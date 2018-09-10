@@ -14,7 +14,7 @@ using SmartFramework4v2.Web.WebExecutor;
 [CSClass("SystemUser")]
 public class SystemUser
 {
-    
+
 
     private DataRow m_data;
 
@@ -23,44 +23,25 @@ public class SystemUser
         get { return m_data["Password"].ToString(); }
     }
 
-    public string UserID {
+    public string UserID
+    {
         get { return m_data["YH_ID"].ToString(); }
     }
-    public string LoginName {
+    public string LoginName
+    {
         get { return m_data["YH_DLM"].ToString(); }
     }
     public string UserName
     {
         get { return m_data["YH_XM"].ToString(); }
     }
-    public string UserType
+    public string RoleID
     {
-        get
-        {
-            return m_data["YH_TP"].ToString();
-        }
+        get { return m_data["roleId"].ToString(); }
     }
-    public string QY_ID
+    public string CompanyID
     {
-        get
-        {
-            return m_data["QY_ID"].ToString();
-        }
-    }
-    public string User_DM
-    {
-        get
-        {
-            return m_data["User_DM"].ToString();
-        }
-    }
-
-    public string DW_ID
-    {
-        get
-        {
-            return GetDWIDByUserID(m_data["YH_ID"].ToString());
-        }
+        get { return m_data["companyId"].ToString(); }
     }
 
     public static string GetDWIDByUserID(string uid)
@@ -83,7 +64,7 @@ public class SystemUser
     {
         using (DBConnection dbc = new DBConnection())
         {
-            string sqlStr = "select User_ID YH_ID, LoginName YH_DLM,User_XM YH_XM,Password,QY_ID from tb_b_Users where  User_DelFlag=0 and User_Enable=0 and LoginName=@LoginName and Password=@Password";
+            string sqlStr = "select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId from tb_b_user a left join tb_b_user_role b on a.UserID = b.userId where a.UserName=@LoginName and a.Password=@Password and (a.ClientKind = 0 or a.ClientKind = 99)";
             SqlCommand cmd = new SqlCommand(sqlStr);
             cmd.Parameters.AddWithValue("@LoginName", username);
             cmd.Parameters.AddWithValue("@Password", password);
@@ -92,8 +73,8 @@ public class SystemUser
             if (dtUser.Rows.Count > 0)
             {
                 su.m_data = dtUser.Rows[0];
-            
-                HttpContext.Current.Response.Cookies.Add(new HttpCookie("userid", dtUser.Rows[0]["YH_ID"].ToString()) { HttpOnly = true});
+
+                HttpContext.Current.Response.Cookies.Add(new HttpCookie("userid", dtUser.Rows[0]["YH_ID"].ToString()) { HttpOnly = true });
                 return su;
             }
             return null;
@@ -160,7 +141,7 @@ public class SystemUser
 
     public static SystemUser GetUserByID(string userid)
     {
-        string sqlStr = "select User_ID YH_ID, LoginName YH_DLM,User_XM YH_XM,QY_ID,User_DM,case when '7E53492E-CF66-411F-83C4-7923467F59B4' in (select JS_ID from tb_b_User_JS_Gl where User_ID = @yh_id and delflag=0)  then '1' else '0' end YH_TP from tb_b_Users  where User_DelFlag=0 and User_ID = @yh_id";
+        string sqlStr = "select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId from tb_b_user a left join tb_b_user_role b on a.UserID = b.userId where a.UserID = @yh_id";
         SqlCommand cmd = new SqlCommand(sqlStr);
         cmd.Parameters.AddWithValue("@yh_id", userid);
         using (DBConnection dbc = new DBConnection())
@@ -402,6 +383,26 @@ public class SystemUser
         catch (Exception ex)
         {
             throw ex;
+        }
+    }
+
+    public DataTable GetPrivilegeList(string role_id)
+    {
+        using (var db = new DBConnection())
+        {
+            string sql = @"select b.privilegeName,c.menuName,d.moduleName from tb_b_privilege_role a 
+                           left join tb_b_privilege b on a.privilegeId = b.privilegeId
+                           left join tb_b_menu c on b.menuId = c.menuId
+                           left join tb_b_module d on b.moduleId = d.moduleId
+                           where a.roleId = @roleId";
+            SqlCommand cmd = new SqlCommand(sql);
+            cmd.Parameters.Add("@roleId", role_id);
+            DataTable dt = db.ExecuteDataTable(cmd);
+            for (var i = 0; i < dt.Rows.Count; i++)
+            {
+                dt.Rows[i]["privilegeName"] = dt.Rows[i]["moduleName"].ToString() + "_" + dt.Rows[i]["menuName"].ToString() + "_" + dt.Rows[i]["privilegeName"].ToString();
+            }
+            return dt;
         }
     }
     #endregion

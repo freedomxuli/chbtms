@@ -22,102 +22,70 @@ public class JsMag
         //
     }
 
-    [CSMethod("SaveJs")]
-    public object SaveJs(JSReader jsr, string zt)
+    [CSMethod("SaveRole")]
+    public object SaveJs(JSReader jsr)
     {
         var user = SystemUser.CurrentUser;
-        string userid = user.UserID;
+        string companyId = user.CompanyID;
         using (DBConnection dbc = new DBConnection())
         {
-            string lbmc = jsr["JS_NAME"];
+            string lbmc = jsr["roleName"];
             if (lbmc == "")
             {
                 throw new Exception("角色名称不能为空！");
             }
 
-            string jsxh = jsr["JS_PX"];
+            string jsxh = jsr["rolePx"];
             if (jsxh == "")
             {
                 throw new Exception("角色序号不能为空！");
             }
 
-            if (jsr["JS_ZT"] == "")
-            {
-                throw new Exception("角色状态出错！");
-            }
-
-            if (jsr["JS_Type"] == "")
-            {
-                throw new Exception("角色类别出错！");
-            }
-
-            int jszt = jsr["JS_ZT"].ToInteger();
-
-            if (jsr["JS_ID"].ToString() == "")
+            if (jsr["roleId"].ToString() == "")
             {
                 //新增
                 string jsid = Guid.NewGuid().ToString();
 
-                var dt = dbc.GetEmptyDataTable("tb_b_JS");
+                var dt = dbc.GetEmptyDataTable("tb_b_roledb");
                 var sr = dt.NewRow();
-                sr["JS_ID"] = new Guid(jsid);
-                sr["JS_NAME"] = lbmc;
-                sr["JS_PX"] = jsr["JS_PX"].ToInteger();
-                sr["JS_Type"] = jsr["JS_Type"].ToInteger();
-                sr["JS_ZT"] = jszt;
-                sr["status"] = false;
-                sr["updatetime"] = DateTime.Now;
-                sr["addtime"] = DateTime.Now;
-                sr["updateuser"] = userid;
+                sr["roleId"] = new Guid(jsid);
+                sr["roleName"] = lbmc;
+                sr["rolePx"] = jsr["rolePx"].ToInteger();
+                sr["companyId"] = companyId;
                 dt.Rows.Add(sr);
                 dbc.InsertTable(dt);
             }
             else
             {
                 //修改
-                string jsid = jsr["JS_ID"].ToString();
-                var dt = dbc.GetEmptyDataTable("tb_b_JS");
+                string jsid = jsr["roleId"].ToString();
+                var dt = dbc.GetEmptyDataTable("tb_b_roledb");
                 var dtt = new SmartFramework4v2.Data.DataTableTracker(dt);
                 var sr = dt.NewRow();
-                sr["JS_ID"] = new Guid(jsid);
-                sr["JS_NAME"] = lbmc;
-                sr["JS_PX"] = jsr["JS_PX"].ToInteger();
-                sr["JS_Type"] = jsr["JS_Type"].ToInteger();
-                sr["JS_ZT"] = jszt;
-                sr["updatetime"] = DateTime.Now;
-                sr["updateuser"] = userid;
+                sr["roleId"] = new Guid(jsid);
+                sr["roleName"] = lbmc;
+                sr["rolePx"] = jsr["rolePx"].ToInteger();
+                sr["companyId"] = companyId;
                 dt.Rows.Add(sr);
                 dbc.UpdateTable(dt, dtt);
             }
 
-            return GetJs(zt);
+            return GetRole();
         }
     }
 
-    [CSMethod("GetJs")]
-    public object GetJs(string zt)
+    [CSMethod("GetRole")]
+    public object GetRole()
     {
         using (DBConnection dbc = new DBConnection())
         {
             try
             {
-                string where = "";
-                if (!string.IsNullOrEmpty(zt) && zt != "")
-                {
-                    where = " and JS_ZT=@JS_ZT ";
-                }
-
-                string sql = "select * from tb_b_JS where status=0 ";
-                sql += where;
-                sql += " order by JS_PX";
-
-                SqlCommand ocmd = new SqlCommand(sql);
-                if (!string.IsNullOrEmpty(zt) && zt != "")
-                {
-                    ocmd.Parameters.AddWithValue("@JS_ZT", zt);
-                }
-
-                DataTable dt = dbc.ExecuteDataTable(ocmd);
+                var companyId = SystemUser.CurrentUser.CompanyID;
+                string sql = "select * from tb_b_roledb where companyId = @companyId order by rolePx";
+                SqlCommand cmd = new SqlCommand(sql);
+                cmd.Parameters.Add("@companyId", companyId);
+                DataTable dt = dbc.ExecuteDataTable(cmd);
                 return dt;
             }
             catch (Exception ex)
@@ -127,11 +95,12 @@ public class JsMag
         }
     }
 
-    [CSMethod("DeleteJs")]
-    public object DeleteJs(JSReader jsr, string zt)
+    [CSMethod("DeleteRole")]
+    public object DeleteJs(JSReader jsr)
     {
         var user = SystemUser.CurrentUser;
         string userid = user.UserID;
+        string companyId = user.CompanyID;
 
         using (DBConnection dbc = new DBConnection())
         {
@@ -141,9 +110,10 @@ public class JsMag
                 for (int i = 0; i < jsr.ToArray().Length; i++)
                 {
                     //判断角色是否被用户关联就不能删除
-                    string str = "select count(*) from tb_b_User_JS_Gl where JS_ID=@JS_ID and delflag=0";
+                    string str = "select count(*) from tb_b_user_role where roleId=@roleId and companyId=@companyId";
                     SqlCommand ocmd = new SqlCommand(str);
-                    ocmd.Parameters.AddWithValue("@JS_ID", jsr.ToArray()[i].ToString());
+                    ocmd.Parameters.AddWithValue("@roleId", jsr.ToArray()[i].ToString());
+                    ocmd.Parameters.AddWithValue("@companyId", companyId);
                     int num = Convert.ToInt32(dbc.ExecuteScalar(ocmd));
 
                     if (num > 0)
@@ -153,20 +123,17 @@ public class JsMag
                     else
                     {
 
-                        string delstr = "update tb_b_JS set status=1,updatetime=@updatetime,updateuser=@updateuser where JS_ID=@JS_ID";
+                        string delstr = "delete from tb_b_roledb where roleId=@roleId and companyId=@companyId";
                         ocmd = new SqlCommand(delstr);
-                        ocmd.Parameters.AddWithValue("updatetime", DateTime.Now);
-                        ocmd.Parameters.AddWithValue("updateuser", userid);
-                        ocmd.Parameters.AddWithValue("JS_ID", jsr.ToArray()[i].ToString());
+                        ocmd.Parameters.AddWithValue("roleId", jsr.ToArray()[i].ToString());
+                        ocmd.Parameters.AddWithValue("companyId", companyId);
                         dbc.ExecuteNonQuery(ocmd);
-
                     }
-
                 }
 
                 dbc.CommitTransaction();
 
-                return GetJs(zt);
+                return GetRole();
             }
             catch (Exception ex)
             {

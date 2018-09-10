@@ -113,8 +113,6 @@ public class PrivateMessage
                     drMsg["ZNXX_LX"] = (int)mi.Type;
                     drMsg["FSR_ID"] = cUser.UserID;
                     drMsg["FSR_MC"] = cUser.UserName;
-                    drMsg["FSR_BM_ID"] = cUser.DW_ID;
-                    drMsg["FSR_BM_MC"] = cUser.User_DM;
                     drMsg["ADDTIME"] = CreateDate;
                     drMsg["UPDATETIME"] = CreateDate;
                     drMsg["ADDUSER"] = cUser.UserID;
@@ -157,10 +155,6 @@ public class PrivateMessage
                     dtMsg.Rows.Add(drMsg);
                     dbc.InsertTable(dtMsg);
                     dbc.InsertTable(dtMsgRelate);
-                    //if (mi.AttachmentList != null && mi.AttachmentList.Count > 0)
-                    //{
-                    //    Core.AttachmentClass.ConnectFilesByPid(mi.AttachmentList.ToArray(), MsgId, Core.Common.FileStorageName);
-                    //}
                     dbc.CommitTransaction();
                     return true;
                 }
@@ -591,8 +585,8 @@ public class PrivateMessage
                 foreach (DataRow drUser in dtUser.Rows)
                 {
                     var childNode = new TreeNode();
-                    childNode.text = drUser["User_DM"] == DBNull.Value ? 
-                        (drUser["User_XM"] == DBNull.Value ? drUser["LoginName"].ToString() : drUser["User_XM"].ToString()) 
+                    childNode.text = drUser["User_DM"] == DBNull.Value ?
+                        (drUser["User_XM"] == DBNull.Value ? drUser["LoginName"].ToString() : drUser["User_XM"].ToString())
                         : drUser["User_DM"].ToString();
                     childNode.id = drUser["User_ID"].ToString();
                     childNode.leaf = true;
@@ -872,7 +866,7 @@ select ZNXX_ID ID,
                 cmd.Parameters.AddWithValue("@ZNXX_ID", id);
                 var dtMessage = dbc.ExecuteDataTable(cmd);
                 dbc.CommitTransaction();
-                return new { MessageDetail = dtMessage};
+                return new { MessageDetail = dtMessage };
             }
             catch (Exception ex)
             {
@@ -900,7 +894,7 @@ select ZNXX_ID ID,
                 cmd.Parameters.AddWithValue("@JSR_ID", SystemUser.CurrentUser.UserID);
                 dbc.ExecuteNonQuery(cmd);
                 dbc.CommitTransaction();
-                return new { MessageDetail = dtMessage};
+                return new { MessageDetail = dtMessage };
             }
             catch (Exception ex)
             {
