@@ -1,175 +1,349 @@
-﻿var zt;
+﻿var pageSize = 20;
 //************************************数据源*****************************************
-var JsStore = Ext.create('Ext.data.Store', {
+var XLStore = createSFW4Store({
+    data: [],
+    pageSize: pageSize,
+    total: 1,
+    currentPage: 1,
     fields: [
-       {name: 'JS_ID'},
-       {name: 'JS_NAME'},
-       {name: 'JS_Type'},
-       {name: 'JS_ZT'},
-       {name: 'JS_PX'}
+       { name: 'traderId' },
+       { name: 'fromOfficeId' },
+       { name: 'fromOfficeName' },
+       { name: 'toOfficeId' },
+       { name: 'toOfficeName' },
+       { name: 'XGQT' }
+    ],
+    onPageChange: function (sto, nPage, sorters) {
+        BindData(nPage);
+    }
+});
+
+var frombscstore = Ext.create('Ext.data.Store', {
+    fields: ['VALUE', 'TEXT'],
+    data: [
     ]
 });
 
-var ztstore = Ext.create('Ext.data.Store', {
-    fields: ['RWLB_ZT', 'text'],
-    data : [
-        {"RWLB_ZT":'', "text":"全部"},
-        {"RWLB_ZT":0, "text":"正常"},
-        {"RWLB_ZT":1, "text":"停用"}
+var tobscstore = Ext.create('Ext.data.Store', {
+    fields: ['VALUE', 'TEXT'],
+    data: [
     ]
 });
 
-var typestore=Ext.create('Ext.data.Store', {
-    fields: ['JS_Type', 'text'],
-    data : [
-        {"JS_Type":0, "text":"监管人员"},
-        {"JS_Type":1, "text":"普通人员"}
+var userstore = Ext.create('Ext.data.Store', {
+    fields: [
+        { name: 'UserID', type: 'string' },
+        { name: 'UserName', type: 'string' }
     ]
-});
+})
+
+var yxstore = Ext.create('Ext.data.Store', {
+    fields: [
+        { name: 'userId', type: 'string' }
+    ]
+})
+
+function GetfromBsc() {
+    CS('CZCLZ.BscMag.GetBsc', function (retVal) {
+        frombscstore.loadData(retVal);
+        Ext.getCmp("fromOfficeId").setValue(retVal[0]["VALUE"]);
+    }, CS.onError)
+}
+
+function GettoBsc() {
+    CS('CZCLZ.BscMag.GetBsc', function (retVal) {
+        tobscstore.loadData(retVal);
+        Ext.getCmp("toOfficeId").setValue(retVal[0]["VALUE"]);
+    }, CS.onError)
+}
+
+function BindData(nPage) {
+    CS('CZCLZ.XLMag.GetXLList', function (retVal) {
+        XLStore.setData({
+            data: retVal.dt,
+            pageSize: pageSize,
+            total: retVal.ac,
+            currentPage: retVal.cp
+        });
+    }, CS.onError, nPage, pageSize, Ext.getCmp("cx_keyword").getValue());
+}
 //************************************数据源*****************************************
 
 //************************************页面方法***************************************
-function getJs(zt)
-{
-    CS('CZCLZ.JsGlClass.GetJs', function(retVal) {
-        if(retVal)
-        {
-            JsStore.loadData(retVal);
+function xg(id) {
+    CS('CZCLZ.XLMag.GetXLById', function (retVal) {
+        if (retVal) {
+            var win = new addWin();
+            win.show(null, function () {
+                GetfromBsc();
+                GettoBsc();
+                var form = Ext.getCmp('addform');
+                form.form.setValues(retVal[0]);
+            });
         }
-        
-    },CS.onError ,zt);
+    }, CS.onError, id);
 }
 
-
-function xg(id){
-    var r=JsStore.findRecord("JS_ID",id).data;
-    var win=new addWin();
-    win.show(null,function(){
-        win.setTitle("角色修改");
-        var form=Ext.getCmp('addform');
-        form.form.setValues(r); 
-        if(r["JS_ZT"]==1)
-        {
-            Ext.getCmp("JS_ZT").setValue(true);
+function del(id) {
+    Ext.MessageBox.confirm("提示", "是否删除你所选?", function (obj) {
+        if (obj == "yes") {
+            CS('CZCLZ.XLMag.DeleteXL', function (retVal) {
+                if (retVal) {
+                    BindData(1);
+                }
+            }, CS.onError, id);
+        }
+        else {
+            return;
         }
     });
 }
+
+function SZQTFZR(id, fromOfficeName, toOfficeName) {
+    var win = new SZQT({xlid:id});
+    win.setTitle(fromOfficeName + "-" + toOfficeName);
+    win.show(null, function () {
+        CS('CZCLZ.XLMag.GetXL2YH', function (retVal) {
+            if (retVal.userdt) {
+                userstore.loadData(retVal.userdt);
+            }
+            if (retVal.yxdt) {
+                yxstore.loadData(retVal.yxdt);
+            }
+            var arr = [];
+            if (userstore.data.length > 0) {
+                for (var i = 0; i < userstore.data.length; i++) {
+                    for (var j = 0; j < yxstore.data.length; j++) {
+                        if (userstore.data.items[i].data.UserID == yxstore.data.items[j].data.userId) {
+                            arr.push(userstore.findRecord("UserID", userstore.data.items[i].data.UserID));
+                        }
+                    }
+                }
+                Ext.getCmp('userpanel').getSelectionModel().select(arr);
+            }
+        }, CS.onError, id);
+
+    })
+}
+
 //************************************页面方法***************************************
 
 //************************************弹出界面***************************************
+Ext.define('SZQT', {
+    extend: 'Ext.window.Window',
+
+    modal: true,
+    width: 450,
+    height: 400,
+    layout: {
+        type: 'fit'
+    },
+    title: '设置前台负责人',
+    id: 'SZQTWin',
+    initComponent: function () {
+        var me = this;
+        var xlid = me.xlid;
+        Ext.applyIf(me, {
+            items: [
+                    {
+                        xtype: 'panel',
+                        autoScroll: true,
+                        dockedItems: [
+                        ],
+                        buttonAlign: 'center',
+                        buttons: [
+
+                                {
+                                    xtype: 'button',
+                                    width: 100,
+                                    text: '确定',
+                                    handler: function () {
+                                        var value1 = [];
+                                        var grid = Ext.getCmp("userpanel");
+                                        var rds = grid.getSelectionModel().getSelection();
+
+                                        Ext.MessageBox.confirm("提示", "是否保存你所选?", function (obj) {
+                                            if (obj == "yes") {
+                                                for (var n = 0, len = rds.length; n < len; n++) {
+                                                    var rd = rds[n];
+                                                    value1.push(rd.data);
+                                                }
+                                                CS('CZCLZ.XLMag.SaveXL2YH', function (retVal) {
+                                                    if (retVal == 1) {
+                                                        Ext.Msg.show({
+                                                            title: '提示',
+                                                            msg: '保存成功',
+                                                            buttons: Ext.MessageBox.OK,
+                                                            icon: Ext.MessageBox.INFO,
+                                                            closable: false,
+                                                            fn: function (btn) {
+                                                                if (btn == 'ok') {
+                                                                    Ext.getCmp("SZQTWin").close();
+                                                                    BindData(1);
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                }, CS.onError, value1,xlid);
+                                            }
+                                            else {
+                                                return;
+                                            }
+                                        });
+                                    }
+                                },
+                                {
+                                    xtype: 'button',
+                                    width: 100,
+                                    text: '返回',
+                                    handler: function () {
+                                        this.up("window").close();
+                                    }
+                                }
+                        ],
+                        items: [
+                            {
+                                xtype: 'form',
+                                layout: {
+                                    type: 'fit'
+                                },
+                                id: 'form',
+                                region: 'center',
+                                items: [
+                                    {
+                                        xtype: 'gridpanel',
+                                        id: 'userpanel',
+                                        store: userstore,
+                                        selModel: Ext.create('Ext.selection.CheckboxModel', {
+                                            selType: 'rowmodel',
+                                            mode: 'SIMPLE'
+                                        }),
+                                        columnLines: true,
+                                        columns: [
+                                            {
+                                                xtype: 'rownumberer',
+                                                //这里可以设置你的宽度
+                                                width: 35,
+                                                sortable: false,
+                                                menuDisabled: true,
+                                            },
+                                            {
+                                                dataIndex: 'UserID',
+                                                width: 75,
+                                                text: 'UserID',
+                                                hidden: true,
+                                                sortable: false,
+                                                menuDisabled: true
+                                            },
+                                            {
+                                                dataIndex: 'UserName',
+                                                flex: 1,
+                                                text: '用户名称',
+                                                sortable: false,
+                                                menuDisabled: true
+                                            }
+                                        ]
+
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+            ]
+        });
+
+        me.callParent(arguments);
+    }
+});
+
 Ext.define('addWin', {
     extend: 'Ext.window.Window',
 
-    height: 250,
+    height: 150,
     width: 400,
     layout: {
         type: 'fit'
     },
-    closeAction:'destroy',
-    modal:true,
-    title: '新增角色',
+    closeAction: 'destroy',
+    modal: true,
+    title: '线路档案编辑',
 
-    initComponent: function() {
+    initComponent: function () {
         var me = this;
         me.items = [
             {
                 xtype: 'form',
-                id:'addform',
+                id: 'addform',
                 frame: true,
                 bodyPadding: 10,
                 title: '',
                 items: [
                     {
                         xtype: 'textfield',
-                        fieldLabel: '角色ID',
-                        id:'JS_ID',
-                        name:'JS_ID',
+                        fieldLabel: '线路ID',
+                        id: 'traderId',
+                        name: 'traderId',
                         labelWidth: 70,
-                        hidden:true,
+                        hidden: true,
                         anchor: '100%'
                     },
                     {
-                        xtype: 'textareafield',
-                        id:'JS_NAME',
-                        name:'JS_NAME',
-                        fieldLabel: '名称',
+                        xtype: 'combobox',
+                        id: 'fromOfficeId',
+                        name: 'fromOfficeId',
+                        fieldLabel: '起始办事处',
+                        editable: false,
+                        store: frombscstore,
+                        queryMode: 'local',
+                        displayField: 'TEXT',
+                        valueField: 'VALUE',
                         labelWidth: 70,
-                        allowBlank: false,
-                        anchor: '100%'
-                    },
-                    {
-                        xtype: 'numberfield',
-                        id:'JS_PX',
-                        name:'JS_PX',
-                        fieldLabel: '排序',
-                        labelWidth: 70,
-                        value:0,
                         allowBlank: false,
                         anchor: '100%'
                     },
                     {
                         xtype: 'combobox',
-                        id:'jslx',
-                        width: 160,
-                        fieldLabel: '类型',
-                        editable:false,
-                        labelWidth: 50,
-                        store:typestore,
+                        id: 'toOfficeId',
+                        name: 'toOfficeId',
+                        fieldLabel: '到达办事处',
+                        editable: false,
+                        store: tobscstore,
                         queryMode: 'local',
-                        displayField: 'text',
-                        valueField: 'JS_Type',
-                        value:0
-                    },
-                    {
-                        xtype: 'container',
-                        items: [
-                            {
-                                xtype: 'checkboxfield',
-                                id:'JS_ZT',
-                                name:'JS_ZT',
-                                fieldLabel: '',
-                                labelWidth: 70,
-                                boxLabel: '停用'
-                            }
-                        ]
+                        displayField: 'TEXT',
+                        valueField: 'VALUE',
+                        labelWidth: 70,
+                        allowBlank: false,
+                        anchor: '100%'
                     }
                 ],
-                buttonAlign:'center',
-                buttons:[
+                buttonAlign: 'center',
+                buttons: [
                     {
                         text: '确定',
-                        handler: function() {
-                            var form=Ext.getCmp('addform');
-                            if (form.form.isValid())
-                            {
+                        handler: function () {
+                            var form = Ext.getCmp('addform');
+                            if (form.form.isValid()) {
                                 //取得表单中的内容
                                 var values = form.form.getValues(false);
-                                if(Ext.getCmp("JS_ZT").value)
-                                {
-                                    values["JS_ZT"]=1;
-                                }
-                                else
-                                {
-                                    values["JS_ZT"]=0;
-                                }
-                                
-                                values["JS_Type"]=Ext.getCmp("jslx").value;
-                                
-                                var me=this;
-                                
-                                CS('CZCLZ.JsGlClass.SaveJs', function(retVal) {
-                                    if(retVal)
-                                    {
-                                        JsStore.loadData(retVal);
+                                var me = this;
+                                CS('CZCLZ.XLMag.SaveXL', function (retVal) {
+                                    if (retVal) {
+                                        Ext.Msg.show({
+                                            title: '提示',
+                                            msg: '保存成功!',
+                                            buttons: Ext.MessageBox.OK,
+                                            icon: Ext.MessageBox.INFO
+                                        });
+                                        BindData(1);
                                     }
                                     me.up('window').close()
-                                },CS.onError ,values,zt);
+                                }, CS.onError, values);
                             }
                         }
                     },
                     {
                         text: '取消',
-                        handler: function() {
+                        handler: function () {
                             this.up('window').close();
                         }
                     }
@@ -183,50 +357,59 @@ Ext.define('addWin', {
 //************************************弹出界面***************************************
 
 //************************************主界面*****************************************
-Ext.onReady(function() {
-    Ext.define('JsView', {
+Ext.onReady(function () {
+    Ext.define('XLView', {
         extend: 'Ext.container.Viewport',
 
         layout: {
             type: 'fit'
         },
 
-        initComponent: function() {
+        initComponent: function () {
             var me = this;
             me.items = [
                 {
                     xtype: 'gridpanel',
-                    id:'JsGrid',
-                    store:JsStore,
-                    selModel: Ext.create('Ext.selection.CheckboxModel', {
-
-                    }),
+                    id: 'XLGrid',
+                    store: XLStore,
+                    columnLines: true,
                     columns: [Ext.create('Ext.grid.RowNumberer'),
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'JS_NAME',
+                            dataIndex: 'fromOfficeName',
                             sortable: false,
                             menuDisabled: true,
-                            width:400,
-                            text: '角色名称'
+                            width: 200,
+                            text: '起始办事处'
                         },
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'JS_ZT',
+                            dataIndex: 'toOfficeName',
                             sortable: false,
                             menuDisabled: true,
-                            text: '状态',
-                            renderer : function(value, cellmeta, record, rowIndex, columnIndex, store){                                  var str="";                                switch(value)                                {                                    case 0:                                        str="正常";                                        break;                                    case 1:                                        cellmeta.style='color: red ';                                        str="停用";                                        break;                                 }                                return str;                              }
+                            flex: 1,
+                            text: '到达办事处'
                         },
                         {
                             xtype: 'gridcolumn',
+                            dataIndex: 'XGQT',
+                            sortable: false,
+                            menuDisabled: true,
+                            flex: 1,
+                            text: '相关前台'
+                        },
+                        {
+                            xtype: 'gridcolumn',
+                            dataIndex: 'traderId',
                             sortable: false,
                             menuDisabled: true,
                             text: '操作',
-                            renderer : function(value, cellmeta, record, rowIndex, columnIndex, store){ 
-                                var r=record.data;
-                                var id=r["JS_ID"];
-                                return "<a href='JavaScript:void(0)' onclick='xg(\""+id+"\")'>修改</a>";
+                            width: 200,
+                            renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                return "<a href='JavaScript:void(0)' onclick='SZQTFZR(\"" + value + "\",\"" + record.data.fromOfficeName + "\",\"" + record.data.toOfficeName
+                                    + "\")'>设置前台负责人</a>&nbsp;<a href='JavaScript:void(0)' onclick='xg(\""
+                                    + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='del(\""
+                                    + value + "\")'>删除</a>";
                             }
                         }
                     ],
@@ -239,16 +422,21 @@ Ext.onReady(function() {
                             dock: 'top',
                             items: [
                                 {
+                                    xtype: 'textfield',
+                                    id: 'cx_keyword',
+                                    labelWidth: 60,
+                                    fieldLabel: '关键字'
+                                },
+                                {
                                     xtype: 'buttongroup',
                                     title: '',
                                     items: [
                                         {
                                             xtype: 'button',
-                                            iconCls: 'add',
-                                            text: '新增',
-                                            handler:function(){
-                                                var win=new addWin();
-                                                win.show();
+                                            iconCls: 'search',
+                                            text: '查询',
+                                            handler: function () {
+                                                BindData(1);
                                             }
                                         }
                                     ]
@@ -259,68 +447,24 @@ Ext.onReady(function() {
                                     items: [
                                         {
                                             xtype: 'button',
-                                            iconCls: 'delete',
-                                            text: '删除',
-                                            handler:function(){
-                                                var idlist = [];
-                                                var grid=Ext.getCmp("JsGrid");
-                                                var rds = grid.getSelectionModel().getSelection();
-                                                if (rds.length == 0) {
-                                                    Ext.Msg.show({
-                                                         title:'提示',
-                                                         msg: '请选择至少一条要删除的记录!',
-                                                         buttons: Ext.MessageBox.OK,
-                                                         icon:  Ext.MessageBox.INFO
-                                                    });
-                                                    return;
-                                                }
-                                                
-                                                Ext.MessageBox.confirm("提示","是否删除你所选?",function(obj){
-                                                    if(obj=="yes")
-                                                    {
-                                                        for (var n = 0, len = rds.length; n < len; n++) {
-                                                            var rd = rds[n];
-                                                            
-                                                            idlist.push(rd.get("JS_ID"));
-                                                        }
-                                                        
-                                                        CS('CZCLZ.JsGlClass.DeleteJs', function(retVal) {
-                                                            if(retVal)
-                                                            {
-                                                                JsStore.loadData(retVal);
-                                                            }
-                                                        }, CS.onError, idlist,zt);
-                                                    }
-                                                    else
-                                                    {
-                                                        return;
-                                                    }
-                                                });
-                                                
-                                                
+                                            iconCls: 'add',
+                                            text: '新增',
+                                            handler: function () {
+                                                var win = new addWin();
+                                                win.show();
+                                                GetfromBsc();
+                                                GettoBsc();
                                             }
                                         }
                                     ]
-                                },'->',
-                                {
-                                    xtype: 'combobox',
-                                    id:'ylzt',
-                                    width: 160,
-                                    fieldLabel: '状态',
-                                    editable:false,
-                                    labelWidth: 50,
-                                    store:ztstore,
-                                    queryMode: 'local',
-                                    displayField: 'text',
-                                    valueField: 'RWLB_ZT',
-                                    value:'',
-                                    listeners:{
-                                         'select': function(field , value , options){
-                                            getJs(field.value);
-                                         }
-                                    }
                                 }
                             ]
+                        },
+                        {
+                            xtype: 'pagingtoolbar',
+                            displayInfo: true,
+                            store: XLStore,
+                            dock: 'bottom'
                         }
                     ]
                 }
@@ -328,11 +472,9 @@ Ext.onReady(function() {
             me.callParent(arguments);
         }
     });
-    
-    new JsView();
-    
-    zt=Ext.getCmp("ylzt").value;
-    
-    getJs(zt);
+
+    new XLView();
+    BindData(1);
+
 })
 //************************************主界面*****************************************
