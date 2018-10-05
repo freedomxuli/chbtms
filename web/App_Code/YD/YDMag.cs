@@ -368,12 +368,12 @@ public class YDMag
                     //cfdr["zhuangchedan_id"]
                     //cfdr["chaifen_statue"]
                     //cfdr["yundan_chaifen_number"]
-                    cfdr["is_leaf"]=0;   //是否末级（0：否；1：是；）
+                    cfdr["is_leaf"]=1;   //是否末级（0：否；1：是；）
                     cfdr["status"]=0;
                     cfdr["addtime"]=DateTime.Now;
                     cfdr["adduser"]=SystemUser.CurrentUser.UserID;
-                    //cfdr["isDache"]
-                    //cfdr["isZhuhuodaofu"]
+                    cfdr["isDache"] = 0;
+                    cfdr["isZhuhuodaofu"] = 0;
                     //cfdr["isPeiSong"]
                     cfdt.Rows.Add(cfdr);
                     dbc.InsertTable(cfdt);

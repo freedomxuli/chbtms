@@ -1,25 +1,21 @@
 ﻿var pageSize = 20;
 //************************************数据源*****************************************
-var YDStore = createSFW4Store({
+var ZCDStore = createSFW4Store({
     data: [],
     pageSize: pageSize,
     total: 1,
     currentPage: 1,
     fields: [
-       { name: 'yundan_id' },
+       { name: 'zhuangchedan_id' },
        { name: 'officeId' },
-       { name: 'officeName' },
-       { name: 'yundanNum' },
-       { name: 'fahuoPeople' },
-       { name: 'shouhuoPeople' },
-       { name: 'shouhuoAddress' },
-       { name: 'toAddress' },
-       { name: 'songhuoType' },
-       { name: 'payType' },
-       { name: 'moneyYunfei' },
-       { name: 'moneyHuikouXianFan' },
-       { name: 'zhidanRen' },
-       { name: 'memo' }
+       { name: 'fromOfficeName' },
+       { name: 'toOfficeId' },
+       { name: 'toOfficeName' },
+       { name: 'zhuangchedanNum' },
+       { name: 'driverId' },
+       { name: 'people' },
+       { name: 'toAdsPeople' },
+       { name: 'toAdsTel' }
     ],
     onPageChange: function (sto, nPage, sorters) {
         BindData(nPage);
@@ -28,36 +24,36 @@ var YDStore = createSFW4Store({
 
 
 function BindData(nPage) {
-    CS('CZCLZ.YDMag.GetYDList', function (retVal) {
-        YDStore.setData({
+    CS('CZCLZ.ZCDMag.GetZCDList', function (retVal) {
+        ZCDStore.setData({
             data: retVal.dt,
             pageSize: pageSize,
             total: retVal.ac,
             currentPage: retVal.cp
         });
-    }, CS.onError, nPage, pageSize, Ext.getCmp("cx_keyword").getValue());
+    }, CS.onError, nPage, pageSize, Ext.getCmp("cx_zcdh").getValue(), Ext.getCmp("cx_sj").getValue(), Ext.getCmp("cx_pz").getValue());
 }
 //************************************数据源*****************************************
 
 //************************************页面方法***************************************
 
 function del(id) {
-    Ext.MessageBox.confirm("提示", "是否删除你所选?", function (obj) {
-        if (obj == "yes") {
-            CS('CZCLZ.YDMag.DeleteYD', function (retVal) {
-                if (retVal) {
-                    BindData(1);
-                }
-            }, CS.onError, id);
-        }
-        else {
-            return;
-        }
-    });
+    //Ext.MessageBox.confirm("提示", "是否删除你所选?", function (obj) {
+    //    if (obj == "yes") {
+    //        CS('CZCLZ.ZCDMag.DeleteZCD', function (retVal) {
+    //            if (retVal) {
+    //                BindData(1);
+    //            }
+    //        }, CS.onError, id);
+    //    }
+    //    else {
+    //        return;
+    //    }
+    //});
 }
 function Edit(id) {
     FrameStack.pushFrame({
-        url: "EditYD.html?ydid=" + id,
+        url: "EditZCD.html?zcdid=" + id,
         onClose: function () {
             BindData(1);
         }
@@ -71,7 +67,7 @@ function Edit(id) {
 
 //************************************主界面*****************************************
 Ext.onReady(function () {
-    Ext.define('YDView', {
+    Ext.define('ZCDView', {
         extend: 'Ext.container.Viewport',
 
         layout: {
@@ -83,53 +79,29 @@ Ext.onReady(function () {
             me.items = [
                 {
                     xtype: 'gridpanel',
-                    id: 'YDGrid',
-                    store: YDStore,
+                    id: 'ZCDGrid',
+                    store: ZCDStore,
                     columnLines: true,
                     columns: [Ext.create('Ext.grid.RowNumberer'),
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'yundanNum',
+                            dataIndex: 'zhuangchedanNum',
                             sortable: false,
                             menuDisabled: true,
                             width: 200,
-                            text: '运单号'
+                            text: '装车单号'
                         },
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'officeName',
+                            dataIndex: 'fromOfficeName',
                             sortable: false,
                             menuDisabled: true,
                             flex: 1,
-                            text: '办事处'
+                            text: '起始站'
                         },
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'fahuoPeople',
-                            sortable: false,
-                            menuDisabled: true,
-                            flex: 1,
-                            text: '发货人'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'shouhuoPeople',
-                            sortable: false,
-                            menuDisabled: true,
-                            flex: 1,
-                            text: '收货人'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'shouhuoAddress',
-                            sortable: false,
-                            menuDisabled: true,
-                            flex: 1,
-                            text: '收货地址'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'toAddress',
+                            dataIndex: 'toOfficeName',
                             sortable: false,
                             menuDisabled: true,
                             flex: 1,
@@ -137,101 +109,31 @@ Ext.onReady(function () {
                         },
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'songhuoType',
+                            dataIndex: 'people',
                             sortable: false,
                             menuDisabled: true,
                             flex: 1,
-                            text: '送货方式',
-                            renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                var str = "";
-                                if (value == 0) {
-                                    str = "自提";
-                                } else if (value == 1) {
-                                    str = "送货";
-                                }
-                                return str;
-                            }
+                            text: '司机'
                         },
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'payType',
+                            dataIndex: 'toAdsPeople',
                             sortable: false,
                             menuDisabled: true,
                             flex: 1,
-                            text: '结算方式',
-                            renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                var str="";
-                                if (value == 11) {
-                                    str = "现金";
-                                } else if (value == 1) {
-                                    str = "欠付";
-                                } else if (value == 2) {
-                                    str = "到付";
-                                } else if (value == 3) {
-                                    str = "回单付";
-                                } else if (value == 4) {
-                                    str = "现付+欠付";
-                                } else if (value == 5) {
-                                    str = "现付+到付";
-                                } else if (value == 6) {
-                                    str = "到付+欠付";
-                                } else if (value == 7) {
-                                    str = "现付+回单付";
-                                } else if (value == 8) {
-                                    str = "欠付+回单付";
-                                } else if (value == 9) {
-                                    str = "到付+回单付";
-                                } else if (value == 10) {
-                                    str = "现付+到付+欠付";
-                                }
-                                return str;
-                            }
+                            text: '到达站联系人'
                         },
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'moneyYunfei',
+                            dataIndex: 'toAdsTel',
                             sortable: false,
                             menuDisabled: true,
                             flex: 1,
-                            text: '运费'
+                            text: '到达站联系电话'
                         },
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'moneyHuikouXianFan',
-                            sortable: false,
-                            menuDisabled: true,
-                            flex: 1,
-                            text: '回扣'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            sortable: false,
-                            menuDisabled: true,
-                            flex: 1,
-                            text: '实际运费',
-                            renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                return record.data.moneyYunfei - record.data.moneyHuikouXianFan;
-                            }
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'zhidanRen',
-                            sortable: false,
-                            menuDisabled: true,
-                            flex: 1,
-                            text: '制单人'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'memo',
-                            sortable: false,
-                            menuDisabled: true,
-                            flex: 1,
-                            text: '备注'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'yundan_id',
+                            dataIndex: 'zhuangchedan_id',
                             sortable: false,
                             menuDisabled: true,
                             text: '操作',
@@ -251,9 +153,21 @@ Ext.onReady(function () {
                             items: [
                                 {
                                     xtype: 'textfield',
-                                    id: 'cx_keyword',
+                                    id: 'cx_zcdh',
                                     labelWidth: 60,
-                                    fieldLabel: '关键字'
+                                    fieldLabel: '装车单号'
+                                },
+                                {
+                                    xtype: 'textfield',
+                                    id: 'cx_sj',
+                                    labelWidth: 60,
+                                    fieldLabel: '司机'
+                                },
+                                {
+                                    xtype: 'textfield',
+                                    id: 'cx_pz',
+                                    labelWidth: 60,
+                                    fieldLabel: '车辆牌照'
                                 },
                                 {
                                     xtype: 'buttongroup',
@@ -288,7 +202,7 @@ Ext.onReady(function () {
                         {
                             xtype: 'pagingtoolbar',
                             displayInfo: true,
-                            store: YDStore,
+                            store: ZCDStore,
                             dock: 'bottom'
                         }
                     ]
@@ -298,7 +212,7 @@ Ext.onReady(function () {
         }
     });
 
-    new YDView();
+    new ZCDView();
     BindData(1);
 
 })
