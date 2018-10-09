@@ -38,6 +38,7 @@
 
     <script type="text/javascript" src="../js/json.js"></script>
     <script type="text/javascript" src="../js/fun.js"></script>
+    <script type="text/javascript" src="../js/LodopFuncs.js"></script>
     <script type="text/javascript" src="../js/cb.js"></script>
     <link href="css/msgs-dialog.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="../JS/PrivateMessage/pm.js"></script>

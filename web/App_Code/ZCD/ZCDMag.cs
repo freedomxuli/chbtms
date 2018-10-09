@@ -60,6 +60,28 @@ public class ZCDMag
 
     }
 
+    [CSMethod("GetZCDByID")]
+    public object GetZCDByID(string zcdid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string str = @"select a.*,b.people,b.tel from zhuangchedan_zhuangchedan a left join jichu_driver b on a.driverId=b.driverId
+                                where zhuangchedan_id=@zhuangchedan_id";
+                SqlCommand cmd = new SqlCommand(str);
+                cmd.Parameters.AddWithValue("@zhuangchedan_id", zcdid);
+                DataTable zcddt = dbc.ExecuteDataTable(cmd);
+
+                return zcddt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
     [CSMethod("GetZCDQSZ")]
     public DataTable GetZCDQSZ()
     {
@@ -124,4 +146,985 @@ public class ZCDMag
         }
     }
 
+
+    /// <summary>
+    /// 库存运单List
+    /// </summary>
+    /// <param name="pagnum"></param>
+    /// <param name="pagesize"></param>
+    /// <param name="keyword"></param>
+    /// <returns></returns>
+    [CSMethod("GetKCYDList")]
+    public object GetKCYDList(int pagnum, int pagesize, string fromOfficeId,string toOfficeId,string kssj,string jssj,string keyword)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                int cp = pagnum;
+                int ac = 0;
+                string where = "";
+                if (!string.IsNullOrEmpty(fromOfficeId.Trim()))
+                {
+                    where += " and " + dbc.C_EQ("b.officeId", fromOfficeId);
+                }
+                if (!string.IsNullOrEmpty(toOfficeId.Trim()))
+                {
+                    where += " and " + dbc.C_EQ("b.toOfficeId", toOfficeId);
+                }
+                if (!string.IsNullOrEmpty(kssj))
+                {
+                    where += " and b.yundanDate>='" + Convert.ToDateTime(kssj) + "'";
+                }
+                if (!string.IsNullOrEmpty(jssj))
+                {
+                    where += " and b.yundanDate<='" + Convert.ToDateTime(jssj) + "'";
+                }
+                if (!string.IsNullOrEmpty(keyword.Trim()))
+                {
+                    where += " and "+dbc.C_Like("b.fahuoPeople",keyword,LikeStyle.LeftAndRightLike); 
+                }
+                string str = @" select a.*,b.*,c.officeName,d.officeName as toOfficeName,e.zhuangchedanNum from yundan_chaifen a left join yundan_yundan b
+                                on a.yundan_id=b.yundan_id
+                                left join jichu_office c on b.officeId=c.officeId
+                                left join jichu_office d on b.officeId=d.officeId
+                                left join zhuangchedan_zhuangchedan e on a.zhuangchedan_id=e.zhuangchedan_id
+                                 where a.is_leaf=1 and a.zhuangchedan_id is null  and b.status=0 " + where + " order by e.zhuangchedanNum asc";
+                //开始取分页数据   
+                System.Data.DataTable dtPage = new System.Data.DataTable();
+                dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
+
+                return new { dt = dtPage, cp = cp, ac = ac };
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+    }
+
+
+    [CSMethod("GetHPList")]
+    public object GetHPList(int pagnum, int pagesize, string cfid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                int cp = pagnum;
+                int ac = 0;
+                string str = @"select * from yundan_goods where status=0 and yundan_chaifen_id='"+cfid+"' order by addtime desc";
+                //开始取分页数据   
+                System.Data.DataTable dtPage = new System.Data.DataTable();
+                dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
+
+                return new { dt = dtPage, cp = cp, ac = ac };
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+    }
+
+
+    [CSMethod("SaveZCD")]
+    public object SaveZCD(string zcdid, JSReader jsr, JSReader[] xzkclist)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            dbc.BeginTransaction();
+            try
+            {
+                if (string.IsNullOrEmpty(zcdid))
+                {
+                    zcdid = Guid.NewGuid().ToString();
+
+                    //装车单表
+                    DataTable zcdt = dbc.GetEmptyDataTable("zhuangchedan_zhuangchedan");
+
+                    DataRow zcdr = zcdt.NewRow();
+                    zcdr["zhuangchedan_id"] = zcdid;
+                    zcdr["officeId"] = jsr["officeId"].ToString();
+                    zcdr["toOfficeId"] = jsr["toOfficeId"].ToString();
+                    zcdr["zhuangchedanNum"] = jsr["zhuangchedanNum"].ToString();
+                    zcdr["driverId"] = jsr["driverId"].ToString();
+                    //zcdr["fromAddress"]
+                    //zcdr["toAddress"]
+                    zcdr["toAdsPeople"] = jsr["toAdsPeople"].ToString();
+                    zcdr["toAdsTel"] = jsr["toAdsTel"].ToString();
+
+                    if (jsr["moneyTotal"] != null && jsr["moneyTotal"].ToString() != "")
+                    {
+                        zcdr["moneyTotal"] = Convert.ToDecimal(jsr["moneyTotal"].ToString());
+                    }
+                    else { zcdr["moneyTotal"] = 0; }
+                    if (jsr["moneyYunfeiYifu"] != null && jsr["moneyYunfeiYifu"].ToString() != "")
+                    {
+                        zcdr["moneyYunfeiYifu"] = Convert.ToDecimal(jsr["moneyYunfeiYifu"].ToString());
+                    }
+                    else { zcdr["moneyYunfeiYifu"] = 0; }
+                    if (jsr["moneyYufu"] != null && jsr["moneyYufu"].ToString() != "")
+                    {
+                        zcdr["moneyYufu"] = Convert.ToDecimal(jsr["moneyYufu"].ToString());
+                    }
+                    else { zcdr["moneyYufu"] = 0; }
+                    if (jsr["moneyQianfu"] != null && jsr["moneyQianfu"].ToString() != "")
+                    {
+                        zcdr["moneyQianfu"] = Convert.ToDecimal(jsr["moneyQianfu"].ToString());
+                    }
+                    else { zcdr["moneyQianfu"] = 0; }
+
+                    if (jsr["moneyDaofu"] != null && jsr["moneyDaofu"].ToString() != "")
+                    {
+                        zcdr["moneyDaofu"] = Convert.ToDecimal(jsr["moneyDaofu"].ToString());
+                    }
+                    else { zcdr["moneyDaofu"] = 0; }
+                    if (jsr["moneyZhuhuoDaofu"] != null && jsr["moneyZhuhuoDaofu"].ToString() != "")
+                    {
+                        zcdr["moneyZhuhuoDaofu"] = Convert.ToDecimal(jsr["moneyZhuhuoDaofu"].ToString());
+                    }
+                    else { zcdr["moneyZhuhuoDaofu"] = 0; }
+                    if (jsr["moneyYajin"] != null && jsr["moneyYajin"].ToString() != "")
+                    {
+                        zcdr["moneyYajin"] = Convert.ToDecimal(jsr["moneyYajin"].ToString());
+                    }
+                    else { zcdr["moneyYajin"] = 0; }
+                    zcdr["isOverYufuHexiao"] = 0;
+                    zcdr["isOverQianfuHexiao"] = 0;
+                    zcdr["isOverDaofuHexiao"] = 0;
+                    zcdr["isOverYajinHexiao"] = 0;
+                    zcdr["isOverZhuhuoDaofuHexiao"] = 0;
+                    zcdr["isYajinKouliu"] = 0;
+                    zcdr["isArrive"] = 0;
+                    //zcdr["yajinKouliuMeno"]
+                    if (jsr["jiaofuDate"] != null && jsr["jiaofuDate"].ToString() != "")
+                    {
+                        zcdr["jiaofuDate"] = Convert.ToDateTime(jsr["jiaofuDate"].ToString());
+                    }
+                    if (jsr["qiandanDate"] != null && jsr["qiandanDate"].ToString() != "")
+                    {
+                        zcdr["qiandanDate"] = Convert.ToDateTime(jsr["qiandanDate"].ToString());
+                    }
+                    //zcdr["maoLishenhe"]
+                    zcdr["memo"] = jsr["memo"].ToString();
+                    zcdr["adduser"] = SystemUser.CurrentUser.UserID;
+                    zcdr["addtime"] = DateTime.Now;
+                    zcdr["status"] = 0;
+                    zcdt.Rows.Add(zcdr);
+                    dbc.InsertTable(zcdt);
+
+
+                    //拆分表
+                    DataTable cfdt = dbc.GetEmptyDataTable("yundan_chaifen");
+                    DataTableTracker cfdtt = new DataTableTracker(cfdt);
+                    if (xzkclist.Length > 0)
+                    {
+                        for (int i = 0; i < xzkclist.Length; i++)
+                        {
+                            DataRow cfdr = cfdt.NewRow();
+                            cfdr["yundan_chaifen_id"] = xzkclist[i]["yundan_chaifen_id"].ToString(); ;
+                            cfdr["zhuangchedan_id"] = zcdid;
+                            cfdr["isPeiSong"] = 1;
+                            cfdt.Rows.Add(cfdr);
+                        }
+                    }
+                    dbc.UpdateTable(cfdt, cfdtt);
+                }
+                else
+                { //编辑
+
+                    //运单表
+                    DataTable zcdt = dbc.GetEmptyDataTable("zhuangchedan_zhuangchedan");
+                    DataTableTracker zcdtt = new DataTableTracker(zcdt);
+                    DataRow zcdr = zcdt.NewRow();
+                    zcdr["zhuangchedan_id"] = zcdid;
+                    zcdr["officeId"] = jsr["officeId"].ToString();
+                    zcdr["toOfficeId"] = jsr["toOfficeId"].ToString();
+                    zcdr["zhuangchedanNum"] = jsr["zhuangchedanNum"].ToString();
+                    zcdr["driverId"] = jsr["driverId"].ToString();
+                    //zcdr["fromAddress"]
+                    //zcdr["toAddress"]
+                    zcdr["toAdsPeople"] = jsr["toAdsPeople"].ToString();
+                    zcdr["toAdsTel"] = jsr["toAdsTel"].ToString();
+                    if (jsr["moneyTotal"] != null && jsr["moneyTotal"].ToString() != "")
+                    {
+                        zcdr["moneyTotal"] = Convert.ToDecimal(jsr["moneyTotal"].ToString());
+                    }
+                    else { zcdr["moneyTotal"] = 0; }
+                    if (jsr["moneyYufu"] != null && jsr["moneyYufu"].ToString() != "")
+                    {
+                        zcdr["moneyYufu"] = Convert.ToDecimal(jsr["moneyYufu"].ToString());
+                    }
+                    else { zcdr["moneyYufu"] = 0; }
+                    if (jsr["moneyQianfu"] != null && jsr["moneyQianfu"].ToString() != "")
+                    {
+                        zcdr["moneyQianfu"] = Convert.ToDecimal(jsr["moneyQianfu"].ToString());
+                    }
+                    else { zcdr["moneyQianfu"] = 0; }
+
+                    if (jsr["moneyDaofu"] != null && jsr["moneyDaofu"].ToString() != "")
+                    {
+                        zcdr["moneyDaofu"] = Convert.ToDecimal(jsr["moneyDaofu"].ToString());
+                    }
+                    else { zcdr["moneyDaofu"] = 0; }
+                    if (jsr["moneyZhuhuoDaofu"] != null && jsr["moneyZhuhuoDaofu"].ToString() != "")
+                    {
+                        zcdr["moneyZhuhuoDaofu"] = Convert.ToDecimal(jsr["moneyZhuhuoDaofu"].ToString());
+                    }
+                    else { zcdr["moneyZhuhuoDaofu"] = 0; }
+                    if (jsr["moneyYajin"] != null && jsr["moneyYajin"].ToString() != "")
+                    {
+                        zcdr["moneyYajin"] = Convert.ToDecimal(jsr["moneyYajin"].ToString());
+                    }
+                    else { zcdr["moneyYajin"] = 0; }
+                    //zcdr["yajinKouliuMeno"]
+                    if (jsr["jiaofuDate"] != null && jsr["jiaofuDate"].ToString() != "")
+                    {
+                        zcdr["jiaofuDate"] = Convert.ToDateTime(jsr["jiaofuDate"].ToString());
+                    }
+                    if (jsr["qiandanDate"] != null && jsr["qiandanDate"].ToString() != "")
+                    {
+                        zcdr["qiandanDate"] = Convert.ToDateTime(jsr["qiandanDate"].ToString());
+                    }
+                    //zcdr["maoLishenhe"]
+                    zcdr["memo"] = jsr["memo"].ToString();
+                    dbc.UpdateTable(zcdt, zcdtt);
+
+                    DataTable cfdt = dbc.GetEmptyDataTable("yundan_chaifen");
+                    DataTableTracker cfdtt = new DataTableTracker(cfdt);
+                    if (xzkclist.Length > 0)
+                    {
+                        for (int i = 0; i < xzkclist.Length; i++)
+                        {
+                            DataRow cfdr = cfdt.NewRow();
+                            cfdr["yundan_chaifen_id"] = xzkclist[i]["yundan_chaifen_id"].ToString(); ;
+                            cfdr["zhuangchedan_id"] = zcdid;
+                            cfdr["isPeiSong"] = 1;
+                            cfdt.Rows.Add(cfdr);
+                        }
+                    }
+                    dbc.UpdateTable(cfdt, cfdtt);
+                }
+                dbc.CommitTransaction();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbc.RoolbackTransaction();
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("GetYPSYD")]
+    public object GetYPSYD(int pagnum, int pagesize, string zcdid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                int cp = pagnum;
+                int ac = 0;
+                string str = @"select a.*,b.*,c.officeName,d.officeName as toOfficeName,e.zhuangchedanNum from yundan_chaifen a left join yundan_yundan b
+                                on a.yundan_id=b.yundan_id
+                                left join jichu_office c on b.officeId=c.officeId
+                                left join jichu_office d on b.officeId=d.officeId
+                                left join zhuangchedan_zhuangchedan e on a.zhuangchedan_id=e.zhuangchedan_id
+                                where a.zhuangchedan_id='" + zcdid + "'  and b.status=0  order by e.zhuangchedanNum asc";
+                //开始取分页数据   
+                System.Data.DataTable dtPage = new System.Data.DataTable();
+                dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
+
+                return new { dt = dtPage, cp = cp, ac = ac };
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+    }
+
+    [CSMethod("SaveDCS")]
+    public object SaveDCS(string isdcs, JSReader[] xzkclist)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            dbc.BeginTransaction();
+            try
+            {
+                if (!string.IsNullOrEmpty(isdcs))
+                {
+                    DataTable cfdt = dbc.GetEmptyDataTable("yundan_chaifen");
+                    DataTableTracker cfdtt = new DataTableTracker(cfdt);
+                    if (xzkclist.Length > 0)
+                    {
+                        for (int i = 0; i < xzkclist.Length; i++)
+                        {
+                            DataRow cfdr = cfdt.NewRow();
+                            cfdr["yundan_chaifen_id"] = xzkclist[i]["yundan_chaifen_id"].ToString();
+                            cfdr["isDache"] = Convert.ToInt32(isdcs);
+                            cfdt.Rows.Add(cfdr);
+                        }
+                    }
+                    dbc.UpdateTable(cfdt, cfdtt);
+                }
+                else
+                {
+                    throw new Exception("请选择是否为大车送！");
+                }
+
+                dbc.CommitTransaction();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbc.RoolbackTransaction();
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("SaveZHDF")]
+    public object SaveZHDF(string isZhuhuodaofu, JSReader[] xzkclist)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            dbc.BeginTransaction();
+            try
+            {
+                if (!string.IsNullOrEmpty(isZhuhuodaofu))
+                {
+                    DataTable cfdt = dbc.GetEmptyDataTable("yundan_chaifen");
+                    DataTableTracker cfdtt = new DataTableTracker(cfdt);
+                    if (xzkclist.Length > 0)
+                    {
+                        for (int i = 0; i < xzkclist.Length; i++)
+                        {
+                            DataRow cfdr = cfdt.NewRow();
+                            cfdr["yundan_chaifen_id"] = xzkclist[i]["yundan_chaifen_id"].ToString();
+                            cfdr["isZhuhuodaofu"] = Convert.ToInt32(isZhuhuodaofu);
+                            cfdt.Rows.Add(cfdr);
+                        }
+                    }
+                    dbc.UpdateTable(cfdt, cfdtt);
+                }
+                else
+                {
+                    throw new Exception("请选择是否为主货到付！");
+                }
+
+                dbc.CommitTransaction();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbc.RoolbackTransaction();
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("SaveSHWD")]
+    public object SaveSHWD(string shwd, JSReader[] xzkclist)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            dbc.BeginTransaction();
+            try
+            {
+                if (!string.IsNullOrEmpty(shwd))
+                {
+                    if (xzkclist.Length > 0)
+                    {
+                        for (int i = 0; i < xzkclist.Length; i++)
+                        {
+                            string str = "select yundan_id from yundan_chaifen where yundan_chaifen_id='" + xzkclist[i]["yundan_chaifen_id"].ToString() + "'";
+                            DataTable yddt = dbc.ExecuteDataTable(str);
+
+                            if (yddt.Rows.Count > 0)
+                            {
+                                DataTable cfdt = dbc.GetEmptyDataTable("yundan_yundan");
+                                DataTableTracker cfdtt = new DataTableTracker(cfdt);
+                                DataRow cfdr = cfdt.NewRow();
+                                cfdr["yundan_id"] = yddt.Rows[0]["yundan_id"];
+                                cfdr["toOfficeId"] =shwd;
+                                cfdt.Rows.Add(cfdr);
+                                dbc.UpdateTable(cfdt, cfdtt);
+                            }
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    throw new Exception("请选择收货网点！");
+                }
+
+                dbc.CommitTransaction();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbc.RoolbackTransaction();
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("AddZCD")]
+    public object AddZCD(string zcdid, JSReader[] xzkclist)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            dbc.BeginTransaction();
+            try
+            {
+                if (!string.IsNullOrEmpty(zcdid))
+                {
+                    DataTable cfdt = dbc.GetEmptyDataTable("yundan_chaifen");
+                    DataTableTracker cfdtt = new DataTableTracker(cfdt);
+                    if (xzkclist.Length > 0)
+                    {
+                        for (int i = 0; i < xzkclist.Length; i++)
+                        {
+                            DataRow cfdr = cfdt.NewRow();
+                            cfdr["yundan_chaifen_id"] = xzkclist[i]["yundan_chaifen_id"].ToString(); ;
+                            cfdr["zhuangchedan_id"] = zcdid;
+                            cfdr["isPeiSong"] = 1;
+                            cfdt.Rows.Add(cfdr);
+                        }
+                    }
+                    dbc.UpdateTable(cfdt, cfdtt);
+
+                }
+                else
+                {
+                    throw new Exception("请先保存装车单！");
+                }
+
+                dbc.CommitTransaction();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbc.RoolbackTransaction();
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("DeleteZCD")]
+    public object DeleteZCD(string zcdid, JSReader[] xzypslist)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            dbc.BeginTransaction();
+            try
+            {
+                if (!string.IsNullOrEmpty(zcdid))
+                {
+                    DataTable cfdt = dbc.GetEmptyDataTable("yundan_chaifen");
+                    DataTableTracker cfdtt = new DataTableTracker(cfdt);
+                    if (xzypslist.Length > 0)
+                    {
+                        for (int i = 0; i < xzypslist.Length; i++)
+                        {
+                            DataRow cfdr = cfdt.NewRow();
+                            cfdr["yundan_chaifen_id"] = xzypslist[i]["yundan_chaifen_id"].ToString(); ;
+                            cfdr["zhuangchedan_id"] = DBNull.Value;
+                            cfdr["isPeiSong"] = 0;
+                            cfdt.Rows.Add(cfdr);
+                        }
+                    }
+                    dbc.UpdateTable(cfdt, cfdtt);
+
+                }
+                else
+                {
+                    throw new Exception("请先保存装车单！");
+                }
+
+                dbc.CommitTransaction();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbc.RoolbackTransaction();
+                throw ex;
+            }
+        }
+    }
+
+
+    [CSMethod("IsArrive")]
+    public object IsArrive(string zcdid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            dbc.BeginTransaction();
+            try
+            {
+                if (!string.IsNullOrEmpty(zcdid))
+                {
+                    DataTable dt = dbc.GetEmptyDataTable("zhuangchedan_zhuangchedan");
+                    DataTableTracker dtt = new DataTableTracker(dt);
+                    DataRow dr = dt.NewRow();
+                    dr["zhuangchedan_id"] = zcdid;
+                    dr["isArrive"] = 1;
+                    dt.Rows.Add(dr);
+                    dbc.UpdateTable(dt, dtt);
+                }
+                else
+                {
+                    throw new Exception("无效的装车单！");
+                }
+
+                dbc.CommitTransaction();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbc.RoolbackTransaction();
+                throw ex;
+            }
+        }
+    }
+
+    #region 拆分运单
+
+    [CSMethod("GetYDNum")]
+    public object GetYDNum(string cfid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string oldyundanNum = "";
+                string newyundanNum = "";
+                
+                string str = @"select a.*,b.yundanNum from yundan_chaifen a left join yundan_yundan b on a.yundan_id=b.yundan_id
+                                where a.yundan_chaifen_id=" + dbc.ToSqlValue(cfid);
+                DataTable cfdt = dbc.ExecuteDataTable(str);
+
+                oldyundanNum = cfdt.Rows[0]["yundan_chaifen_number"].ToString();
+
+                string sql = "select * from yundan_chaifen where status=0 and  yundan_id='" + cfdt.Rows[0]["yundan_id"].ToString() + "' and yundan_chaifen_number='" + cfdt.Rows[0]["yundanNum"].ToString() + "'";
+                DataTable dt1 = dbc.ExecuteDataTable(sql);
+                
+                //未拆
+                if (Convert.ToInt32(dt1.Rows[0]["chaifen_statue"].ToString()) == 0)
+                {
+                    newyundanNum = cfdt.Rows[0]["yundanNum"].ToString() + "_2";
+                }
+                else
+                {
+                    //已拆
+                    str = "select yundan_chaifen_number from yundan_chaifen where status=0 and  yundan_id='" + cfdt.Rows[0]["yundan_id"].ToString() + "' order by yundan_chaifen_number desc";
+                    DataTable cfdt2 = dbc.ExecuteDataTable(str);
+
+                    if (cfdt2.Rows.Count > 0)
+                    {
+                        string[] ary = cfdt2.Rows[0][0].ToString().Split('_');
+                        int temp = Convert.ToInt32(ary[ary.Length - 1]);
+                        newyundanNum = cfdt.Rows[0]["yundanNum"].ToString() + "_" + (temp + 1);
+                    }
+                    }
+              
+                return new { oldyundanNum = oldyundanNum, newyundanNum = newyundanNum };
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+
+    [CSMethod("GetHPByYD2")]
+    public DataTable GetHPByYD2(string cfid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string str = @"select * from yundan_goods where status=0 and yundan_chaifen_id="+dbc.ToSqlValue(cfid)+" order by addtime desc";
+                DataTable dt = dbc.ExecuteDataTable(str);
+
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    public DataTable GetHPByYD(string ydid, string ydnum)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string str = @"select * from yundan_goods where yundan_chaifen_id in 
+                (select yundan_chaifen_id from yundan_chaifen where status=0 and yundan_id=@yundan_id and yundan_chaifen_number=@yundan_chaifen_number ) and status=0 order by addtime desc";
+                SqlCommand cmd = new SqlCommand(str);
+                cmd.Parameters.Add("@yundan_id", ydid);
+                cmd.Parameters.Add("@yundan_chaifen_number", ydnum);
+                DataTable dt = dbc.ExecuteDataTable(cmd);
+
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("SaveCF")]
+    public object SaveCF(string cfid, string newyundanNum, JSReader[] hplist)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                dbc.BeginTransaction();
+
+                string str = @"select a.*,b.yundanNum from yundan_chaifen a left join yundan_yundan b on a.yundan_id=b.yundan_id
+                            where a.yundan_chaifen_id=" + dbc.ToSqlValue(cfid);
+                DataTable dt1 = dbc.ExecuteDataTable(str);
+
+                string ydid = dt1.Rows[0]["yundan_id"].ToString();
+                string oldyundanNum = dt1.Rows[0]["yundanNum"].ToString();
+
+                str = "select * from yundan_chaifen where status=0 and  yundan_id=" + dbc.ToSqlValue(ydid) + " and yundan_chaifen_number='" + oldyundanNum + "'";
+                DataTable cfdt = dbc.ExecuteDataTable(str);
+                //未拆
+                if (Convert.ToInt32(cfdt.Rows[0]["chaifen_statue"].ToString()) == 0)
+                {
+                    DataTable kcdt = GetHPByYD(ydid, oldyundanNum);
+
+                    #region 剩余
+                    DataTable sydt = dbc.GetEmptyDataTable("yundan_goods");
+
+                    for (int i = 0; i < kcdt.Rows.Count; i++)
+                    {
+                        int n = 1;
+                        for (int j = 0; j < hplist.Length; j++)
+                        {
+                            if (kcdt.Rows[i]["yundan_goods_id"].ToString() == hplist[j]["yundan_goods_id"].ToString())
+                            {
+                                DataRow dr = sydt.NewRow();
+                                dr["yundan_goods_id"] = hplist[j]["yundan_goods_id"].ToString();
+                                dr["yundan_chaifen_id"] = hplist[j]["yundan_chaifen_id"].ToString();
+                                dr["yundan_goodsName"] = hplist[j]["yundan_goodsName"].ToString();
+                                dr["yundan_goodsPack"] = hplist[j]["yundan_goodsPack"].ToString();
+                                dr["yundan_goodsAmount"] = Convert.ToInt32(kcdt.Rows[i]["yundan_goodsAmount"]) - Convert.ToInt32(hplist[j]["yundan_goodsAmount"].ToString());
+                                if (hplist[j]["yundan_goodsWeight"] != null && hplist[j]["yundan_goodsWeight"].ToString() != "")
+                                {
+                                    dr["yundan_goodsWeight"] = Convert.ToDecimal(hplist[j]["yundan_goodsWeight"].ToString());
+                                }
+                                if (hplist[j]["yundan_goodsVolume"] != null && hplist[j]["yundan_goodsVolume"].ToString() != "")
+                                {
+                                    dr["yundan_goodsVolume"] = Convert.ToDecimal(hplist[j]["yundan_goodsVolume"].ToString());
+                                }
+                                dr["status"] = hplist[j]["status"].ToString();
+                                dr["addtime"] = hplist[j]["addtime"].ToString();
+                                dr["adduser"] = hplist[j]["adduser"].ToString();
+                                sydt.Rows.Add(dr);
+                                n--;
+                            }
+                        }
+                        if (n > 0)
+                        {
+                            DataRow dr = sydt.NewRow();
+                            dr["yundan_goods_id"] = Guid.NewGuid().ToString();
+                            dr["yundan_chaifen_id"] = kcdt.Rows[i]["yundan_chaifen_id"];
+                            dr["yundan_goodsName"] = kcdt.Rows[i]["yundan_goodsName"];
+                            dr["yundan_goodsPack"] = kcdt.Rows[i]["yundan_goodsPack"];
+                            dr["yundan_goodsAmount"] = kcdt.Rows[i]["yundan_goodsAmount"];
+                            if (kcdt.Rows[i]["yundan_goodsWeight"] != null && kcdt.Rows[i]["yundan_goodsWeight"].ToString() != "")
+                            {
+                                dr["yundan_goodsWeight"] = Convert.ToDecimal(kcdt.Rows[i]["yundan_goodsWeight"]);
+                            }
+                            if (kcdt.Rows[i]["yundan_goodsVolume"] != null && kcdt.Rows[i]["yundan_goodsVolume"].ToString() != "")
+                            {
+                                dr["yundan_goodsVolume"] = Convert.ToDecimal(kcdt.Rows[i]["yundan_goodsVolume"]);
+                            }
+                            dr["status"] = kcdt.Rows[i]["status"];
+                            dr["addtime"] = kcdt.Rows[i]["addtime"];
+                            dr["adduser"] = kcdt.Rows[i]["adduser"];
+                            sydt.Rows.Add(dr);
+                        }
+                    }
+
+                    //拆分表
+                    string sy_yundan_chaifen_id = Guid.NewGuid().ToString();
+                    DataTable sy_cfdt = dbc.GetEmptyDataTable("yundan_chaifen");
+                    DataRow sy_cfdr = sy_cfdt.NewRow();
+                    sy_cfdr["yundan_chaifen_id"] = sy_yundan_chaifen_id;
+                    sy_cfdr["yundan_id"] = ydid;
+                    //cfdr["zhuangchedan_id"]
+                    sy_cfdr["chaifen_statue"] = 0;
+                    sy_cfdr["yundan_chaifen_number"] = oldyundanNum + "_1";
+                    sy_cfdr["is_leaf"] = 1;   //是否末级（0：否；1：是；）
+                    sy_cfdr["status"] = 0;
+                    sy_cfdr["addtime"] = DateTime.Now;
+                    sy_cfdr["adduser"] = SystemUser.CurrentUser.UserID;
+                    sy_cfdr["isDache"] = 0;
+                    sy_cfdr["isZhuhuodaofu"] = 0;
+                    sy_cfdr["isPeiSong"] = 0;
+                    sy_cfdt.Rows.Add(sy_cfdr);
+                    dbc.InsertTable(sy_cfdt);
+
+                    //货品表
+                    DataTable sy_hpdt = dbc.GetEmptyDataTable("yundan_goods");
+                    for (int i = 0; i < sydt.Rows.Count; i++)
+                    {
+                        if (Convert.ToInt32(sydt.Rows[i]["yundan_goodsAmount"]) > 0)
+                        {
+                            DataRow sy_hpdr = sy_hpdt.NewRow();
+                            sy_hpdr["yundan_goods_id"] = Guid.NewGuid().ToString();
+                            sy_hpdr["yundan_chaifen_id"] = sy_yundan_chaifen_id;
+                            sy_hpdr["yundan_goodsName"] = sydt.Rows[i]["yundan_goodsName"].ToString();
+                            sy_hpdr["yundan_goodsPack"] = sydt.Rows[i]["yundan_goodsPack"].ToString();
+                            sy_hpdr["yundan_goodsAmount"] = sydt.Rows[i]["yundan_goodsAmount"].ToString();
+                            if (sydt.Rows[i]["yundan_goodsWeight"] != null && sydt.Rows[i]["yundan_goodsWeight"].ToString() != "")
+                            {
+                                sy_hpdr["yundan_goodsWeight"] = Convert.ToDecimal(sydt.Rows[i]["yundan_goodsWeight"].ToString());
+                            }
+                            if (sydt.Rows[i]["yundan_goodsVolume"] != null && sydt.Rows[i]["yundan_goodsVolume"].ToString() != "")
+                            {
+                                sy_hpdr["yundan_goodsVolume"] = Convert.ToDecimal(sydt.Rows[i]["yundan_goodsVolume"].ToString());
+                            }
+                            sy_hpdr["status"] = 0;
+                            sy_hpdr["addtime"] = DateTime.Now;
+                            sy_hpdr["adduser"] = SystemUser.CurrentUser.UserID;
+                            sy_hpdt.Rows.Add(sy_hpdr);
+                        }
+                    }
+                    dbc.InsertTable(sy_hpdt);
+                    #endregion
+
+                    #region 拆分
+                    string cf_yundan_chaifen_id = Guid.NewGuid().ToString();
+                    DataTable cf_cfdt = dbc.GetEmptyDataTable("yundan_chaifen");
+                    DataRow cf_cfdr = cf_cfdt.NewRow();
+                    cf_cfdr["yundan_chaifen_id"] = cf_yundan_chaifen_id;
+                    cf_cfdr["yundan_id"] = ydid;
+                    //cfdr["zhuangchedan_id"]
+                    cf_cfdr["chaifen_statue"] = 0;
+                    cf_cfdr["yundan_chaifen_number"] = newyundanNum;
+                    cf_cfdr["is_leaf"] = 1;   //是否末级（0：否；1：是；）
+                    cf_cfdr["status"] = 0;
+                    cf_cfdr["addtime"] = DateTime.Now;
+                    cf_cfdr["adduser"] = SystemUser.CurrentUser.UserID;
+                    cf_cfdr["isDache"] = 0;
+                    cf_cfdr["isZhuhuodaofu"] = 0;
+                    cf_cfdr["isPeiSong"] = 0;
+                    cf_cfdt.Rows.Add(cf_cfdr);
+                    dbc.InsertTable(cf_cfdt);
+
+                    //货品表
+                    DataTable cf_hpdt = dbc.GetEmptyDataTable("yundan_goods");
+                    if (hplist.Length > 0)
+                    {
+                        for (int i = 0; i < hplist.Length; i++)
+                        {
+                            DataRow cf_hpdr = cf_hpdt.NewRow();
+                            cf_hpdr["yundan_goods_id"] = Guid.NewGuid().ToString();
+                            cf_hpdr["yundan_chaifen_id"] = cf_yundan_chaifen_id;
+                            cf_hpdr["yundan_goodsName"] = hplist[i]["yundan_goodsName"].ToString();
+                            cf_hpdr["yundan_goodsPack"] = hplist[i]["yundan_goodsPack"].ToString();
+                            if (hplist[i]["yundan_goodsAmount"] != null && hplist[i]["yundan_goodsAmount"].ToString() != "")
+                            {
+                                cf_hpdr["yundan_goodsAmount"] = Convert.ToInt32(hplist[i]["yundan_goodsAmount"].ToString());
+                            }
+                            else { cf_hpdr["yundan_goodsAmount"] = 0; }
+                            if (hplist[i]["yundan_goodsWeight"] != null && hplist[i]["yundan_goodsWeight"].ToString() != "")
+                            {
+                                cf_hpdr["yundan_goodsWeight"] = Convert.ToDecimal(hplist[i]["yundan_goodsWeight"].ToString());
+                            }
+                            if (hplist[i]["yundan_goodsVolume"] != null && hplist[i]["yundan_goodsVolume"].ToString() != "")
+                            {
+                                cf_hpdr["yundan_goodsVolume"] = Convert.ToDecimal(hplist[i]["yundan_goodsVolume"].ToString());
+                            }
+                            cf_hpdr["status"] = 0;
+                            cf_hpdr["addtime"] = DateTime.Now;
+                            cf_hpdr["adduser"] = SystemUser.CurrentUser.UserID;
+                            cf_hpdt.Rows.Add(cf_hpdr);
+                        }
+                    }
+                    dbc.InsertTable(cf_hpdt);
+
+                    #endregion
+
+                    #region 更新主记录
+                    //拆分表
+                    DataTable zcfdt = dbc.GetEmptyDataTable("yundan_chaifen");
+                    DataTableTracker zcfdtt = new DataTableTracker(zcfdt);
+                    DataRow zcfdr = zcfdt.NewRow();
+                    zcfdr["yundan_chaifen_id"] = cfdt.Rows[0]["yundan_chaifen_id"];
+                    zcfdr["chaifen_statue"] = 1;
+                    zcfdr["is_leaf"] = 0;   //是否末级（0：否；1：是；）
+                    zcfdt.Rows.Add(zcfdr);
+                    dbc.UpdateTable(zcfdt, zcfdtt);
+                    #endregion
+                }
+                else
+                {
+                    string sql = @"select * from yundan_goods where status=0 and yundan_chaifen_id=" + dbc.ToSqlValue(cfid) + " order by addtime desc";
+                    DataTable kcdt = dbc.ExecuteDataTable(sql);
+
+                    #region 剩余
+                    DataTable sydt = dbc.GetEmptyDataTable("yundan_goods");
+
+                    for (int i = 0; i < kcdt.Rows.Count; i++)
+                    {
+                        int n = 1;
+                        for (int j = 0; j < hplist.Length; j++)
+                        {
+                            if (kcdt.Rows[i]["yundan_goods_id"].ToString() == hplist[j]["yundan_goods_id"].ToString())
+                            {
+                                DataRow dr = sydt.NewRow();
+                                dr["yundan_goods_id"] = hplist[j]["yundan_goods_id"].ToString();
+                                dr["yundan_chaifen_id"] = hplist[j]["yundan_chaifen_id"].ToString();
+                                dr["yundan_goodsName"] = hplist[j]["yundan_goodsName"].ToString();
+                                dr["yundan_goodsPack"] = hplist[j]["yundan_goodsPack"].ToString();
+                                dr["yundan_goodsAmount"] = Convert.ToInt32(kcdt.Rows[i]["yundan_goodsAmount"]) - Convert.ToInt32(hplist[j]["yundan_goodsAmount"].ToString());
+                                if (hplist[j]["yundan_goodsWeight"] != null && hplist[j]["yundan_goodsWeight"].ToString() != "")
+                                {
+                                    dr["yundan_goodsWeight"] = Convert.ToDecimal(hplist[j]["yundan_goodsWeight"].ToString());
+                                }
+                                if (hplist[j]["yundan_goodsVolume"] != null && hplist[j]["yundan_goodsVolume"].ToString() != "")
+                                {
+                                    dr["yundan_goodsVolume"] = Convert.ToDecimal(hplist[j]["yundan_goodsVolume"].ToString());
+                                }
+                                dr["status"] = hplist[j]["status"].ToString();
+                                dr["addtime"] = hplist[j]["addtime"].ToString();
+                                dr["adduser"] = hplist[j]["adduser"].ToString();
+                                sydt.Rows.Add(dr);
+                                n--;
+                            }
+                        }
+                        if (n > 0)
+                        {
+                            DataRow dr = sydt.NewRow();
+                            dr["yundan_goods_id"] = kcdt.Rows[i]["yundan_goods_id"];
+                            dr["yundan_chaifen_id"] = kcdt.Rows[i]["yundan_chaifen_id"];
+                            dr["yundan_goodsName"] = kcdt.Rows[i]["yundan_goodsName"];
+                            dr["yundan_goodsPack"] = kcdt.Rows[i]["yundan_goodsPack"];
+                            dr["yundan_goodsAmount"] = kcdt.Rows[i]["yundan_goodsAmount"];
+                            if (kcdt.Rows[i]["yundan_goodsWeight"] != null && kcdt.Rows[i]["yundan_goodsWeight"].ToString() != "")
+                            {
+                                dr["yundan_goodsWeight"] = Convert.ToDecimal(kcdt.Rows[i]["yundan_goodsWeight"]);
+                            }
+                            if (kcdt.Rows[i]["yundan_goodsVolume"] != null && kcdt.Rows[i]["yundan_goodsVolume"].ToString() != "")
+                            {
+                                dr["yundan_goodsVolume"] = Convert.ToDecimal(kcdt.Rows[i]["yundan_goodsVolume"]);
+                            }
+                            dr["status"] = kcdt.Rows[i]["status"];
+                            dr["addtime"] = kcdt.Rows[i]["addtime"];
+                            dr["adduser"] = kcdt.Rows[i]["adduser"];
+                            sydt.Rows.Add(dr);
+                        }
+                    }
+
+                    string sy_yundan_chaifen_id = cfid;
+
+                    //货品表
+                    DataTable sy_hpdt = dbc.GetEmptyDataTable("yundan_goods");
+                    DataTableTracker sy_hpdtt = new DataTableTracker(sy_hpdt);
+                    for (int i = 0; i < sydt.Rows.Count; i++)
+                    {
+                        if (Convert.ToInt32(sydt.Rows[i]["yundan_goodsAmount"]) > 0)
+                        {
+
+                            DataRow sy_hpdr = sy_hpdt.NewRow();
+                            sy_hpdr["yundan_goods_id"] = sydt.Rows[i]["yundan_goods_id"].ToString();
+                            sy_hpdr["yundan_goodsAmount"] = sydt.Rows[i]["yundan_goodsAmount"].ToString();
+                            sy_hpdt.Rows.Add(sy_hpdr);
+                        }
+                        else
+                        {
+                            DataRow sy_hpdr = sy_hpdt.NewRow();
+                            sy_hpdr["yundan_goods_id"] = sydt.Rows[i]["yundan_goods_id"].ToString();
+                            sy_hpdr["status"] = 1;
+                            sy_hpdt.Rows.Add(sy_hpdr);
+                        }
+                    }
+                    dbc.UpdateTable(sy_hpdt, sy_hpdtt);
+                    #endregion
+
+                    #region 拆分
+                    string cf_yundan_chaifen_id = Guid.NewGuid().ToString();
+                    DataTable cf_cfdt = dbc.GetEmptyDataTable("yundan_chaifen");
+                    DataRow cf_cfdr = cf_cfdt.NewRow();
+                    cf_cfdr["yundan_chaifen_id"] = cf_yundan_chaifen_id;
+                    cf_cfdr["yundan_id"] = ydid;
+                    //cfdr["zhuangchedan_id"]
+                    cf_cfdr["chaifen_statue"] = 0;
+                    cf_cfdr["yundan_chaifen_number"] = newyundanNum;
+                    cf_cfdr["is_leaf"] = 1;   //是否末级（0：否；1：是；）
+                    cf_cfdr["status"] = 0;
+                    cf_cfdr["addtime"] = DateTime.Now;
+                    cf_cfdr["adduser"] = SystemUser.CurrentUser.UserID;
+                    cf_cfdr["isDache"] = 0;
+                    cf_cfdr["isZhuhuodaofu"] = 0;
+                    cf_cfdr["isPeiSong"] = 0;
+                    cf_cfdt.Rows.Add(cf_cfdr);
+                    dbc.InsertTable(cf_cfdt);
+
+                    //货品表
+                    DataTable cf_hpdt = dbc.GetEmptyDataTable("yundan_goods");
+                    if (hplist.Length > 0)
+                    {
+                        for (int i = 0; i < hplist.Length; i++)
+                        {
+                            DataRow cf_hpdr = cf_hpdt.NewRow();
+                            cf_hpdr["yundan_goods_id"] = Guid.NewGuid().ToString();
+                            cf_hpdr["yundan_chaifen_id"] = cf_yundan_chaifen_id;
+                            cf_hpdr["yundan_goodsName"] = hplist[i]["yundan_goodsName"].ToString();
+                            cf_hpdr["yundan_goodsPack"] = hplist[i]["yundan_goodsPack"].ToString();
+                            if (hplist[i]["yundan_goodsAmount"] != null && hplist[i]["yundan_goodsAmount"].ToString() != "")
+                            {
+                                cf_hpdr["yundan_goodsAmount"] = Convert.ToInt32(hplist[i]["yundan_goodsAmount"].ToString());
+                            }
+                            else { cf_hpdr["yundan_goodsAmount"] = 0; }
+                            if (hplist[i]["yundan_goodsWeight"] != null && hplist[i]["yundan_goodsWeight"].ToString() != "")
+                            {
+                                cf_hpdr["yundan_goodsWeight"] = Convert.ToDecimal(hplist[i]["yundan_goodsWeight"].ToString());
+                            }
+                            if (hplist[i]["yundan_goodsVolume"] != null && hplist[i]["yundan_goodsVolume"].ToString() != "")
+                            {
+                                cf_hpdr["yundan_goodsVolume"] = Convert.ToDecimal(hplist[i]["yundan_goodsVolume"].ToString());
+                            }
+                            cf_hpdr["status"] = 0;
+                            cf_hpdr["addtime"] = DateTime.Now;
+                            cf_hpdr["adduser"] = SystemUser.CurrentUser.UserID;
+                            cf_hpdt.Rows.Add(cf_hpdr);
+                        }
+                    }
+                    dbc.InsertTable(cf_hpdt);
+
+                    #endregion
+                }
+
+                dbc.CommitTransaction();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbc.RoolbackTransaction();
+                throw ex;
+            }
+        }
+    }
+
+
+    #endregion
 }

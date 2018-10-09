@@ -118,7 +118,8 @@ function loadScript(path, nocache, loaded) {
         var script = document.createElement("script");
         script.setAttribute("src", path);
         script.setAttribute('type', 'text/javascript');
-        script.onreadystatechange = script.onload = cb; 
+        script.onreadystatechange = script.onload = cb;
+        console.log(script);
         document.body.appendChild(script);
     }
     catch(ex)
@@ -159,7 +160,6 @@ function inline_include(path) {
 }
 
 function include(path, loaded) {
-    
     if (!window.basePath)
         loadScript(path, true, loaded);
     else {
