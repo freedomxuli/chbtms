@@ -13,14 +13,25 @@ var yfStore = createSFW4Store({
     total: 1,
     currentPage: 1,
     fields: [
-       { name: 'driverId' },
+       { name: 'yundan_id' },
+       { name: 'yundanNum' },
+       { name: 'zhuangchedanNum' },
+       { name: 'daiShouKuan' },
+       { name: 'yhxmoney' },
+       { name: 'whxmoney' },
+       { name: 'incomeDate' },
        { name: 'officeName' },
-       { name: 'dthyj' },
-       { name: 'people' },
-       { name: 'shenfenzheng' },
-       { name: 'address' },
-       { name: 'tel' },
-       { name: 'carNum' }
+       { name: 'fahuoPeople' },
+       { name: 'fahuoTel' },
+       { name: 'shouhuoPeople' },
+       { name: 'shouhuoTel' },
+       { name: 'shouhuoAddress' },
+       { name: 'ddofficeName' },
+       { name: 'songhuoType' },
+       { name: 'payType' },
+       { name: 'moneyYunfei' },
+       { name: 'UserName' },
+       { name: 'memo' }
     ],
     onPageChange: function (sto, nPage, sorters) {
         getyfList(nPage);
