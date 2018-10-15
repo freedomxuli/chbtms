@@ -54,10 +54,22 @@ public class Finance
                 {
 
                 }
-                string sql = @"select  from yundan_chaifen a 
+                string sql = @"select a.id, b.yundanNum,c.zhuangchedanNum,d.people,b.toAddress,b.shouhuoPeople,b.shouhuoTel,b.songhuoType,b.moneyYunfei,b.moneyHuikouXianFan,b.moneyHuikouQianFan,b.memo from yundan_chaifen a 
                                left join yundan_yundan b on a.yundan_id = b.yundan_id
-                               left join zhuangchedan_zhuangchedan c on a.zhuangchedan_id = c.zhuangchedan_id";
+                               left join zhuangchedan_zhuangchedan c on a.zhuangchedan_id = c.zhuangchedan_id
+                               left join jichu_driver d on a.driverId = d.driverId";
                 DataTable dt = db.GetPagedDataTable(sql, pagesize, ref cp, out ac);
+                dt.Columns.Add("moneyHuiKou");
+                dt.Columns.Add("YDJSHF");
+                dt.Columns.Add("YDJZZF");
+                dt.Columns.Add("YHXSHF");
+                dt.Columns.Add("YHXZZF");
+
+                for (var i = 0; i < dt.Rows.Count; i++)
+                    dt.Rows[i]["moneyHuiKou"] = Convert.ToDecimal(dt.Rows[i]["moneyHuikouXianFan"].ToString()) + Convert.ToDecimal(dt.Rows[i]["moneyHuikouQianFan"].ToString());
+
+                sql = "select sum(money) shf,fenliuId from yundan_duanbo_fenliu where kind = 1 group by fenliuId";
+
 
                 return new { dt = dt, cp = cp, ac = ac };
             }
