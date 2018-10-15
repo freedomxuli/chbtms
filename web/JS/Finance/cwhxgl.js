@@ -7,19 +7,27 @@ var store = createSFW4Store({
     total: 1,
     currentPage: 1,
     fields: [
-       { name: 'UserID' },
-       { name: 'UserName' },
-       { name: 'Password' },
-       { name: 'roleId' },
-       { name: 'roleName' },
-       { name: 'UserXM' },
-       { name: 'UserTel' }
+       { name: 'zhuangchedan_id' },
+       { name: 'yundan_id' },
+       { name: 'yundanNum' },
+       { name: 'zhuangchedanNum' },
+       { name: 'people' },
+       { name: 'toAddress' },
+       { name: 'shouhuoPeople' },
+       { name: 'shouhuoTel' },
+       { name: 'songhuoType' },
+       { name: 'moneyYunfei' },
+       { name: 'moneyHuiKou' },
+       { name: 'memo' },
+       { name: 'ydjshf' },
+       { name: 'ydjzzf' },
+       { name: 'yhxshf' },
+       { name: 'yhxzzf' }
     ],
     onPageChange: function (sto, nPage, sorters) {
-        getUser(nPage);
+        GetYunDanList(nPage);
     }
 });
-
 
 var bscStore = Ext.create('Ext.data.Store', {
     fields: [
@@ -31,15 +39,15 @@ var bscStore = Ext.create('Ext.data.Store', {
 //************************************数据源*****************************************
 
 //************************************页面方法***************************************
-function getUser(nPage) {
-    //CS('CZCLZ.YHGLClass.GetUserList', function (retVal) {
-    //    store.setData({
-    //        data: retVal.dt,
-    //        pageSize: pageSize,
-    //        total: retVal.ac,
-    //        currentPage: retVal.cp
-    //    });
-    //}, CS.onError, nPage, pageSize, Ext.getCmp("cx_role").getValue(), Ext.getCmp("cx_yhm").getValue(), Ext.getCmp("cx_xm").getValue());
+function GetYunDanList(nPage) {
+    CS('CZCLZ.Finance.GetYunDanList', function (retVal) {
+        store.setData({
+            data: retVal.dt,
+            pageSize: pageSize,
+            total: retVal.ac,
+            currentPage: retVal.cp
+        });
+    }, CS.onError, nPage, pageSize, Ext.getCmp("cx_bsc").getValue(), Ext.getCmp("start_time").getValue(), Ext.getCmp("end_time").getValue(), Ext.getCmp("cx_zcd").getValue(), Ext.getCmp("cx_ydh").getValue(), Ext.getCmp("cx_isfl").getValue());
 }
 
 function EditFenLiu(id) {
@@ -341,7 +349,6 @@ Ext.onReady(function () {
                 {
                     xtype: 'gridpanel',
                     id: 'usergrid',
-                    title: '',
                     store: store,
                     columnLines: true,
                     selModel: Ext.create('Ext.selection.CheckboxModel', {
@@ -353,25 +360,12 @@ Ext.onReady(function () {
                             xtype: 'gridcolumn',
                             text: '操作',
                             dataIndex: 'zhuangchedan_id',
-                            width: 60,
+                            width: 120,
                             sortable: false,
                             menuDisabled: true,
                             renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
                                 var str;
-                                str = "<a onclick='EditFenLiu(\"" + value + "\");'>设置</a>";
-                                return str;
-                            }
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            text: '货物查看',
-                            dataIndex: 'yundan_id',
-                            width: 80,
-                            sortable: false,
-                            menuDisabled: true,
-                            renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                var str;
-                                str = "<a onclick='EditZhuangCheDan(\"" + value + "\");'>查看</a>";
+                                str = "<a onclick='EditFenLiu(\"" + value + "\");'>设置</a>　<a onclick='EditZhuangCheDan(\"" + value + "\");'>货物查看</a>";
                                 return str;
                             }
                         },
@@ -433,10 +427,45 @@ Ext.onReady(function () {
                         },
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'moneyFenliu',
+                            dataIndex: 'moneyHuiKou',
                             sortable: false,
                             menuDisabled: true,
-                            text: "分流费"
+                            text: "回扣"
+                        },
+                        {
+                            xtype: 'gridcolumn',
+                            dataIndex: 'memo',
+                            sortable: false,
+                            menuDisabled: true,
+                            text: "备注"
+                        },
+                        {
+                            xtype: 'gridcolumn',
+                            dataIndex: 'ydjshf',
+                            sortable: false,
+                            menuDisabled: true,
+                            text: "已登记送货费"
+                        },
+                        {
+                            xtype: 'gridcolumn',
+                            dataIndex: 'ydjzzf',
+                            sortable: false,
+                            menuDisabled: true,
+                            text: "已登记中转费"
+                        },
+                        {
+                            xtype: 'gridcolumn',
+                            dataIndex: 'yhxshf',
+                            sortable: false,
+                            menuDisabled: true,
+                            text: "已核销送货费"
+                        },
+                        {
+                            xtype: 'gridcolumn',
+                            dataIndex: 'yhxzzf',
+                            sortable: false,
+                            menuDisabled: true,
+                            text: "已核销中转费"
                         }
                     ],
                     viewConfig: {
@@ -544,6 +573,6 @@ Ext.onReady(function () {
 
     new YhView();
 
-
+    GetYunDanList(1);
 })
 //************************************主界面*****************************************
