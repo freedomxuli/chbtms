@@ -60,14 +60,15 @@ public class SystemUser
         配供中心 = 2
     }
 
-    public static SystemUser Login(string username, string password)
+    public static SystemUser Login(string companyBS, string username, string password)
     {
         using (DBConnection dbc = new DBConnection())
         {
-            string sqlStr = "select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId from tb_b_user a left join tb_b_user_role b on a.UserID = b.userId where a.UserName=@LoginName and a.Password=@Password and (a.ClientKind = 0 or a.ClientKind = 99)";
+            string sqlStr = "select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId from tb_b_user a left join tb_b_user_role b on a.UserID = b.userId left join tb_b_company c on a.companyId = c.companyId where a.UserName=@LoginName and a.Password=@Password and c.companyBS = @companyBS and (a.ClientKind = 0 or a.ClientKind = 99)";
             SqlCommand cmd = new SqlCommand(sqlStr);
             cmd.Parameters.AddWithValue("@LoginName", username);
             cmd.Parameters.AddWithValue("@Password", password);
+            cmd.Parameters.AddWithValue("@companyBS", companyBS);
             var dtUser = dbc.ExecuteDataTable(cmd);
             SystemUser su = new SystemUser();
             if (dtUser.Rows.Count > 0)

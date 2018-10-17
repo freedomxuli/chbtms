@@ -16,8 +16,12 @@ using System.Text;
 public class UserClass
 {
     [CSMethod("Login")]
-    public bool Login(string username, string password, string captcha)
+    public bool Login(string companyBS, string username, string password, string captcha)
     {
+        if (companyBS.Trim() == string.Empty)
+        {
+            throw new Exception("公司标识不能为空！");
+        }
         if (username.Trim() == string.Empty)
         {
             throw new Exception("用户名不能为空！");
@@ -35,8 +39,8 @@ public class UserClass
         {
             throw new Exception("验证码验证错误！");
         }
-        
-        var su = SystemUser.Login(username, password);
+
+        var su = SystemUser.Login(companyBS, username, password);
         if (su != null)
         {
             HttpCookie cookie = new HttpCookie("login_Username", username)
@@ -72,7 +76,7 @@ public class UserClass
 public class UserSJClass
 {
     [CSMethod("Login")]
-    public string Login(string username, string password)
+    public string Login(string companyBS, string username, string password)
     {
         if (username.Trim() == string.Empty)
         {
@@ -82,7 +86,7 @@ public class UserSJClass
         {
             throw new Exception("密码不能为空！");
         }
-        var su = SystemUser.Login(username, password);
+        var su = SystemUser.Login(companyBS, username, password);
         if (su != null)
         {
             HttpCookie cookie = new HttpCookie("login_Username", username)
