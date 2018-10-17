@@ -49,7 +49,7 @@ public class KHMag
                               (select count(yundan_id) as yhyds,clientId from yundan_yundan where  status=0 group by clientId) b 
                               on a.clientId=b.clientId 
                                left join jichu_office c on a.officeId=c.officeId
-                                where a.status=0 " + where+" order by addtime desc";
+                                where a.status=0 " + where + " and a.companyId='"+SystemUser.CurrentUser.CompanyID+"' order by addtime desc";
                 //开始取分页数据   
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -129,6 +129,7 @@ public class KHMag
                     dr["adduser"] = userid;
                     dr["updatetime"] = DateTime.Now;
                     dr["updateuser"]= userid;
+                    dr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
                 }
@@ -162,11 +163,6 @@ public class KHMag
         }
     }
 
-    /// <summary>
-    /// 删除业务员
-    /// </summary>
-    /// <param name="officeid"></param>
-    /// <returns></returns>
     [CSMethod("DeleteKH")]
     public object DeleteYwy(string clientId)
     {

@@ -3,7 +3,7 @@ var pageSize = 10;
 var fromofficeid = "";
 var toofficeid = "";
 var clientId = "";
-var LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+//var LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
 
 var qszstore = Ext.create('Ext.data.Store', {
     fields: ['officeId', 'officeName'],
@@ -22,7 +22,7 @@ var ywystore = Ext.create('Ext.data.Store', {
     data: [
     ]
 });
-var HPStore =  Ext.create('Ext.data.Store', {
+var HPStore = Ext.create('Ext.data.Store', {
     fields: [{ name: 'yundan_goods_id' },
             { name: 'yundan_chaifen_id' },
             { name: 'yundan_goodsName' },
@@ -96,7 +96,7 @@ var zzfstore = createSFW4Store({
 });
 
 var khstore = Ext.create('Ext.data.Store', {
-    fields: ['clientId', 'people','tel','address'],
+    fields: ['clientId', 'people', 'tel', 'address'],
     data: [
     ]
 });
@@ -162,11 +162,11 @@ function BindZZF(nPage) {
 }
 
 
-function GetKH(){
+function GetKH() {
     CS('CZCLZ.YDMag.GetKH', function (retVal) {
         khstore.loadData(retVal);
     }, CS.onError)
-    
+
 }
 
 
@@ -174,7 +174,7 @@ function GetYDQSZ() {
     CS('CZCLZ.YDMag.GetYDQSZ', function (retVal) {
         qszstore.loadData(retVal);
         Ext.getCmp("officeId").setValue(retVal[0]["officeId"]);
-        
+
         if (retVal[0]["officeId"] != "") {
             CS('CZCLZ.YDMag.GetYWYByQSZ', function (retVal) {
                 ywystore.loadData(retVal);
@@ -246,7 +246,7 @@ function xgshf(id) {
                     form.form.setValues(retVal[0]);
                     Ext.getCmp("shtel").setValue(retVal[0]["tel"]);
                     Ext.getCmp("shcarNum").setValue(retVal[0]["carNum"]);
-                    
+
                 });
             }
         }, CS.onError, id);
@@ -365,7 +365,7 @@ Ext.define('addHPWin', {
                                    labelWidth: 70,
                                    anchor: '100%'
                                },
-                                { xtype: "displayfield", value: "吨", columnWidth: 0.01},
+                                { xtype: "displayfield", value: "吨", columnWidth: 0.01 },
                         ]
                     },
                      {
@@ -385,11 +385,11 @@ Ext.define('addHPWin', {
                                     labelWidth: 70,
                                     anchor: '100%'
                                 },
-                                 { xtype: "displayfield", value: "方", columnWidth: 0.01},
+                                 { xtype: "displayfield", value: "方", columnWidth: 0.01 },
                          ]
                      }
-                     
-                    
+
+
                 ],
                 buttonAlign: 'center',
                 buttons: [
@@ -399,11 +399,11 @@ Ext.define('addHPWin', {
                             var form = Ext.getCmp('addHPform');
                             if (form.form.isValid()) {
                                 var yundan_goods_id = Ext.getCmp("yundan_goods_id").getValue();
-                                var yundan_goodsName=Ext.getCmp("yundan_goodsName").getValue();
-                                var yundan_goodsPack=Ext.getCmp("yundan_goodsPack").getValue();
-                                var yundan_goodsAmount=Ext.getCmp("yundan_goodsAmount").getValue();
-                                var yundan_goodsWeight=Ext.getCmp("yundan_goodsWeight").getValue();
-                                var yundan_goodsVolume=Ext.getCmp("yundan_goodsVolume").getValue();
+                                var yundan_goodsName = Ext.getCmp("yundan_goodsName").getValue();
+                                var yundan_goodsPack = Ext.getCmp("yundan_goodsPack").getValue();
+                                var yundan_goodsAmount = Ext.getCmp("yundan_goodsAmount").getValue();
+                                var yundan_goodsWeight = Ext.getCmp("yundan_goodsWeight").getValue();
+                                var yundan_goodsVolume = Ext.getCmp("yundan_goodsVolume").getValue();
 
                                 if (yundan_goods_id) {
                                     for (var i = 0; i < HPStore.data.length; i++) {
@@ -501,7 +501,7 @@ Ext.define('addDBFWin', {
                         xtype: 'textfield',
                         fieldLabel: '电话',
                         name: 'tel',
-                        id:'tel',
+                        id: 'tel',
                         labelWidth: 70,
                         anchor: '100%',
                         readOnly: true,
@@ -529,7 +529,7 @@ Ext.define('addDBFWin', {
                         labelWidth: 70,
                         value: new Date()
                     },
-                    
+
                      {
                          xtype: 'container',
                          layout: {
@@ -583,8 +583,8 @@ Ext.define('addDBFWin', {
                                         });
                                         BindDBF(1);
                                     }
-                                    
-                                }, CS.onError, values, ydid, fromofficeid,clientId);
+
+                                }, CS.onError, values, ydid, fromofficeid, clientId);
                             }
                         }
                     },
@@ -736,7 +736,7 @@ Ext.define('addZZFWin', {
                                         BindZZF(1);
                                     }
 
-                                }, CS.onError, values, ydid, toofficeid, clientId,zhuangchedanId);
+                                }, CS.onError, values, ydid, toofficeid, clientId, zhuangchedanId);
                             }
                         }
                     },
@@ -963,7 +963,7 @@ Ext.define('DBFList', {
                                                 menuDisabled: true
                                             }, {
                                                 xtype: 'datecolumn',
-                                                format:'Y-m-d',
+                                                format: 'Y-m-d',
                                                 dataIndex: 'expenseDate',
                                                 flex: 1,
                                                 text: '提货时间',
@@ -1012,7 +1012,7 @@ Ext.define('DBFList', {
                                                     var win = new addDBFWin();
                                                     win.show();
                                                 }, CS.onError)
-                                                
+
                                             }
                                         }
                                     ]
@@ -1029,9 +1029,9 @@ Ext.define('DBFList', {
 
                                     },
 
-                                ]
-                            }
-                        
+                        ]
+                    }
+
             ]
         });
 
@@ -1067,7 +1067,7 @@ Ext.define('FLFList', {
                                     {
                                         xtype: 'gridpanel',
                                         id: 'ZZFListpanel',
-                                        title:'中转费',
+                                        title: '中转费',
                                         store: zzfstore,
                                         itemId: 'tab1',
                                         columnLines: true,
@@ -1412,7 +1412,7 @@ Ext.define('HDWin', {
                                         });
                                     }
                                     me.up('window').close()
-                                }, CS.onError, ydid,values);
+                                }, CS.onError, ydid, values);
                             }
                         }
                     },
@@ -1429,6 +1429,154 @@ Ext.define('HDWin', {
     }
 });
 
+Ext.define('BQDYWin', {
+    extend: 'Ext.window.Window',
+
+    height: 160,
+    width: 400,
+    layout: {
+        type: 'fit'
+    },
+    closeAction: 'destroy',
+    modal: true,
+    title: '打印标签[参数设置]',
+
+    initComponent: function () {
+        var me = this;
+        me.items = [
+            {
+                xtype: 'form',
+                id: 'BQDYform',
+                frame: true,
+                bodyPadding: 10,
+                items: [
+                    {
+                        xtype: 'container',
+                        layout: {
+                            type: 'column'
+                        },
+                        margin: '10 0 10 0',
+                        anchor: '100%',
+                        items: [
+                               {
+                                   xtype: 'numberfield',
+                                   fieldLabel: '已打印的数量',
+                                   allowBlank: false,
+                                   id: 'ydysl',
+                                   name: 'ydysl',
+                                   columnWidth: 0.85,
+                                   allowNegative: false,
+                                   labelWidth: 110,
+                                   minValue: 0,
+                                   anchor: '100%'
+                               },
+                                { xtype: "displayfield", value: "个", columnWidth: 0.15 },
+                        ]
+                    },
+                    {
+                        xtype: 'container',
+                        layout: {
+                            type: 'column'
+                        },
+                        margin: '10 0 10 0',
+                        anchor: '100%',
+                        items: [
+                               {
+                                   xtype: 'numberfield',
+                                   fieldLabel: '本次要打印的数量',
+                                   allowBlank: false,
+                                   id: 'bcydysl',
+                                   name: 'bcydysl',
+                                   columnWidth: 0.85,
+                                   allowNegative: false,
+                                   minValue: 0,
+                                   labelWidth: 110,
+                                   anchor: '100%'
+                               },
+                                { xtype: "displayfield", value: "个", columnWidth: 0.15 },
+                        ]
+                    }
+                ],
+                buttonAlign: 'center',
+                buttons: [
+                    {
+                        text: '打印预览',
+                        handler: function () {
+                            var form = Ext.getCmp('BQDYform');
+                            if (form.form.isValid()) {
+                                var length = Ext.getCmp("bcydysl").getValue();
+                                CS('CZCLZ.PrinterMag.GetPrintBQ', function (retVal) {
+                                    var LODOP1 = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+                                    LODOP1.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
+                                    LODOP1.SET_PRINT_PAGESIZE(0, 800, 510, "A4");                                    LODOP1.SET_PRINT_STYLE("FontSize", 12);
+                                    LODOP1.SET_PRINT_STYLE("Bold", 1);
+                                    //if (retVal.ztdt.length > 0) {
+                                    //if (retVal.printdt.length > 0) {
+                                    var html = '<table width="100%" align="center" border="0" height="100%" cellpadding="0" cellspacing="0"><tr><td>';
+                                    html += '<table width="100%" align="center" height="50" cellpadding="0" cellspacing="0" style="border-bottom:2px solid black"><tr><td width="100%" style="text-align:center;font-weight:bold">查货宝</td></tr>';
+                                    html += '<tr><td width="100%" style="text-align:center;">' + Ext.getCmp("officeId").getRawValue() + '至' + Ext.getCmp("toOfficeId").getRawValue() + '</td></tr></table>';
+                                    html += '<table width="100%" align="center" border="0"cellpadding="0" cellspacing="0" style="border-bottom:1px solid black"><tr style="border-bottom:1px solid black"><td width="50%" style="line-height:180%">' + Ext.getCmp("yundanNum").getValue() + '</td><td>到站：' + Ext.getCmp("toAddress").getValue() + '</td></tr></table>';
+                                    html += '<table width="100%" align="center" border="0"cellpadding="0" cellspacing="0" style="border-bottom:1px solid black"><tr style="border-bottom:1px solid black"><td width="50%" style="line-height:180%">货名：' + HPStore.data.items[0].data.yundan_goodsName + '</td><td>收货人：' + Ext.getCmp("shouhuoPeople").getValue() + '</td></tr></table>';
+                                    html += '<table width="100%" align="center" border="0"cellpadding="0" cellspacing="0" style="border-bottom:1px solid black"><tr style="border-bottom:1px solid black"><td width="50%" style="line-height:180%">包装：' + HPStore.data.items[0].data.yundan_goodsPack + '</td><td>件数：' + HPStore.data.items[0].data.yundan_goodsAmount + '</td></tr></table>';
+                                    html += '<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0"><tr><td  style="line-height:180%">电话：' + Ext.getCmp("shouhuoTel").getValue() + '</td></tr></table>';
+                                    html += '</td></tr></table>';
+
+                                    for (j = 0; j < length ; j++) {
+                                        LODOP1.NewPage();
+
+                                        LODOP1.ADD_PRINT_HTM(0, 0, "100%", "100%", html);
+                                        //for (var i = 0; i < retVal.printdt.length; i++) {
+
+                                        //    if (retVal.printdt[i]["fieldMC"] == "第一个地址") {
+                                        //        LODOP1.ADD_PRINT_TEXT(66, 66, 200, 20, "到站：" + Ext.getCmp("toAddress").getValue());
+                                        //    }
+                                        //    if (retVal.printdt[i]["fieldMC"] == "第一个收件人名") {
+                                        //        LODOP1.ADD_PRINT_TEXT(retVal.printdt[i]["leftBJ"], retVal.printdt[i]["topBJ"], 200, 20, "收货人：" + Ext.getCmp("shouhuoPeople").getValue());
+                                        //    }
+                                        //    if (retVal.printdt[i]["fieldMC"] == "第一个收件人电话") {
+                                        //        LODOP1.ADD_PRINT_TEXT(retVal.printdt[i]["leftBJ"], retVal.printdt[i]["topBJ"], 200, 20, "电话：" + Ext.getCmp("shouhuoTel").getValue());
+                                        //    }
+                                        //    if (retVal.printdt[i]["fieldMC"] == "货物名称") {
+                                        //        LODOP1.ADD_PRINT_TEXT(retVal.printdt[i]["leftBJ"], retVal.printdt[i]["topBJ"], 200, 20, "货名：" + HPStore.data.items[0].data.yundan_goodsName);
+                                        //    }
+                                        //    if (retVal.printdt[i]["fieldMC"] == "件数") {
+                                        //        LODOP1.ADD_PRINT_TEXT(retVal.printdt[i]["leftBJ"], retVal.printdt[i]["topBJ"], 200, 20, "件数：" + HPStore.data.items[0].data.yundan_goodsAmount);
+                                        //    }
+                                        //    if (retVal.printdt[i]["fieldMC"] == "包装") {
+                                        //        LODOP1.ADD_PRINT_TEXT(retVal.printdt[i]["leftBJ"], retVal.printdt[i]["topBJ"], 200, 20, "包装：" + HPStore.data.items[0].data.yundan_goodsPack);
+                                        //    }
+                                        //}
+                                        //var topBJ = 0;
+                                        //if (retVal.ztdt[0]["topBJ"]) {
+                                        //    topBJ = retVal.ztdt[0]["topBJ"];
+                                        //}
+                                        //var leftBJ = 0;
+                                        //if (retVal.ztdt[0]["leftBJ"]) {
+                                        //    leftBJ = retVal.ztdt[0]["leftBJ"];
+                                        //}
+                                        // LODOP1.ADD_PRINT_HTM(topBJ, leftBJ, "100%", "100%");
+                                        // }
+                                        //  }
+                                    }
+                                    LODOP1.PREVIEW();
+
+                                }, CS.onError);
+                            }
+
+                        }
+                    },
+                    {
+                        text: '取消',
+                        handler: function () {
+                            this.up('window').close();
+                        }
+                    }
+                ]
+            }
+        ];
+        me.callParent(arguments);
+    }
+});
 
 //************************************弹出界面***************************************
 
@@ -1466,7 +1614,7 @@ Ext.onReady(function () {
                                                text: '保存',
                                                handler: function () {
 
-                                                   
+
                                                    var form = Ext.getCmp('addform');
                                                    if (form.form.isValid()) {
 
@@ -1492,7 +1640,7 @@ Ext.onReady(function () {
 
 
                                                        var songhuoType = Ext.getCmp("songhuoType").getValue();
-                                                       if (songhuoType ==="") {
+                                                       if (songhuoType === "") {
                                                            Ext.Msg.alert('提示', "送货方式不能为空！");
                                                            return;
                                                        }
@@ -1509,7 +1657,7 @@ Ext.onReady(function () {
                                                            return;
                                                        }
 
-                                                       var cntHuidan = Ext.getCmp("huidanType").getValue();
+                                                       var cntHuidan = Ext.getCmp("cntHuidan").getValue();
                                                        if (cntHuidan === "" || cntHuidan < 1) {
                                                            Ext.Msg.alert('提示', "回单数必须大于0！");
                                                            return;
@@ -1550,11 +1698,11 @@ Ext.onReady(function () {
                                                                    icon: Ext.MessageBox.INFO,
                                                                    fn: function () {
                                                                        FrameStack.popFrame();
-                                                                       
+
                                                                    }
                                                                });
                                                            }
-                                                          
+
                                                        }, CS.onError, ydid, values, hplist, fahuoPeople_dispaly);
 
                                                    }
@@ -1581,7 +1729,8 @@ Ext.onReady(function () {
                                                                Ext.Msg.alert('提示', "未保存的运单禁止设置费用！");
                                                                return;
                                                            }
-                                                       }},
+                                                       }
+                                                   },
                                                    {
                                                        text: "分流费", handler: function () {
                                                            if (ydid) {
@@ -1601,7 +1750,8 @@ Ext.onReady(function () {
                                                                Ext.Msg.alert('提示', "未保存的运单禁止设置分流费用！");
                                                                return;
                                                            }
-                                                       }}
+                                                       }
+                                                   }
                                                ]
                                            }]
                                    },
@@ -1616,37 +1766,83 @@ Ext.onReady(function () {
                                        arrowAlign: "right",
                                        menu: [
                                            {
-                                               text: "运单（预览）", iconCls: "preview", handler: function () {
+                                               text: "标签", handler: function () {
+                                                   if (ydid) {
+                                                       var win = new BQDYWin();
+                                                       win.show();
+                                                   } else {
+                                                       Ext.Msg.alert('提示', "请先保存运单！");
+                                                       return;
+                                                   }
+
+                                               }
+                                           },
+                                           {
+                                               text: "信封（预览）", handler: function () {
                                                    if (ydid) {
                                                        CS('CZCLZ.PrinterMag.GetPrintByKind', function (retVal) {
-                                                           LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+                                                           var LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
                                                            LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
                                                            LODOP.SET_PRINT_PAGESIZE(0, 2500, 1200, "A4");                                                           LODOP.SET_PRINT_STYLE("FontSize", 18);
                                                            LODOP.SET_PRINT_STYLE("Bold", 1);
                                                            if (retVal.ztdt.length > 0) {
                                                                if (retVal.printdt.length > 0) {
                                                                    for (var i = 0; i < retVal.printdt.length; i++) {
-                                                                      
+
                                                                        if (Ext.getCmp("songhuoType").getValue() == 0) {
                                                                            if (retVal.printdt[i]["fieldMC"] == "自提") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"], 20, 10, "自提");
+                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 20, 20, "自提");
                                                                            }
                                                                        } else {
                                                                            if (retVal.printdt[i]["fieldMC"] == "送货") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"], 20, 10, "送货");
+                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 20, 20, "送货");
                                                                            }
                                                                        }
 
                                                                        if (Ext.getCmp("huidanType").getValue() == 0) {
                                                                            if (retVal.printdt[i]["fieldMC"] == "回单") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"], 20, 10, "回单");
+                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, "回单:" + Ext.getCmp("cntHuidan").getValue());
                                                                            }
                                                                        } else {
                                                                            if (retVal.printdt[i]["fieldMC"] == "收条") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"], 20, 10, "收条");
+                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, "收条:" + Ext.getCmp("cntHuidan").getValue());
                                                                            }
                                                                        }
-                                                                           
+                                                                       if (retVal.printdt[i]["fieldMC"] == "备注") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("memo").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "运单号") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("yundanNum").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "货物名称") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsName);
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "件数") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsAmount);
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "包装") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsPack);
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "重量") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsWeight + "T");
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "体积") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsVolume + "m³");
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "地址") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoAddress").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "联系人") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoPeople").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "电话") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoTel").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "到付") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("moneyDaofu").getValue());
+                                                                       }
+
+
                                                                    }
                                                                }
                                                                var topBJ = 0;
@@ -1661,16 +1857,125 @@ Ext.onReady(function () {
                                                            }
                                                            LODOP.PREVIEW();
                                                        }, CS.onError, 0);
-
-
-                                                       LODOP.ADD_PRINT_TEXT(53, 187, "科学家");
                                                    } else {
                                                        Ext.Msg.alert('提示', "请先保存运单！");
                                                        return;
                                                    }
-                                               }},
-                                           { text: "标签" },
-                                           { text: "信封（预览）" }
+                                               }
+                                           },
+                                           {
+                                               text: "运单（预览）", iconCls: "preview", handler: function () {
+                                                   if (ydid) {
+                                                       CS('CZCLZ.PrinterMag.GetPrintYD', function (retVal) {
+                                                           var LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+                                                           LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
+                                                           LODOP.SET_PRINT_PAGESIZE(0, 3000, 3000, "A4");                                                           LODOP.SET_PRINT_STYLE("FontSize", 18);
+                                                           LODOP.SET_PRINT_STYLE("Bold", 1);
+                                                           if (retVal.ztdt.length > 0) {
+                                                               if (retVal.printdt.length > 0) {
+                                                                   for (var i = 0; i < retVal.printdt.length; i++) {
+
+                                                                       if (Ext.getCmp("songhuoType").getValue() == 0) {
+                                                                           if (retVal.printdt[i]["fieldMC"] == "自提") {
+                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 20, 20, "自提");
+                                                                           }
+                                                                       } else {
+                                                                           if (retVal.printdt[i]["fieldMC"] == "送货") {
+                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 20, 20, "送货");
+                                                                           }
+                                                                       }
+
+                                                                       if (Ext.getCmp("huidanType").getValue() == 0) {
+                                                                           if (retVal.printdt[i]["fieldMC"] == "回单数") {
+                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 200, 20, "回单:" + Ext.getCmp("cntHuidan").getValue());
+                                                                           }
+                                                                       } else {
+                                                                           if (retVal.printdt[i]["fieldMC"] == "收条数") {
+                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"],retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 200, 20, "收条:" + Ext.getCmp("cntHuidan").getValue());
+                                                                           }
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "公司地址1（到达办事处）") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("officeId").getRawValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "公司地址2（起始办事处）") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("toOfficeId").getRawValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "起运地点") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("officeId").getRawValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "到达网点") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("toAddress").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "欠付") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("moneyQianfu").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "已付") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("moneyYunfei").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "备注") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("memo").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "运单编号") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("yundanNum").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "收货人（单位）") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoPeople").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "收货地址") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoAddress").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "收货电话") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoTel").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "托运人（单位）") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("fahuoPeople").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "托运地址") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("faAddress").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "托运电话") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("fahuoTel").getValue());
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "货物名称") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsName);
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "件数") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsAmount);
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "包装") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsPack);
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "重量") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsWeight + "T");
+                                                                       }
+                                                                       if (retVal.printdt[i]["fieldMC"] == "体积") {
+                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsVolume + "m³");
+                                                                       }
+
+
+
+                                                                   }
+                                                               }
+                                                               var topBJ = 0;
+                                                               if (retVal.ztdt[0]["topBJ"]) {
+                                                                   topBJ = retVal.ztdt[0]["topBJ"];
+                                                               }
+                                                               var leftBJ = 0;
+                                                               if (retVal.ztdt[0]["leftBJ"]) {
+                                                                   leftBJ = retVal.ztdt[0]["leftBJ"];
+                                                               }
+                                                               LODOP.ADD_PRINT_HTM(topBJ, leftBJ, "100%", "100%");
+                                                           }
+                                                           LODOP.PREVIEW();
+                                                       }, CS.onError);
+                                                   } else {
+                                                       Ext.Msg.alert('提示', "请先保存运单！");
+                                                       return;
+                                                   }
+
+                                               }
+                                           }
+                                           
                                        ]
                                    }]
                                    },
@@ -1694,19 +1999,20 @@ Ext.onReady(function () {
                                                                Ext.Msg.alert('提示', "未保存的运单禁止拆分！");
                                                                return;
                                                            }
-                                                           
-                                                       }},
+
+                                                       }
+                                                   },
                                                    {
                                                        text: "回单设置", handler: function () {
                                                            if (ydid) {
-                                                               
+
                                                                CS('CZCLZ.YDMag.GetHDByID', function (retVal) {
                                                                    if (retVal) {
                                                                        var win = new HDWin();
                                                                        win.show();
                                                                        Ext.getCmp("shsj").setValue(retVal[0]["fahuoTel"]);
                                                                        if (retVal[0]["isSign"] == 1) {
-                                                                          
+
                                                                            Ext.getCmp("isSign").setValue(1);
                                                                            Ext.getCmp("bschuidanDate").enable();
                                                                            Ext.getCmp("bschuidanDate").setValue(retVal[0]["bschuidanDate"]);
@@ -1722,7 +2028,7 @@ Ext.onReady(function () {
                                                                        }
                                                                    }
                                                                }, CS.onError, ydid);
-                                                               
+
                                                            } else {
                                                                Ext.Msg.alert('提示', "未保存的运单禁止设置！");
                                                                return;
@@ -2053,7 +2359,7 @@ Ext.onReady(function () {
                                                               ['欠付', "1"],
                                                               ['到付', "2"],
                                                               ['回单付', "3"],
-                                                              ['现付+欠付',"4"],
+                                                              ['现付+欠付', "4"],
                                                               ['现付+到付', "5"],
                                                               ['到付+欠付', "6"],
                                                               ['现付+回单付', "7"],
@@ -2065,7 +2371,7 @@ Ext.onReady(function () {
                                                       value: "",
                                                       listeners: {
                                                           'select': function (record) {
-                                                              if (Ext.getCmp("payType").getValue()!="") {
+                                                              if (Ext.getCmp("payType").getValue() != "") {
                                                                   var paytype = Ext.getCmp("payType").getValue();
                                                                   if (paytype == 11) {
                                                                       Ext.getCmp("moneyXianfu").enable();
@@ -2526,7 +2832,7 @@ Ext.onReady(function () {
 
                 fromofficeid = retVal.yddt[0].officeId;
                 toofficeid = retVal.yddt[0].toOfficeId;
-                clientId=retVal.yddt[0].clientId;
+                clientId = retVal.yddt[0].clientId;
 
                 var paytype = retVal.yddt[0].payType;
                 if (paytype == 11) {

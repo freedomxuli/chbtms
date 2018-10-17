@@ -45,7 +45,7 @@ public class BscMag
                     where += " and " + dbc.C_Like("officeCode", keyword.Trim(), LikeStyle.LeftAndRightLike)
                           + " and " + dbc.C_Like("officeName", keyword.Trim(), LikeStyle.LeftAndRightLike);
                 }
-                string str = "select * from jichu_office where status=0 "+where+" order by addtime desc";
+                string str = "select * from jichu_office where status=0 " + where + " and companyId='"+SystemUser.CurrentUser.CompanyID+"' order by addtime desc";
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -154,6 +154,7 @@ public class BscMag
                     dr["adduser"] = userid;
                     dr["updatetime"] = DateTime.Now;
                     dr["updateuser"]= userid;
+                    dr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
                 }
@@ -237,7 +238,7 @@ public class BscMag
             try
             {
                 string str = @"select officeId as VALUE,officeName as TEXT from jichu_office 
-                                where status=0 order by officeCode,addtime desc";
+                                where status=0 and companyId='"+SystemUser.CurrentUser.CompanyID+"' order by officeCode,addtime desc";
                 DataTable dt = dbc.ExecuteDataTable(str);
                 return dt;
             }

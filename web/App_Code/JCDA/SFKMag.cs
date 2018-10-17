@@ -46,7 +46,7 @@ public class SFKMag
                           + " or " + dbc.C_Like("itemName", keyword.Trim(), LikeStyle.LeftAndRightLike);
                 }
 
-                string str = @"select * from caiwu_income_item where status=0 "+where+" order by addtime desc";
+                string str = @"select * from caiwu_income_item where status=0 " + where + " and companyId='"+SystemUser.CurrentUser.CompanyID+"' order by addtime desc";
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -97,6 +97,7 @@ public class SFKMag
                     dr["memo"] = jsr["memo"];
                     dr["status"] = 0;
                     dr["addtime"] = DateTime.Now;
+                    dr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
                 }
@@ -208,7 +209,7 @@ public class SFKMag
                           + " or " + dbc.C_Like("itemName", keyword.Trim(), LikeStyle.LeftAndRightLike);
                 }
 
-                string str = @"select * from caiwu_expense_item where status=0 " + where + " order by addtime desc";
+                string str = @"select * from caiwu_expense_item where status=0 " + where + " and companyId='" + SystemUser.CurrentUser.CompanyID + "' order by addtime desc";
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -258,6 +259,7 @@ public class SFKMag
                     dr["memo"] = jsr["memo"];
                     dr["status"] = 0;
                     dr["addtime"] = DateTime.Now;
+                    dr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
                 }

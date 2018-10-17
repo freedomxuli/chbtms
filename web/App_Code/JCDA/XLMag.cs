@@ -46,12 +46,9 @@ public class XLMag
                           + " or " + dbc.C_Like("c.officeName", keyword.Trim(), LikeStyle.LeftAndRightLike) + ")";
                 }
 
-                if(SystemUser.CurrentUser.UserID!="D4D659F2-C2AE-4D96-AA87-A5DF0EC3F57C"){
-                        where += "and a.companyId='"+SystemUser.CurrentUser.UserID+"' ";
-                }
                 string str = @"select a.*,b.officeName as fromOfficeName,c.officeName as toOfficeName from jichu_xianlu a left join jichu_office b on a.fromOfficeId=b.officeId
                               left join jichu_office c on a.toOfficeId=c.officeId
-                              where a.status=0 " + where + " order by a.addtime desc";
+                              where a.status=0 " + where + " and a.companyId='" + SystemUser.CurrentUser.CompanyID + "' order by a.addtime desc";
                 //开始取分页数据   
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
