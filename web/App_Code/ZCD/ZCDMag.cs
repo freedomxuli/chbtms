@@ -42,9 +42,9 @@ public class ZCDMag
                 string str = @" select a.*,b.officeName as fromOfficeName,c.officeName as toOfficeName,d.people,d.carNum
                                   from zhuangchedan_zhuangchedan a 
                                   left join jichu_office b on a.officeId=b.officeId
-                                  left join jichu_office c on a.officeId=c.officeId 
+                                  left join jichu_office c on a.toOfficeId=c.officeId 
                                   left join jichu_driver d on a.driverId=d.driverId
-                                  where a.status=0 "+where+@"
+                                  where a.status=0 " + where + @"  and a.companyId='"+SystemUser.CurrentUser.CompanyID+@"'
                                   order by addtime desc";
                 //开始取分页数据   
                 System.Data.DataTable dtPage = new System.Data.DataTable();
@@ -133,7 +133,7 @@ public class ZCDMag
         {
             try
             {
-                string str = "  select driverId,people,tel,carNum from jichu_driver where  status=0 order by people";
+                string str = "  select driverId,people,tel,carNum from jichu_driver where  status=0 and companyId='" + SystemUser.CurrentUser.CompanyID + @"' order by people";
                 SqlCommand cmd = new SqlCommand(str);
                 DataTable dt = dbc.ExecuteDataTable(cmd);
                 return dt;
@@ -187,9 +187,9 @@ public class ZCDMag
                 string str = @" select a.*,b.*,c.officeName,d.officeName as toOfficeName,e.zhuangchedanNum from yundan_chaifen a left join yundan_yundan b
                                 on a.yundan_id=b.yundan_id
                                 left join jichu_office c on b.officeId=c.officeId
-                                left join jichu_office d on b.officeId=d.officeId
+                                left join jichu_office d on b.toOfficeId=d.officeId
                                 left join zhuangchedan_zhuangchedan e on a.zhuangchedan_id=e.zhuangchedan_id
-                                 where a.is_leaf=1 and a.zhuangchedan_id is null  and b.status=0 " + where + " order by e.zhuangchedanNum asc";
+                                 where a.is_leaf=1 and a.zhuangchedan_id is null  and b.status=0 " + where + "and  a.companyId='" + SystemUser.CurrentUser.CompanyID + @"' order by e.zhuangchedanNum asc";
                 //开始取分页数据   
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -313,6 +313,7 @@ public class ZCDMag
                     zcdr["adduser"] = SystemUser.CurrentUser.UserID;
                     zcdr["addtime"] = DateTime.Now;
                     zcdr["status"] = 0;
+                    zcdr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     zcdt.Rows.Add(zcdr);
                     dbc.InsertTable(zcdt);
 
@@ -433,7 +434,7 @@ public class ZCDMag
                                 left join jichu_office c on b.officeId=c.officeId
                                 left join jichu_office d on b.officeId=d.officeId
                                 left join zhuangchedan_zhuangchedan e on a.zhuangchedan_id=e.zhuangchedan_id
-                                where a.zhuangchedan_id='" + zcdid + "'  and b.status=0  order by e.zhuangchedanNum asc";
+                                where a.zhuangchedan_id='" + zcdid + "'  and b.status=0  and a.companyId='"+SystemUser.CurrentUser.CompanyID+"' order by e.zhuangchedanNum asc";
                 //开始取分页数据   
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -878,6 +879,7 @@ public class ZCDMag
                     sy_cfdr["isDache"] = 0;
                     sy_cfdr["isZhuhuodaofu"] = 0;
                     sy_cfdr["isPeiSong"] = 0;
+                    sy_cfdr["companyId"] =SystemUser.CurrentUser.CompanyID;
                     sy_cfdt.Rows.Add(sy_cfdr);
                     dbc.InsertTable(sy_cfdt);
 
@@ -926,6 +928,7 @@ public class ZCDMag
                     cf_cfdr["isDache"] = 0;
                     cf_cfdr["isZhuhuodaofu"] = 0;
                     cf_cfdr["isPeiSong"] = 0;
+                    cf_cfdr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     cf_cfdt.Rows.Add(cf_cfdr);
                     dbc.InsertTable(cf_cfdt);
 
@@ -1076,6 +1079,7 @@ public class ZCDMag
                     cf_cfdr["isDache"] = 0;
                     cf_cfdr["isZhuhuodaofu"] = 0;
                     cf_cfdr["isPeiSong"] = 0;
+                    cf_cfdr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     cf_cfdt.Rows.Add(cf_cfdr);
                     dbc.InsertTable(cf_cfdt);
 

@@ -44,7 +44,7 @@ public class XydjMag
                 {
                     where += " and " + dbc.C_Like("grade", keyword.Trim(), LikeStyle.LeftAndRightLike);
                 }
-                string str = "select * from jichu_credit where status=0 " + where + " order by grade";
+                string str = "select * from jichu_credit where status=0 " + where + " and companyId='" + SystemUser.CurrentUser.CompanyID + "' order by grade";
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -141,6 +141,7 @@ public class XydjMag
                     dr["adduser"] = userid;
                     dr["updatetime"] = DateTime.Now;
                     dr["updateuser"]= userid;
+                    dr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
                 }

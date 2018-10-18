@@ -22,17 +22,48 @@ var ypstore = new Ext.data.ArrayStore({
          { name: 'px', type: 'int' }
     ],
     data: [
-        ["", "", "", "", "", "", "", "第一个地址", 1],
-        ["", "", "", "", "", "", "", "第一个收件人名", 2],
-        ["", "", "", "", "", "", "", "第一个收件人电话", 3],
-        ["", "", "", "", "", "", "", "第一个件数", 4],
-        ["", "", "", "", "", "", "", "第一个货物名称", 5],
-        ["", "", "", "", "", "", "", "第一个备注", 6]
+        ["", "", "", "", "", "", "", "查货宝", 1],
+        ["", "", "", "", "", "", "", "公司地址1（到达办事处）", 2],
+        ["", "", "", "", "", "", "", "公司地址2（起始办事处）", 3],
+        ["", "", "", "", "", "", "", "起运地点", 4],
+        ["", "", "", "", "", "", "", "到达地点", 5],
+        ["", "", "", "", "", "", "", "到达网点", 6],
+        ["", "", "", "", "", "", "", "欠付", 7],
+        ["", "", "", "", "", "", "", "已付", 8],
+        ["", "", "", "", "", "", "", "到付", 9],
+        ["", "", "", "", "", "", "", "运单编号", 10],
+        ["", "", "", "", "", "", "", "回单数", 11],
+        ["", "", "", "", "", "", "", "收条数", 12],
+        ["", "", "", "", "", "", "", "回单", 13],
+        ["", "", "", "", "", "", "", "收条", 14],
+        ["", "", "", "", "", "", "", "收货人（单位）", 15],
+        ["", "", "", "", "", "", "", "收货地址", 16],
+        ["", "", "", "", "", "", "", "收货电话", 17],
+        ["", "", "", "", "", "", "", "托运人（单位）", 18],
+        ["", "", "", "", "", "", "", "托运地址", 19],
+        ["", "", "", "", "", "", "", "托运电话", 20],
+        ["", "", "", "", "", "", "", "货物名称", 21],
+        ["", "", "", "", "", "", "", "包装", 22],
+        ["", "", "", "", "", "", "", "件数", 23],
+        ["", "", "", "", "", "", "", "重量", 24],
+        ["", "", "", "", "", "", "", "体积", 25],
+        ["", "", "", "", "", "", "", "运费", 26],
+        ["", "", "", "", "", "", "", "回扣", 27],
+        ["", "", "", "", "", "", "", "金额（小写）", 28],
+        ["", "", "", "", "", "", "", "金额（大写）", 29],
+        ["", "", "", "", "", "", "", "金额大写字距", 30],
+        ["", "", "", "", "", "", "", "备注", 31],
+        ["", "", "", "", "", "", "", "签名", 32],
+        ["", "", "", "", "", "", "", "签单年", 33],
+        ["", "", "", "", "", "", "", "签单月", 34],
+        ["", "", "", "", "", "", "", "签单日", 35],
+        ["", "", "", "", "", "", "", "自提", 36],
+        ["", "", "", "", "", "", "", "送货到家", 37],
     ]
 })
 
 Ext.onReady(function () {
-    Ext.define('DYXF', {
+    Ext.define('DYYD', {
         extend: 'Ext.container.Viewport',
 
         layout: {
@@ -71,7 +102,7 @@ Ext.onReady(function () {
                                     var values = form.form.getValues(false);
                                     var me = this;
 
-                                    CS('CZCLZ.PrinterMag.SavePrint_BQ', function (retVal) {
+                                    CS('CZCLZ.PrinterMag.SavePrint_YD', function (retVal) {
                                         if (retVal) {
                                             Ext.Msg.show({
                                                 title: '提示',
@@ -85,7 +116,7 @@ Ext.onReady(function () {
                                 }
                             }
                         }
-                        
+
                     ],
                     items: [
                         {
@@ -187,9 +218,10 @@ Ext.onReady(function () {
                                         anchor: '100%',
                                         padding: 10,
                                         editable: false,
-                                        fieldLabel: '是否打印格子',
-                                        id: 'sfdygz',
-                                        name: 'sfdygz',
+                                        fieldLabel: '配送方式显示文字',
+                                        id: "psfs",
+                                        name: "psfs",
+                                        labelWidth: 120,
                                         store: new Ext.data.ArrayStore({
                                             fields: ['TXT', 'VAL'],
                                             data: [
@@ -199,33 +231,72 @@ Ext.onReady(function () {
                                         }),
                                         value: 1
                                     },
-                                {
-                                    xtype: 'numberfield',
-                                    fieldLabel: '单个标签高度',
-                                    padding: 10,
-                                    anchor: '100%',
-                                    id: 'bqgd',
-                                    name: 'bqgd',
-                                    allowDecimals: false
-                                },
-                                {
-                                    xtype: 'numberfield',
-                                    fieldLabel: '单个标签宽度',
-                                    padding: 10,
-                                    anchor: '100%',
-                                    id: 'bqkd',
-                                    name: 'bqkd',
-                                    allowDecimals: false
-                                },
-                                {
-                                    xtype: 'numberfield',
-                                    fieldLabel: '每行打印个数',
-                                    padding: 10,
-                                    anchor: '100%',
-                                    id: 'mhdygs',
-                                    name: 'mhdygs',
-                                    allowDecimals: false
-                                }
+                                    {
+                                        xtype: 'combobox',
+                                        allowBlank: false,
+                                        displayField: 'TXT',
+                                        valueField: 'VAL',
+                                        queryMode: 'local',
+                                        anchor: '100%',
+                                        padding: 10,
+                                        editable: false,
+                                        fieldLabel: '结算方式显示文字',
+                                        id: "jsfs",
+                                        name: "jsfs",
+                                        labelWidth: 120,
+                                        store: new Ext.data.ArrayStore({
+                                            fields: ['TXT', 'VAL'],
+                                            data: [
+                                                ['是', 0],
+                                                ['否', 1]
+                                            ]
+                                        }),
+                                        value: 1
+                                    },
+                                     {
+                                         xtype: 'combobox',
+                                         allowBlank: false,
+                                         displayField: 'TXT',
+                                         valueField: 'VAL',
+                                         queryMode: 'local',
+                                         anchor: '100%',
+                                         padding: 10,
+                                         editable: false,
+                                         fieldLabel: '运费大写显示文字',
+                                         id: 'yfdx',
+                                         name: "yfdx",
+                                         labelWidth: 120,
+                                         store: new Ext.data.ArrayStore({
+                                             fields: ['TXT', 'VAL'],
+                                             data: [
+                                                 ['是', 0],
+                                                 ['否', 1]
+                                             ]
+                                         }),
+                                         value: 1
+                                     }, {
+                                         xtype: 'combobox',
+                                         allowBlank: false,
+                                         displayField: 'TXT',
+                                         valueField: 'VAL',
+                                         queryMode: 'local',
+                                         anchor: '100%',
+                                         padding: 10,
+                                         editable: false,
+                                         fieldLabel: '日期显示文字',
+                                         id: 'rq',
+                                         name: "rq",
+                                         labelWidth: 120,
+                                         store: new Ext.data.ArrayStore({
+                                             fields: ['TXT', 'VAL'],
+                                             data: [
+                                                 ['是', 0],
+                                                 ['否', 1]
+                                             ]
+                                         }),
+                                         value: 1
+                                     }
+                                
                                     ]
                                 }
                             ]
@@ -335,7 +406,6 @@ Ext.onReady(function () {
                                             flex: 1,
                                             sortable: false,
                                             menuDisabled: true,
-                                            hidden: true,
                                             text: '宽度',
                                             field: {
                                                 xtype: 'numberfield',
@@ -354,7 +424,6 @@ Ext.onReady(function () {
                                             flex: 1,
                                             sortable: false,
                                             menuDisabled: true,
-                                            hidden: true,
                                             text: '高度',
                                             field: {
                                                 xtype: 'numberfield',
@@ -378,27 +447,27 @@ Ext.onReady(function () {
                         }
                     ]
                 }
-                        
-                
+
+
             ];
             me.callParent(arguments);
         }
     });
 
-    new DYXF();
+    new DYYD();
 
-    CS('CZCLZ.PrinterMag.GetPrintBQ', function (retVal) {
+    CS('CZCLZ.PrinterMag.GetPrintYD', function (retVal) {
         if (retVal.ztdt.length > 0) {
             ztstore.loadData(retVal.ztdt);
 
             if (retVal.printdt) {
                 ypstore.loadData(retVal.printdt);
             }
-            Ext.getCmp("sfdygz").setValue(retVal.sfdygz);
-            Ext.getCmp("bqgd").setValue(retVal.dygd);
-            Ext.getCmp("bqkd").setValue(retVal.dykd);
-            Ext.getCmp("mhdygs").setValue(retVal.mhdygs);
-            
+            Ext.getCmp("psfs").setValue(retVal.psfs);
+            Ext.getCmp("jsfs").setValue(retVal.jsfs);
+            Ext.getCmp("yfdx").setValue(retVal.yfdx);
+            Ext.getCmp("rq").setValue(retVal.rq);
+
         }
     }, CS.onError, 1);
 });

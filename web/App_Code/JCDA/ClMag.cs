@@ -51,7 +51,7 @@ public class ClMag
                     where += " and " + dbc.C_EQ("a.kind", Convert.ToInt32(kind));
                 }
                 string str = @"select a.*,b.officeName from jichu_driver a left join jichu_office b on a.officeId=b.officeId
-                          where a.status=0 " +where+" order by addtime desc";
+                          where a.status=0 " + where + " and a.companyId='"+SystemUser.CurrentUser.CompanyID+"' order by addtime desc";
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -142,6 +142,7 @@ public class ClMag
                     dr["adduser"] = userid;
                     dr["updatetime"] = DateTime.Now;
                     dr["updateuser"]= userid;
+                    dr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
                 }

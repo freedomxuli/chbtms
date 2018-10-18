@@ -45,7 +45,7 @@ public class HpMag
                     where += " and (" + dbc.C_Like("hpName", keyword.Trim(), LikeStyle.LeftAndRightLike)
                           + " or " + dbc.C_Like("hpCode", keyword.Trim(), LikeStyle.LeftAndRightLike)+")";
                 }
-                string str = "  select * from jichu_huoping where status=0 "+where+" order by addtime desc";
+                string str = "  select * from jichu_huoping where status=0 " + where + " and companyId='"+SystemUser.CurrentUser.CompanyID+"' order by addtime desc";
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -121,6 +121,7 @@ public class HpMag
                     dr["adduser"] = userid;
                     dr["updatetime"] = DateTime.Now;
                     dr["updateuser"]= userid;
+                    dr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
                 }
