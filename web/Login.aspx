@@ -30,8 +30,7 @@
         body {
             background: url(Images/login/index_bg.jpg) no-repeat no-repeat center center;
         }
-
-        #username {
+        #companybs {
             border-style: none;
             border-color: inherit;
             border-width: 0px;
@@ -46,6 +45,21 @@
             font-size: 24px;
         }
 
+        #username {
+            border-style: none;
+            border-color: inherit;
+            border-width: 0px;
+            background-color: transparent;
+            height: 33px;
+            line-height: 33px;
+            width: 290px;
+            padding: 0px;
+            position: relative;
+            top: 315px;
+            left: 327px;
+            font-size: 24px;
+        }
+
         #captcha {
             border-style: none;
             border-color: inherit;
@@ -56,7 +70,7 @@
             width: 141px;
             padding: 0px;
             position: relative;
-            top: 416px;
+            top: 355px;
             left: -263px;
             font-size: 24px;
         }
@@ -71,7 +85,7 @@
             width: 290px;
             padding: 0px;
             position: relative;
-            top: 345px;
+            top: 355px;
             left: 33px;
             right: -33px;
             font-size: 24px;
@@ -109,11 +123,12 @@
 </head>
 <body onkeydown="Send()">
     <div id="container">
+        <%--<input id="companybs" type="text" />
         <input id="username" type="text" />
         <input id="password" type="password" />
         <input id="captcha" type="text" />
         <img id="imgcode" src="captcha.aspx?vctype=log" style="cursor: pointer; vertical-align: top;" onclick='code(this);' />
-        <img src="Images/login/login_btn.png" id="btnSubmit" />
+        <img src="Images/login/login_btn.png" id="btnSubmit" />--%>
     </div>
     <script type="text/javascript">
         function Send() {
@@ -147,6 +162,7 @@
                 });
                 code(document.getElementById('imgcode'));
             },
+            document.getElementById('companybs').value,
             document.getElementById('username').value,
             document.getElementById('password').value,
             document.getElementById('captcha').value);
