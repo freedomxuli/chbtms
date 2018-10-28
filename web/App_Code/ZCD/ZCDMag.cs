@@ -9,6 +9,8 @@ using System.Text;
 using System.Data.SqlClient;
 using SmartFramework4v2.Web.Common.JSON;
 using SmartFramework4v2.Data;
+using Aspose.Cells;
+using System.IO;
 
 /// <summary>
 ///ZCDMag 的摘要说明
@@ -67,7 +69,7 @@ public class ZCDMag
         {
             try
             {
-                string str = @"select a.*,b.people,b.tel from zhuangchedan_zhuangchedan a left join jichu_driver b on a.driverId=b.driverId
+                string str = @"select a.*,b.people,b.tel,b.carNum from zhuangchedan_zhuangchedan a left join jichu_driver b on a.driverId=b.driverId
                                 where zhuangchedan_id=@zhuangchedan_id";
                 SqlCommand cmd = new SqlCommand(str);
                 cmd.Parameters.AddWithValue("@zhuangchedan_id", zcdid);
@@ -326,7 +328,7 @@ public class ZCDMag
                         for (int i = 0; i < xzkclist.Length; i++)
                         {
                             DataRow cfdr = cfdt.NewRow();
-                            cfdr["yundan_chaifen_id"] = xzkclist[i]["yundan_chaifen_id"].ToString(); ;
+                            cfdr["yundan_chaifen_id"] = xzkclist[i]["yundan_chaifen_id"].ToString();
                             cfdr["zhuangchedan_id"] = zcdid;
                             cfdr["isPeiSong"] = 1;
                             cfdt.Rows.Add(cfdr);
@@ -659,7 +661,6 @@ public class ZCDMag
             }
         }
     }
-
 
     [CSMethod("IsArrive")]
     public object IsArrive(string zcdid)
@@ -1131,4 +1132,317 @@ public class ZCDMag
 
 
     #endregion
+
+    [CSMethod("GetKCYDToFile", 2)]
+    public byte[] GetKCYDToFile(int k,JSReader[] xzkclist)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                Workbook workbook = new Workbook(); //工作簿
+                Worksheet sheet = workbook.Worksheets[0]; //工作表
+                Cells cells = sheet.Cells;//单元格
+
+                //为标题设置样式  
+                Style styleTitle = workbook.Styles[workbook.Styles.Add()];
+                styleTitle.HorizontalAlignment = TextAlignmentType.Center;//文字居中
+                styleTitle.Font.Name = "宋体";//文字字体
+                styleTitle.Font.Size = 18;//文字大小
+                styleTitle.Font.IsBold = true;//粗体
+
+                //样式2
+                Style style2 = workbook.Styles[workbook.Styles.Add()];
+                style2.HorizontalAlignment = TextAlignmentType.Left;//文字居中
+                style2.Font.Name = "宋体";//文字字体
+                style2.Font.Size = 14;//文字大小
+                style2.Font.IsBold = true;//粗体
+                style2.IsTextWrapped = true;//单元格内容自动换行
+                style2.Borders[BorderType.LeftBorder].LineStyle = CellBorderType.Thin; //应用边界线 左边界线
+                style2.Borders[BorderType.RightBorder].LineStyle = CellBorderType.Thin; //应用边界线 右边界线
+                style2.Borders[BorderType.TopBorder].LineStyle = CellBorderType.Thin; //应用边界线 上边界线
+                style2.Borders[BorderType.BottomBorder].LineStyle = CellBorderType.Thin; //应用边界线 下边界线
+                style2.IsLocked = true;
+
+                //样式3
+                Style style4 = workbook.Styles[workbook.Styles.Add()];
+                style4.HorizontalAlignment = TextAlignmentType.Left;//文字居中
+                style4.Font.Name = "宋体";//文字字体
+                style4.Font.Size = 11;//文字大小
+                style4.Borders[BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+                style4.Borders[BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+                style4.Borders[BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+                style4.Borders[BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+                #region 表头
+                cells.SetRowHeight(0, 20);
+                cells[0, 0].PutValue("导出库存运单");
+                cells[0, 0].SetStyle(styleTitle);
+                cells.Merge(0, 0, 1, 17);
+                //运单号 大车送	送货方式	到达站	收货地址	制单日期	起始站	收货网点	发货人	发货人电话	收货人	收货电话	结算方式	代收	回单/收条	回单张数	备注
+                cells.SetRowHeight(1, 20);
+                cells[1, 0].PutValue("运单号");
+                cells[1, 0].SetStyle(style2);
+                cells.SetColumnWidth(0, 20);
+                cells[1, 1].PutValue("大车送");
+                cells[1, 1].SetStyle(style2);
+                cells.SetColumnWidth(1, 20);
+                cells[1, 2].PutValue("送货方式");
+                cells[1, 2].SetStyle(style2);
+                cells.SetColumnWidth(2, 20);
+                cells[1, 3].PutValue("到达站");
+                cells[1, 3].SetStyle(style2);
+                cells.SetColumnWidth(3, 20);
+                cells[1, 4].PutValue("收货地址");
+                cells[1, 4].SetStyle(style2);
+                cells.SetColumnWidth(4, 20);
+                cells[1, 5].PutValue("制单日期");
+                cells[1, 5].SetStyle(style2);
+                cells.SetColumnWidth(5, 20);
+                cells[1, 6].PutValue("起始站");
+                cells[1, 6].SetStyle(style2);
+                cells.SetColumnWidth(6, 20);
+                cells[1, 7].PutValue("收货网点");
+                cells[1, 7].SetStyle(style2);
+                cells.SetColumnWidth(7, 20);
+                cells[1, 8].PutValue("发货人");
+                cells[1, 8].SetStyle(style2);
+                cells.SetColumnWidth(8, 20);
+                cells[1, 9].PutValue("发货人电话");
+                cells[1, 9].SetStyle(style2);
+                cells.SetColumnWidth(9, 20);
+                cells[1, 10].PutValue("收货人");
+                cells[1, 10].SetStyle(style2);
+                cells.SetColumnWidth(10, 20);
+                cells[1, 11].PutValue("收货电话");
+                cells[1, 11].SetStyle(style2);
+                cells.SetColumnWidth(11, 20);
+                cells[1, 12].PutValue("结算方式");
+                cells[1, 12].SetStyle(style2);
+                cells.SetColumnWidth(12, 20);
+                cells[1, 13].PutValue("代收");
+                cells[1, 13].SetStyle(style2);
+                cells.SetColumnWidth(13, 20);
+                cells[1, 14].PutValue("回单/收条");
+                cells[1, 14].SetStyle(style2);
+                cells.SetColumnWidth(14, 20);
+                cells[1, 15].PutValue("回单张数");
+                cells[1, 15].SetStyle(style2);
+                cells.SetColumnWidth(15, 20);
+                cells[1, 16].PutValue("备注");
+                cells[1, 16].SetStyle(style2);
+                cells.SetColumnWidth(16, 20);
+                #endregion
+
+                double dshj = 0;
+
+                if (xzkclist.Length > 0)
+                {
+                    for (int i = 0; i < xzkclist.Length; i++)
+                    {
+                        #region 判空
+                        string yundan_chaifen_number = "";
+                        if (xzkclist[i]["yundan_chaifen_number"] != null && xzkclist[i]["yundan_chaifen_number"].ToString() != "")
+                        {
+                            yundan_chaifen_number = xzkclist[i]["yundan_chaifen_number"].ToString();
+                        }
+                        string isDaChe = "";
+                        if (xzkclist[i]["isDache"] != null && xzkclist[i]["isDache"].ToString() != "")
+                        {
+                            if (Convert.ToInt32(xzkclist[i]["isDache"].ToString()) == 0)
+                            {
+                                isDaChe = "否";
+                            }
+                            else
+                            {
+                                isDaChe = "是";
+                            }
+                        }
+                        var songhuoType = "";
+                        if (xzkclist[i]["songhuoType"] != null && xzkclist[i]["songhuoType"].ToString() != "")
+                        {
+                            if (Convert.ToInt32(xzkclist[i]["songhuoType"].ToString()) == 0)
+                            {
+                                songhuoType = "自提";
+                            }
+                            else
+                            {
+                                songhuoType = "送货";
+                            }
+                        }
+                        string shouhuoAddress = "";
+                        if (xzkclist[i]["shouhuoAddress"] != null && xzkclist[i]["shouhuoAddress"].ToString() != "")
+                        {
+                            shouhuoAddress = xzkclist[i]["shouhuoAddress"].ToString();
+                        }
+                        string yundanDate = "";
+                        if (xzkclist[i]["yundanDate"] != null && xzkclist[i]["yundanDate"].ToString() != "")
+                        {
+                            yundanDate =Convert.ToDateTime(xzkclist[i]["yundanDate"].ToString()).ToString("yyyy-MM-dd");
+                        }
+                        string officeName = "";
+                        if (xzkclist[i]["officeName"] != null && xzkclist[i]["officeName"].ToString() != "")
+                        {
+                            officeName =xzkclist[i]["officeName"].ToString();
+                        }
+                        string toOfficeName = "";
+                        if (xzkclist[i]["toOfficeName"] != null && xzkclist[i]["toOfficeName"].ToString() != "")
+                        {
+                            toOfficeName = xzkclist[i]["toOfficeName"].ToString();
+                        }
+                        string fahuoPeople = "";
+                        if (xzkclist[i]["fahuoPeople"] != null && xzkclist[i]["fahuoPeople"].ToString() != "")
+                        {
+                            fahuoPeople = xzkclist[i]["fahuoPeople"].ToString();
+                        }
+                        string fahuoTel = "";
+                        if (xzkclist[i]["fahuoTel"] != null && xzkclist[i]["fahuoTel"].ToString() != "")
+                        {
+                            fahuoTel = xzkclist[i]["fahuoTel"].ToString();
+                        }
+                        string shouhuoPeople = "";
+                        if (xzkclist[i]["shouhuoPeople"] != null && xzkclist[i]["shouhuoPeople"].ToString() != "")
+                        {
+                            shouhuoPeople = xzkclist[i]["shouhuoPeople"].ToString();
+                        }
+                        string shouhuoTel = "";
+                        if (xzkclist[i]["shouhuoTel"] != null && xzkclist[i]["shouhuoTel"].ToString() != "")
+                        {
+                            shouhuoTel = xzkclist[i]["shouhuoTel"].ToString();
+                        }
+                        var payType = "";
+                        if (xzkclist[i]["payType"] != null && xzkclist[i]["payType"].ToString() != "")
+                        {
+
+                            if (Convert.ToInt32(xzkclist[i]["payType"].ToString()) == 11)
+                            {
+                                payType = "现金";
+                            }
+                            else if (Convert.ToInt32(xzkclist[i]["payType"].ToString()) == 1)
+                            {
+                                payType = "欠付";
+                            }
+                            else if (Convert.ToInt32(xzkclist[i]["payType"].ToString()) == 2)
+                            {
+                                payType = "到付";
+                            }
+                            else if (Convert.ToInt32(xzkclist[i]["payType"].ToString()) == 3)
+                            {
+                                payType = "回单付";
+                            }
+                            else if (Convert.ToInt32(xzkclist[i]["payType"].ToString()) == 4)
+                            {
+                                payType = "现付+欠付";
+                            }
+                            else if (Convert.ToInt32(xzkclist[i]["payType"].ToString()) == 5)
+                            {
+                                payType = "现付+到付";
+                            }
+                            else if (Convert.ToInt32(xzkclist[i]["payType"].ToString()) == 6)
+                            {
+                                payType = "到付+欠付";
+                            }
+                            else if (Convert.ToInt32(xzkclist[i]["payType"].ToString()) == 7)
+                            {
+                                payType = "现付+回单付";
+                            }
+                            else if (Convert.ToInt32(xzkclist[i]["payType"].ToString()) == 8)
+                            {
+                                payType = "欠付+回单付";
+                            }
+                            else if (Convert.ToInt32(xzkclist[i]["payType"].ToString()) == 9)
+                            {
+                                payType = "到付+回单付";
+                            }
+                            else if (Convert.ToInt32(xzkclist[i]["payType"].ToString()) == 10)
+                            {
+                                payType = "现付+到付+欠付";
+                            }
+                        }
+                        string moneyDaishou = "";
+                        if (xzkclist[i]["moneyDaishou"] != null && xzkclist[i]["moneyDaishou"].ToString() != "")
+                        {
+                            moneyDaishou = xzkclist[i]["moneyDaishou"].ToString();
+                            dshj = dshj + Convert.ToDouble(xzkclist[i]["moneyDaishou"].ToString());
+                        }
+                        string huidanType = "";
+                        if (xzkclist[i]["huidanType"] != null & xzkclist[i]["huidanType"].ToString() != "")
+                        {
+                            if (Convert.ToInt32(xzkclist[i]["huidanType"].ToString()) == 0)
+                            {
+                                huidanType = "回单";
+                            }
+                            else
+                            {
+                                huidanType = "收条";
+                            }
+                        }
+                        string cntHuidan = "";
+                        if (xzkclist[i]["cntHuidan"] != null && xzkclist[i]["cntHuidan"].ToString() != "")
+                        {
+                            cntHuidan = xzkclist[i]["cntHuidan"].ToString();
+                        }
+                        string memo = "";
+                        if (xzkclist[i]["memo"] != null && xzkclist[i]["memo"].ToString() != "")
+                        {
+                            memo = xzkclist[i]["memo"].ToString();
+                        }
+                        #endregion 
+                        cells[i + 2, 0].PutValue(yundan_chaifen_number);
+                        cells[i + 2, 0].SetStyle(style4);
+                        cells[i + 2, 1].PutValue(isDaChe);
+                        cells[i + 2, 1].SetStyle(style4);
+                        cells[i + 2, 2].PutValue(songhuoType);
+                        cells[i + 2, 2].SetStyle(style4);
+                        cells[i + 2, 3].PutValue(toOfficeName);
+                        cells[i + 2, 3].SetStyle(style4);
+                        cells[i + 2, 4].PutValue(shouhuoAddress);
+                        cells[i + 2, 4].SetStyle(style4);
+                        cells[i + 2, 5].PutValue(yundanDate);
+                        cells[i + 2, 5].SetStyle(style4);
+                        cells[i + 2, 6].PutValue(officeName);
+                        cells[i + 2, 6].SetStyle(style4);
+                        cells[i + 2, 7].PutValue(toOfficeName);
+                        cells[i + 2, 7].SetStyle(style4);
+                        cells[i + 2, 8].PutValue(fahuoPeople);
+                        cells[i + 2, 8].SetStyle(style4);
+                        cells[i + 2, 9].PutValue(fahuoTel);
+                        cells[i + 2, 9].SetStyle(style4);
+                        cells[i + 2, 10].PutValue(shouhuoPeople);
+                        cells[i + 2, 10].SetStyle(style4);
+                        cells[i + 2, 11].PutValue(shouhuoTel);
+                        cells[i + 2, 11].SetStyle(style4);
+                        cells[i + 2, 12].PutValue(payType);
+                        cells[i + 2, 12].SetStyle(style4);
+                        cells[i + 2, 13].PutValue(moneyDaishou);
+                        cells[i + 2, 13].SetStyle(style4);
+                        cells[i + 2, 14].PutValue(huidanType);
+                        cells[i + 2, 14].SetStyle(style4);
+                        cells[i + 2, 15].PutValue(cntHuidan);
+                        cells[i + 2, 15].SetStyle(style4);
+                        cells[i + 2, 16].PutValue(memo);
+                        cells[i + 2, 16].SetStyle(style4);
+                    }
+                }
+                cells[xzkclist.Length + 2, 0].PutValue("合计");
+                cells[xzkclist.Length + 2, 13].PutValue(dshj);
+                
+
+                for (int i = 0; i < 17; i++)
+                {
+                    cells[xzkclist.Length + 2, i].SetStyle(style4);
+                }
+
+
+                MemoryStream ms = workbook.SaveToStream();
+                byte[] bt = ms.ToArray();
+                return bt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+    }
 }
