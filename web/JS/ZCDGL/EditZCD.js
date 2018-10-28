@@ -342,8 +342,8 @@ function getshz() {
 function printYD() {
     var titlehtml = '<DIV style="LINE-HEIGHT: 30px" class=size16 align=center><STRONG><font color="#0000FF">装车清单一览表</font></STRONG></DIV>';
 
-    var html='<TABLE border=1 cellSpacing=0 cellPadding=1 width="100%" style="border-collapse:collapse" bordercolor="#333333">';
-    html+='<thead>';
+    var html = '<TABLE border=1 cellSpacing=0 cellPadding=1 width="100%" style="border-collapse:collapse" bordercolor="#333333">';
+    html += '<thead>';
     html += '<TR>';
     html += '<TD width="2%">';
     html += '<DIV align=center><b>序号</b></DIV></TD>';
@@ -388,7 +388,7 @@ function printYD() {
             html += '<TD >' + XZKCStore.data.items[i].data.fahuoPeople + '</TD>';
             html += '<TD >' + XZKCStore.data.items[i].data.shouhuoPeople + '</TD>';
             html += '<TD >' + XZKCStore.data.items[i].data.shouhuoAddress + '</TD>';
-            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD>' + XZKCStore.data.items[i].data.moneyYunfei + '</TD>';            var ysfs="";            if (XZKCStore.data.items[i].data.songhuoType == 0) {
+            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD>' + XZKCStore.data.items[i].data.moneyYunfei + '</TD>';            var ysfs = "";            if (XZKCStore.data.items[i].data.songhuoType == 0) {
                 ysfs = "自提";
             } else {
                 ysfs = "送货";
@@ -400,7 +400,8 @@ function printYD() {
                 sfzc = "否";
             } else {
                 sfzc = "是";
-            }            html += '<TD>' + sfzc + '</TD>';            html += '</TR>';        }
+            }            html += '<TD>' + sfzc + '</TD>';            html += '</TR>';
+        }
     }    if (XZYPSStore.data.length > 0) {
         for (var i = 0; i < XZYPSStore.data.length; i++) {
 
@@ -425,7 +426,7 @@ function printYD() {
                 sfzc = "是";
             }            html += '<TD>' + sfzc + '</TD>';            html += '</TR>';
         }
-    }    
+    }
     html += '</TABLE>';
     LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
     LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_分页打印综合表格");
@@ -434,8 +435,137 @@ function printYD() {
     LODOP.SET_PRINT_STYLEA(0, "ItemType", 1);
     LODOP.SET_PRINT_STYLEA(0, "LinkedItem", 1);
     LODOP.ADD_PRINT_HTM(128, "5%", "90%", "90%", html);
-    LODOP.SET_PRINT_STYLEA(0, "TableRowThickNess", 25);    LODOP.PREVIEW();    XZKCStore.removeAll();    XZYPSStore.removeAll();}
+    LODOP.SET_PRINT_STYLEA(0, "TableRowThickNess", 25);    LODOP.PREVIEW();    XZKCStore.removeAll();    XZYPSStore.removeAll();
+}
 
+function printZCD() {
+    var style = '<style>table,th{border:none;height:18px} td{border: 1px solid #000;height:18px}</style>';
+    var html = '<TABLE border=0 cellSpacing=0 cellPadding=0  width="100%" height="200" bordercolor="#000000" style="border-collapse:collapse">';
+    html += '<caption><b><font face="黑体" size="4">物流运输协议</font></b></caption>'
+    html += '<thead>';
+    html += '<TR>';
+    html += '<th colspan="6">';
+    html += '<DIV align=left><b>车辆牌照:' + Ext.getCmp("carNum").getValue() + '</b></DIV></th>';
+    html += '<th colspan="6">';
+    html += '<DIV align=left><b>驾驶员:' + Ext.getCmp("driverId").getRawValue() + '</b></DIV></th>';
+    html += '<th colspan="5">';
+    html += '<DIV align=left><b>联系电话:' + Ext.getCmp("tel").getValue() + '</b></DIV></th>';
+    html += '</TR>';
+    html += '<TR>';
+    html += '<th colspan="6">';
+    html += '<DIV align=left><b>装车日期:' + new Date(Ext.getCmp("qiandanDate").getValue()).Format("yyyy-MM-dd") + '</b></DIV></th>';
+    html += '<th colspan="6">';
+    html += '<DIV align=left><b>合同号:' + Ext.getCmp("zhuangchedanNum").getValue() + '</b></DIV></th>';
+    html += '<th colspan="5">';
+    html += '<DIV align=left><b>发车时间:' + new Date(Ext.getCmp("jiaofuDate").getValue()).Format("yyyy-MM-dd hh:mm:ss") + '</b></DIV></th>';
+    html += '</TR>';
+    html += '<TR>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>序号</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>运单号</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>发件人</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>发件人电话</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>收件人</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>收件人电话</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>货名</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>包装</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>数量</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>重量</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>体积</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>收件人地址</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>到付</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>回单类型</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>运输方式</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>大车送</b></DIV></TD>';
+    html += '<TD width="2%">';
+    html += '<DIV align=center><b>备注</b></DIV></TD>';
+    html += '</TR>';
+    html += '</thead>';
+
+    if (YPSYDStore.data.length > 0) {
+        for (var i = 0; i < YPSYDStore.data.length; i++) {
+            html += '<TR>';
+            html += '<TD >' + (i + 1) + '</TD>';
+            html += '<TD >' + YPSYDStore.data.items[i].data.yundan_chaifen_number + '</TD>';
+            html += '<TD >' + YPSYDStore.data.items[i].data.fahuoPeople + '</TD>';
+            html += '<TD >' + YPSYDStore.data.items[i].data.fahuoTel + '</TD>';
+            html += '<TD >' + YPSYDStore.data.items[i].data.shouhuoPeople + '</TD>';
+            html += '<TD >' + YPSYDStore.data.items[i].data.shouhuoTel + '</TD>';
+            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD>' + '</TD>';            html += '<TD >' + YPSYDStore.data.items[i].data.shouhuoAddress + '</TD>';            html += '<TD>' + YPSYDStore.data.items[i].data.moneyDaofu + '</TD>';            var hdlx = "";            if (YPSYDStore.data.items[i].data.huidanType == 0) {
+                hdlx = "回单";
+            } else {
+                hdlx = "收条";
+            }            html += '<TD>' + hdlx + '</TD>';            var ysfs = "";            if (YPSYDStore.data.items[i].data.songhuoType == 0) {
+                ysfs = "自提";
+            } else {
+                ysfs = "送货";
+            }            html += '<TD>' + ysfs + '</TD>';            var dcs = "";            if (YPSYDStore.data.items[i].data.isDache == 0) {
+                dcs = "否";
+            } else {
+                dcs = "是";
+            }            html += '<TD>' + dcs + '</TD>';            html += '<TD>' + YPSYDStore.data.items[i].data.memo + '</TD>';            html += '</TR>';
+        }
+    }    html += '<tfoot>';
+    html += '<tr>';
+    html += '<th colspan="14">';
+    html += '<DIV align=left><b>司机总运费为:' + Ext.getCmp("moneyTotal").getValue() + '现付：' + Ext.getCmp("moneyYufu").getValue()
+        + '欠付：' + Ext.getCmp("moneyQianfu").getValue() + '主货到付：' + Ext.getCmp("moneyZhuhuoDaofu").getValue()
+        + '点上付：' + Ext.getCmp("moneZCDaofu").getValue() + '押金：' + Ext.getCmp("moneyYajin").getValue() + '</b></DIV></th>';
+    html += '<td colspan="2">';
+    html += '<DIV align=left><b>总分流费：</b></DIV></td>';
+    html += '<td>';
+    html += '<DIV align=left><b></b></DIV></td>';
+    html += '</tr>';
+    html += '<tr>';
+    html += '<th colspan="7">';
+    html += '<DIV align=left><b>承运人签字</b></DIV></th>';
+    html += '<th colspan="7">';
+    html += '<DIV align=left><b>托运人签字</b></DIV></th>';
+    html += '<td colspan="2">';
+    html += '<DIV align=left><b>总配送费：</b></DIV></td>';
+    html += '<td>';
+    html += '<DIV align=left><b></b></DIV></td>';
+    html += '</tr>';
+    html += '<tr>';
+    html += '<th colspan="7">';
+    html += '<DIV align=left><b>点上签字</b></DIV></th>';
+    html += '<th colspan="7">';
+    html += '<DIV align=left><b>（如收到所有货物数量齐全，货物完好无损）</b></DIV></th>';
+    html += '<td colspan="2">';
+    html += '<DIV align=left><b>最后结余：</b></DIV></td>';
+    html += '<td>';
+    html += '<DIV align=left><b></b></DIV></td>';
+    html += '</tr>';
+    html += '<tr>';
+    html += '<th colspan="9">';
+    html += '<DIV align=left><b>' + Ext.getCmp("memo").getValue() + '</b></DIV></th>';
+    html += '<th colspan="8">';
+    html += '<DIV align=left><b>到达日期：  年  月  日</b></DIV></th>';
+    html += '</tr>';
+    html += '</tfoot>';
+    html += '</TABLE>';
+
+    LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_无边线表格");
+    LODOP.SET_PRINT_PAGESIZE(2, 0, 0, "A4");
+    LODOP.ADD_PRINT_TABLE("2%", "1%", "96%", "98%", style + html);
+    LODOP.SET_PREVIEW_WINDOW(0, 0, 0, 800, 600, "");    LODOP.PREVIEW();
+
+}
 //************************************弹出界面***************************************
 Ext.define('HPList', {
     extend: 'Ext.window.Window',
@@ -508,7 +638,7 @@ Ext.define('HPList', {
                                             }
                                         ],
                                         dockedItems: [
-                        
+
                         {
                             xtype: 'pagingtoolbar',
                             displayInfo: true,
@@ -559,7 +689,7 @@ Ext.define('EditDCWin', {
                         columnWidth: 0.33,
                         margin: '5 10 5 10',
                         editable: false,
-                        allowBlank:false,
+                        allowBlank: false,
                         fieldLabel: '是否为大车送',
                         name: 'isDache',
                         id: 'isDache',
@@ -604,7 +734,7 @@ Ext.define('EditDCWin', {
                                 }, CS.onError, isdcs, xzkclist);
 
 
-                                
+
                             }
                         }
                     },
@@ -863,9 +993,9 @@ Ext.onReady(function () {
                                                        }
 
                                                        var xzkclist = [];
-                                                        for (var i = 0; i < XZKCStore.data.items.length; i++) {
-                                                            xzkclist.push(XZKCStore.data.items[i].data);
-                                                        }
+                                                       for (var i = 0; i < XZKCStore.data.items.length; i++) {
+                                                           xzkclist.push(XZKCStore.data.items[i].data);
+                                                       }
 
                                                        //取得表单中的内容
                                                        var values = form.form.getValues(false);
@@ -879,7 +1009,7 @@ Ext.onReady(function () {
                                                                    buttons: Ext.MessageBox.OK,
                                                                    icon: Ext.MessageBox.INFO,
                                                                    fn: function () {
-                                                                       
+
                                                                        FrameStack.popFrame();
                                                                    }
                                                                });
@@ -900,7 +1030,15 @@ Ext.onReady(function () {
                                                {
                                                    xtype: "button",
                                                    text: "打印",
-                                                   iconCls: "printer"
+                                                   iconCls: "printer",
+                                                   handler: function () {
+                                                       if (zcdid) {
+                                                           printZCD();
+                                                       } else {
+                                                           Ext.Msg.alert('提示', "请先保存该装车单！");
+                                                           return;
+                                                       }
+                                                   }
                                                }
                                        ]
                                    }, {
@@ -923,7 +1061,8 @@ Ext.onReady(function () {
                                                                Ext.Msg.alert('提示', "请选择库存运单！");
                                                                return;
                                                            }
-                                                       }},
+                                                       }
+                                                   },
                                                    {
                                                        text: "设置(主货到付)",
                                                        handler: function () {
@@ -1044,7 +1183,21 @@ Ext.onReady(function () {
                                                        }
                                                    },
                                                    '-',
-                                                   { text: "导出" },
+                                                   {
+                                                       text: "导出", handler: function () {
+                                                           if (XZKCStore.data.items.length) {
+                                                               var xzkcslist = [];
+                                                               for (var i = 0; i < XZKCStore.data.items.length; i++) {
+                                                                   xzkcslist.push(XZKCStore.data.items[i].data);
+                                                               }
+                                                               DownloadFile("CZCLZ.ZCDMag.GetKCYDToFile", "导出库存运单.xls", 1, xzkcslist);
+                                                               XZKCStore.removeAll();
+                                                           } else {
+                                                               Ext.Msg.alert('提示', "请选择库存运单！");
+                                                               return;
+                                                           }
+                                                       }
+                                                   },
                                                    {
                                                        text: "打印",
                                                        handler: function () {
@@ -1471,7 +1624,7 @@ Ext.onReady(function () {
                                 xtype: 'gridcolumn',
                                 dataIndex: 'isDache',
                                 text: "大车送",
-                                width:50,
+                                width: 50,
                                 menuDisabled: true,
                                 sortable: false,
                                 renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
@@ -1532,7 +1685,7 @@ Ext.onReady(function () {
                                 xtype: 'datecolumn',
                                 dataIndex: 'hxrq',
                                 width: 65,
-                                format:'Y-m-d',
+                                format: 'Y-m-d',
                                 text: '核销时间',
                                 menuDisabled: true,
                                 sortable: false
@@ -2185,11 +2338,11 @@ Ext.onReady(function () {
         driverstore.loadData(retVal);
 
         if (zcdid) {
-           
-            CS('CZCLZ.ZCDMag.GetZCDByID', function (retVal) {
-                if (retVal) {
+
+            CS('CZCLZ.ZCDMag.GetZCDByID', function (ret) {
+                if (ret) {
                     var form = Ext.getCmp('addform');
-                    form.form.setValues(retVal[0]);
+                    form.form.setValues(ret[0]);
                 }
             }, CS.onError, zcdid);
 
@@ -2197,7 +2350,7 @@ Ext.onReady(function () {
         }
     }, CS.onError)
 
-    
+
 });
 
 Date.prototype.Format = function (fmt) { //author: meizz 
