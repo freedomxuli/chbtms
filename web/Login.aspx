@@ -41,7 +41,7 @@
             padding: 0px;
             position: relative;
             top: 276px;
-            left: 327px;
+            left: 321px;
             font-size: 24px;
         }
 
@@ -55,8 +55,8 @@
             width: 290px;
             padding: 0px;
             position: relative;
-            top: 315px;
-            left: 327px;
+            top: 327px;
+            left: 27px;
             font-size: 24px;
         }
 
@@ -70,8 +70,8 @@
             width: 141px;
             padding: 0px;
             position: relative;
-            top: 355px;
-            left: -263px;
+            top: 370px;
+            left: 323px;
             font-size: 24px;
         }
 
@@ -85,9 +85,8 @@
             width: 290px;
             padding: 0px;
             position: relative;
-            top: 355px;
-            left: 33px;
-            right: -33px;
+            top: 381px;
+            left: -267px;
             font-size: 24px;
         }
 
@@ -106,8 +105,8 @@
             width: 411px;
             height: 57px;
             position: relative;
-            top: 435px;
-            left: 285px;
+            top: 452px;
+            left: 45px;
             cursor: pointer;
         }
 
@@ -115,20 +114,20 @@
             width: 120px;
             height: 35px;
             position: relative;
-            top: 412px;
-            left: -249px;
+            top: 400px;
+            left: 343px;
             cursor: pointer;
         }
     </style>
 </head>
 <body onkeydown="Send()">
     <div id="container">
-        <%--<input id="companybs" type="text" />
-        <input id="username" type="text" />
-        <input id="password" type="password" />
+        <input id="companybs" type="text" placeholder="请输入公司编码"/>
+        <input id="username" type="text"  placeholder="请输入用户名"/>
+        <input id="password" type="password" placeholder="请输入密码"/>
         <input id="captcha" type="text" />
         <img id="imgcode" src="captcha.aspx?vctype=log" style="cursor: pointer; vertical-align: top;" onclick='code(this);' />
-        <img src="Images/login/login_btn.png" id="btnSubmit" />--%>
+        <img src="Images/login/login_btn.png" id="btnSubmit" />
     </div>
     <script type="text/javascript">
         function Send() {
