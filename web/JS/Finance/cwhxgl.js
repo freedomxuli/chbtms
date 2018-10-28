@@ -7,6 +7,7 @@ var store = createSFW4Store({
     total: 1,
     currentPage: 1,
     fields: [
+       { name: 'yundan_chaifen_id' },
        { name: 'zhuangchedan_id' },
        { name: 'yundan_id' },
        { name: 'yundanNum' },
@@ -19,10 +20,10 @@ var store = createSFW4Store({
        { name: 'moneyYunfei' },
        { name: 'moneyHuiKou' },
        { name: 'memo' },
-       { name: 'ydjshf' },
-       { name: 'ydjzzf' },
-       { name: 'yhxshf' },
-       { name: 'yhxzzf' }
+       { name: 'YDJSHF' },
+       { name: 'YDJZZF' },
+       { name: 'YHXSHF' },
+       { name: 'YHXZZF' }
     ],
     onPageChange: function (sto, nPage, sorters) {
         GetYunDanList(nPage);
@@ -36,6 +37,19 @@ var bscStore = Ext.create('Ext.data.Store', {
     ]
 });
 
+var compStore = Ext.create('Ext.data.Store', {
+    fields: [
+       { name: 'id' },
+       { name: 'mc' }
+    ]
+});
+
+var driverStore = Ext.create('Ext.data.Store', {
+    fields: [
+       { name: 'id' },
+       { name: 'mc' }
+    ]
+});
 //************************************数据源*****************************************
 
 //************************************页面方法***************************************
@@ -50,11 +64,38 @@ function GetYunDanList(nPage) {
     }, CS.onError, nPage, pageSize, Ext.getCmp("cx_bsc").getValue(), Ext.getCmp("start_time").getValue(), Ext.getCmp("end_time").getValue(), Ext.getCmp("cx_zcd").getValue(), Ext.getCmp("cx_ydh").getValue(), Ext.getCmp("cx_isfl").getValue());
 }
 
+function GetOffice()
+{
+    CS('CZCLZ.Finance.GetOfficeList', function (retVal) {
+        if (retVal)
+        {
+            bscStore.loadData(retVal);
+        }
+    },CS.onError);
+}
+
+function GetCompany()
+{
+    CS('CZCLZ.Finance.GetCompanyList', function (retVal) {
+        if (retVal) {
+            compStore.loadData(retVal);
+        }
+    }, CS.onError);
+}
+
+function GetDriver() {
+    CS('CZCLZ.Finance.GetDriverList', function (retVal) {
+        if (retVal) {
+            driverStore.loadData(retVal);
+        }
+    }, CS.onError);
+}
+
 function EditFenLiu(id) {
-    //var win = new FenLiuWin();
-    //win.show(null, function () {
+    var win = new FenLiuWin();
+    win.show(null, function () {
         
-    //});
+    });
 
     //var win = new PLFenLinWin();
     //win.show(null, function () {
@@ -99,11 +140,18 @@ Ext.define('FenLiuWin', {
                                 },
                                 items: [
                                     {
-                                        xtype: 'textfield',
-                                        fieldLabel: '中转公司',
+                                        xtype: 'combobox',
                                         id: 'compName',
-                                        padding:'10 10 10 10',
-                                        columnWidth: 1
+                                        columnWidth: 1,
+                                        fieldLabel: '中转公司',
+                                        editable: false,
+                                        store: compStore,
+                                        queryMode: 'local',
+                                        displayField: 'mc',
+                                        valueField: 'id',
+                                        value: '',
+                                        fieldLabel: '中转公司',
+                                        padding: '10 10 10 10'
                                     },
                                     {
                                         xtype: 'datefield',
@@ -133,8 +181,14 @@ Ext.define('FenLiuWin', {
                                 buttons: [
                                     {
                                         text: '保存',
+                                        iconCls: 'book',
                                         handler: function () {
-                                            alert(1);
+                                            CS('CZCLZ.Finance.SaveZZData', function (retVal) {
+                                                if (retVal)
+                                                {
+
+                                                }
+                                            }, CS.onError, Ext.getCmp("compName").getValue(), Ext.getCmp("actionDate").getValue(), Ext.getCmp("money").getValue(), Ext.getCmp("memo").getValue());
                                         }
                                     }
                                 ]
@@ -211,11 +265,17 @@ Ext.define('FenLiuWin', {
                                 },
                                 items: [
                                     {
-                                        xtype: 'textfield',
-                                        fieldLabel: '司机',
+                                        xtype: 'combobox',
                                         id: 'people',
-                                        padding: '10 10 10 10',
-                                        columnWidth: 1
+                                        columnWidth: 1,
+                                        fieldLabel: '司机',
+                                        editable: false,
+                                        store: driverStore,
+                                        queryMode: 'local',
+                                        displayField: 'mc',
+                                        valueField: 'id',
+                                        value: '',
+                                        padding: '10 10 10 10'
                                     },
                                     {
                                         xtype: 'datefield',
@@ -245,8 +305,13 @@ Ext.define('FenLiuWin', {
                                 buttons: [
                                     {
                                         text: '保存',
+                                        iconCls:'book',
                                         handler: function () {
-                                            alert(1);
+                                            CS('CZCLZ.Finance.SaveSHData', function (retVal) {
+                                                if (retVal) {
+
+                                                }
+                                            }, CS.onError, Ext.getCmp("compName").getValue(), Ext.getCmp("actionDate").getValue(), Ext.getCmp("money").getValue(), Ext.getCmp("memo").getValue());
                                         }
                                     }
                                 ]
@@ -359,7 +424,7 @@ Ext.onReady(function () {
                         {
                             xtype: 'gridcolumn',
                             text: '操作',
-                            dataIndex: 'zhuangchedan_id',
+                            dataIndex: 'yundan_chaifen_id',
                             width: 120,
                             sortable: false,
                             menuDisabled: true,
@@ -374,6 +439,7 @@ Ext.onReady(function () {
                             dataIndex: 'yundanNum',
                             sortable: false,
                             menuDisabled: true,
+                            width: 140,
                             text: "运单号"
                         },
                         {
@@ -381,6 +447,7 @@ Ext.onReady(function () {
                             dataIndex: 'zhuangchedanNum',
                             sortable: false,
                             menuDisabled: true,
+                            width: 140,
                             text: "装车单号"
                         },
                         {
@@ -409,6 +476,7 @@ Ext.onReady(function () {
                             dataIndex: 'shouhuoTel',
                             sortable: false,
                             menuDisabled: true,
+                            width: 140,
                             text: "收货电话"
                         },
                         {
@@ -416,7 +484,13 @@ Ext.onReady(function () {
                             dataIndex: 'songhuoType',
                             sortable: false,
                             menuDisabled: true,
-                            text: "配送方式"
+                            text: "配送方式",
+                            renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                if (value == 0)
+                                    return "自提";
+                                else
+                                    return "送货";
+                            }
                         },
                         {
                             xtype: 'gridcolumn',
@@ -494,12 +568,12 @@ Ext.onReady(function () {
                                     id: 'start_time',
                                     width: 160,
                                     labelWidth: 60,
-                                    format:'Y-m-d',
+                                    format: 'Y-m-d',
                                     fieldLabel: '运单时间'
                                 },
                                 {
                                     xtype: 'label',
-                                    text:'~'
+                                    text: '~'
                                 },
                                 {
                                     xtype: 'datefield',
@@ -531,7 +605,7 @@ Ext.onReady(function () {
                                     store: Ext.create('Ext.data.Store', {
                                         fields: ['id', 'mc'],
                                         data: [
-                                            { 'id': '0', 'mc':'否' },
+                                            { 'id': '0', 'mc': '否' },
                                             { 'id': '1', 'mc': '是' }
                                         ]
                                     }),
@@ -545,17 +619,17 @@ Ext.onReady(function () {
                                     iconCls: 'search',
                                     text: '查询',
                                     handler: function () {
-                                                
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    iconCls: 'add',
-                                    text: '批量设置',
-                                    handler: function () {
-                                        EditFenLiu(1);
+                                        GetYunDanList(1);
                                     }
                                 }
+                                //{
+                                //    xtype: 'button',
+                                //    iconCls: 'add',
+                                //    text: '批量设置',
+                                //    handler: function () {
+                                //        //EditFenLiu(1);
+                                //    }
+                                //}
                             ]
                         },
                         {
@@ -574,5 +648,11 @@ Ext.onReady(function () {
     new YhView();
 
     GetYunDanList(1);
-})
+
+    GetOffice();
+
+    GetCompany();
+
+    GetDriver();
+});
 //************************************主界面*****************************************
