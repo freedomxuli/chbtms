@@ -45,7 +45,7 @@ public class BscMag
                     where += " and " + dbc.C_Like("officeCode", keyword.Trim(), LikeStyle.LeftAndRightLike)
                           + " and " + dbc.C_Like("officeName", keyword.Trim(), LikeStyle.LeftAndRightLike);
                 }
-                string str = "select * from jichu_office where status=0 " + where + " and companyId='"+SystemUser.CurrentUser.CompanyID+"' order by addtime desc";
+                string str = "select * from jichu_office where status=0 " + where + " and companyId='" + SystemUser.CurrentUser.CompanyID + "' order by addtime desc";
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -134,7 +134,7 @@ public class BscMag
                     DataTable dt = dbc.GetEmptyDataTable("jichu_office");
                     DataRow dr = dt.NewRow();
                     dr["officeId"] = new Guid(officeid);
-                    dr["officeCode"]=officeCode;
+                    dr["officeCode"] = officeCode;
                     dr["officeName"] = officeName;
                     dr["officeGroup"] = Convert.ToInt32(officeGroup);
                     dr["officeTel"] = jsr["officeTel"];
@@ -149,11 +149,11 @@ public class BscMag
                         dr["officeHead"] = officeHead;
                     }
                     dr["officeMemo"] = jsr["officeMemo"];
-                    dr["status"]=0;
+                    dr["status"] = 0;
                     dr["addtime"] = DateTime.Now;
                     dr["adduser"] = userid;
                     dr["updatetime"] = DateTime.Now;
-                    dr["updateuser"]= userid;
+                    dr["updateuser"] = userid;
                     dr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
@@ -219,6 +219,12 @@ public class BscMag
                 dr["updateuser"] = SystemUser.CurrentUser.UserID;
                 dt.Rows.Add(dr);
                 dbc.UpdateTable(dt, dtt);
+
+                //办事处对应的路线也有所变化
+                string sql = @"update jichu_xianlu set status=1 
+                                where companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " fromOfficeId=" + dbc.ToSqlValue(officeid) + " or toOfficeId=" + dbc.ToSqlValue(officeid);
+                dbc.ExecuteNonQuery(sql);
+
                 dbc.CommitTransaction();
                 return true;
             }
@@ -238,9 +244,51 @@ public class BscMag
             try
             {
                 string str = @"select officeId as VALUE,officeName as TEXT from jichu_office 
-                                where status=0 and companyId='"+SystemUser.CurrentUser.CompanyID+"' order by officeCode,addtime desc";
+                                where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " order by officeCode,addtime desc";
                 DataTable dt = dbc.ExecuteDataTable(str);
                 return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+    }
+
+    [CSMethod("GetUserBsc")]
+    public object GetUserBsc(string userid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string companyID = SystemUser.CurrentUser.CompanyID;
+                string str = @"select 
+                                b.userId,
+                                a.officeId,
+                                a.officeName,
+                                case
+                                when b.officeId is null then 0
+                                else 1
+                                END as glzt 
+                                from jichu_office a
+                                left join tb_b_user_office b on a.officeId=b.officeId and b.userId=" + dbc.ToSqlValue(userid) + " and b.companyId=" + dbc.ToSqlValue(companyID) + @"
+                                where a.status=0 and a.companyId=" + dbc.ToSqlValue(companyID) + @" 
+                                order by a.officeCode,a.addtime desc";
+                DataTable dt = dbc.ExecuteDataTable(str);
+
+                str = @"select a.employId,a.employName,a.officeId,
+                case
+                when b.traderId is null then 0
+                else 1
+                END as glzt 
+                from dbo.jichu_employ a
+                left join tb_b_user_trader b on a.employId=b.traderId and b.userId=" + dbc.ToSqlValue(userid) + " and b.companyId=" + dbc.ToSqlValue(companyID) + @"
+ where a.status=0 and a.companyId=" + dbc.ToSqlValue(companyID) + @" 
+order by a.employCode,a.addtime desc";
+                DataTable ywyGlDt = dbc.ExecuteDataTable(str);
+                return new { officeGlDt = dt, ywyGlDt = ywyGlDt };
             }
             catch (Exception ex)
             {

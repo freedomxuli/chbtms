@@ -395,7 +395,7 @@ public class UserMag
     }
 
     [CSMethod("SaveUser")]
-    public bool SaveUser(JSReader jsr)
+    public bool SaveUser(JSReader jsr, JSReader officejsr, JSReader empojsr)
     {
         if (jsr["UserName"].IsNull || jsr["UserName"].IsEmpty)
         {
@@ -417,6 +417,7 @@ public class UserMag
             dbc.BeginTransaction();
             try
             {
+                var YHID = "";
                 if (jsr["UserID"].ToString() == "")
                 {
                     DataTable dt_user = dbc.ExecuteDataTable("select * from tb_b_user where UserName='" + jsr["UserName"].ToString() + "'");
@@ -425,7 +426,7 @@ public class UserMag
                         throw new Exception("该用户名已存在！");
                     }
                     //用户表
-                    var YHID = Guid.NewGuid().ToString();
+                    YHID = Guid.NewGuid().ToString();
                     var dt = dbc.GetEmptyDataTable("tb_b_user");
                     var dr = dt.NewRow();
                     dr["UserID"] = new Guid(YHID);
@@ -458,7 +459,7 @@ public class UserMag
                 }
                 else
                 {
-                    var YHID = jsr["UserID"].ToString();
+                    YHID = jsr["UserID"].ToString();
                     var oldname = dbc.ExecuteScalar("select UserName from tb_b_user where UserID='" + YHID + "'");
                     if (!jsr["UserName"].ToString().Equals(oldname.ToString()))
                     {
@@ -494,6 +495,35 @@ public class UserMag
                     rdr["companyId"] = companyId;
                     rdt.Rows.Add(rdr);
                     dbc.InsertTable(rdt);
+                }
+
+                //关联办事处(全删全查)
+                string sql = @"delete from dbo.tb_b_user_office where userId=" + dbc.ToSqlValue(YHID) + " and companyId=" + dbc.ToSqlValue(companyId);
+                dbc.ExecuteNonQuery(sql);
+                for (int i = 0; i < officejsr.ToArray().Length; i++)
+                {
+                    var dt = dbc.GetEmptyDataTable("tb_b_user_office");
+                    var dr = dt.NewRow();
+                    dr["userofficeId"] = Guid.NewGuid().ToString();
+                    dr["userId"] = YHID;
+                    dr["officeId"] = officejsr[i].ToString();
+                    dr["companyId"] = companyId;
+                    dt.Rows.Add(dr);
+                    dbc.InsertTable(dt);
+                }
+                //关联业务员(全删全查)
+                sql = @"delete from dbo.tb_b_user_trader where userId=" + dbc.ToSqlValue(YHID) + " and companyId=" + dbc.ToSqlValue(companyId);
+                dbc.ExecuteNonQuery(sql);
+                for (int i = 0; i < empojsr.ToArray().Length; i++)
+                {
+                    var dt = dbc.GetEmptyDataTable("tb_b_user_trader");
+                    var dr = dt.NewRow();
+                    dr["usertraderId"] = Guid.NewGuid().ToString();
+                    dr["userId"] = YHID;
+                    dr["traderId"] = empojsr[i].ToString();
+                    dr["companyId"] = companyId;
+                    dt.Rows.Add(dr);
+                    dbc.InsertTable(dt);
                 }
                 dbc.CommitTransaction();
                 return true;

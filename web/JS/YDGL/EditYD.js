@@ -24,15 +24,15 @@ var ywystore = Ext.create('Ext.data.Store', {
 });
 var HPStore = Ext.create('Ext.data.Store', {
     fields: [{ name: 'yundan_goods_id' },
-            { name: 'yundan_chaifen_id' },
-            { name: 'yundan_goodsName' },
-            { name: 'yundan_goodsPack' },
-            { name: 'yundan_goodsAmount' },
-            { name: 'yundan_goodsWeight' },
-            { name: 'yundan_goodsVolume' },
-            { name: 'status' },
-            { name: 'addtime' },
-            { name: 'adduser' }
+    { name: 'yundan_chaifen_id' },
+    { name: 'yundan_goodsName' },
+    { name: 'yundan_goodsPack' },
+    { name: 'yundan_goodsAmount' },
+    { name: 'yundan_goodsWeight' },
+    { name: 'yundan_goodsVolume' },
+    { name: 'status' },
+    { name: 'addtime' },
+    { name: 'adduser' }
     ],
     data: [
     ]
@@ -44,13 +44,13 @@ var dbfstore = createSFW4Store({
     total: 1,
     currentPage: 1,
     fields: [
-       { name: 'id' },
-       { name: 'people' },
-       { name: 'tel' },
-       { name: 'carNum' },
-       { name: 'expenseDate' },
-       { name: 'money' },
-       { name: 'memo' }
+        { name: 'id' },
+        { name: 'people' },
+        { name: 'tel' },
+        { name: 'carNum' },
+        { name: 'expenseDate' },
+        { name: 'money' },
+        { name: 'memo' }
     ],
     onPageChange: function (sto, nPage, sorters) {
         BindDBF(nPage);
@@ -63,13 +63,13 @@ var shfstore = createSFW4Store({
     total: 1,
     currentPage: 1,
     fields: [
-       { name: 'id' },
-       { name: 'people' },
-       { name: 'tel' },
-       { name: 'compName' },
-       { name: 'expenseDate' },
-       { name: 'money' },
-       { name: 'memo' }
+        { name: 'id' },
+        { name: 'people' },
+        { name: 'tel' },
+        { name: 'compName' },
+        { name: 'expenseDate' },
+        { name: 'money' },
+        { name: 'memo' }
     ],
     onPageChange: function (sto, nPage, sorters) {
         BindSHF(nPage);
@@ -82,13 +82,13 @@ var zzfstore = createSFW4Store({
     total: 1,
     currentPage: 1,
     fields: [
-       { name: 'id' },
-       { name: 'people' },
-       { name: 'tel' },
-       { name: 'compName' },
-       { name: 'expenseDate' },
-       { name: 'money' },
-       { name: 'memo' }
+        { name: 'id' },
+        { name: 'people' },
+        { name: 'tel' },
+        { name: 'compName' },
+        { name: 'expenseDate' },
+        { name: 'money' },
+        { name: 'memo' }
     ],
     onPageChange: function (sto, nPage, sorters) {
         BindZZF(nPage);
@@ -356,38 +356,38 @@ Ext.define('addHPWin', {
                         },
                         anchor: '100%',
                         items: [
-                               {
-                                   xtype: 'textfield',
-                                   fieldLabel: '重量',
-                                   id: 'yundan_goodsWeight',
-                                   name: 'yundan_goodsWeight',
-                                   columnWidth: 0.99,
-                                   labelWidth: 70,
-                                   anchor: '100%'
-                               },
-                                { xtype: "displayfield", value: "吨", columnWidth: 0.01 },
+                            {
+                                xtype: 'textfield',
+                                fieldLabel: '重量',
+                                id: 'yundan_goodsWeight',
+                                name: 'yundan_goodsWeight',
+                                columnWidth: 0.99,
+                                labelWidth: 70,
+                                anchor: '100%'
+                            },
+                            { xtype: "displayfield", value: "吨", columnWidth: 0.01 },
                         ]
                     },
-                     {
-                         xtype: 'container',
-                         layout: {
-                             type: 'column'
-                         },
-                         margin: '10 0 0 0',
-                         anchor: '100%',
-                         items: [
-                                {
-                                    xtype: 'textfield',
-                                    fieldLabel: '体积',
-                                    id: 'yundan_goodsVolume',
-                                    name: 'yundan_goodsVolume',
-                                    columnWidth: 0.99,
-                                    labelWidth: 70,
-                                    anchor: '100%'
-                                },
-                                 { xtype: "displayfield", value: "方", columnWidth: 0.01 },
-                         ]
-                     }
+                    {
+                        xtype: 'container',
+                        layout: {
+                            type: 'column'
+                        },
+                        margin: '10 0 0 0',
+                        anchor: '100%',
+                        items: [
+                            {
+                                xtype: 'textfield',
+                                fieldLabel: '体积',
+                                id: 'yundan_goodsVolume',
+                                name: 'yundan_goodsVolume',
+                                columnWidth: 0.99,
+                                labelWidth: 70,
+                                anchor: '100%'
+                            },
+                            { xtype: "displayfield", value: "方", columnWidth: 0.01 },
+                        ]
+                    }
 
 
                 ],
@@ -530,36 +530,36 @@ Ext.define('addDBFWin', {
                         value: new Date()
                     },
 
-                     {
-                         xtype: 'container',
-                         layout: {
-                             type: 'column'
-                         },
-                         margin: '10 0 10 0',
-                         anchor: '100%',
-                         items: [
-                                {
-                                    xtype: 'numberfield',
-                                    fieldLabel: '费用',
-                                    allowBlank: false,
-                                    id: 'money',
-                                    name: 'money',
-                                    columnWidth: 0.99,
-                                    allowNegative: false,
-                                    minValue: 0,
-                                    labelWidth: 70,
-                                    anchor: '100%'
-                                },
-                                 { xtype: "displayfield", value: "元", columnWidth: 0.01 },
-                         ]
-                     },
-                     {
-                         xtype: 'textfield',
-                         fieldLabel: '备注',
-                         name: 'memo',
-                         labelWidth: 70,
-                         anchor: '100%'
-                     }
+                    {
+                        xtype: 'container',
+                        layout: {
+                            type: 'column'
+                        },
+                        margin: '10 0 10 0',
+                        anchor: '100%',
+                        items: [
+                            {
+                                xtype: 'numberfield',
+                                fieldLabel: '费用',
+                                allowBlank: false,
+                                id: 'money',
+                                name: 'money',
+                                columnWidth: 0.99,
+                                allowNegative: false,
+                                minValue: 0,
+                                labelWidth: 70,
+                                anchor: '100%'
+                            },
+                            { xtype: "displayfield", value: "元", columnWidth: 0.01 },
+                        ]
+                    },
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: '备注',
+                        name: 'memo',
+                        labelWidth: 70,
+                        anchor: '100%'
+                    }
                 ],
                 buttonAlign: 'center',
                 buttons: [
@@ -683,35 +683,35 @@ Ext.define('addZZFWin', {
                         value: new Date()
                     },
 
-                     {
-                         xtype: 'container',
-                         layout: {
-                             type: 'column'
-                         },
-                         margin: '10 0 10 0',
-                         anchor: '100%',
-                         items: [
-                                {
-                                    xtype: 'numberfield',
-                                    fieldLabel: '金额',
-                                    allowBlank: false,
-                                    name: 'money',
-                                    columnWidth: 0.99,
-                                    allowNegative: false,
-                                    minValue: 0,
-                                    labelWidth: 70,
-                                    anchor: '100%'
-                                },
-                                 { xtype: "displayfield", value: "元", columnWidth: 0.01 },
-                         ]
-                     },
-                     {
-                         xtype: 'textfield',
-                         fieldLabel: '备注',
-                         name: 'memo',
-                         labelWidth: 70,
-                         anchor: '100%'
-                     }
+                    {
+                        xtype: 'container',
+                        layout: {
+                            type: 'column'
+                        },
+                        margin: '10 0 10 0',
+                        anchor: '100%',
+                        items: [
+                            {
+                                xtype: 'numberfield',
+                                fieldLabel: '金额',
+                                allowBlank: false,
+                                name: 'money',
+                                columnWidth: 0.99,
+                                allowNegative: false,
+                                minValue: 0,
+                                labelWidth: 70,
+                                anchor: '100%'
+                            },
+                            { xtype: "displayfield", value: "元", columnWidth: 0.01 },
+                        ]
+                    },
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: '备注',
+                        name: 'memo',
+                        labelWidth: 70,
+                        anchor: '100%'
+                    }
                 ],
                 buttonAlign: 'center',
                 buttons: [
@@ -835,35 +835,35 @@ Ext.define('addSHFWin', {
                         value: new Date()
                     },
 
-                     {
-                         xtype: 'container',
-                         layout: {
-                             type: 'column'
-                         },
-                         margin: '10 0 10 0',
-                         anchor: '100%',
-                         items: [
-                                {
-                                    xtype: 'numberfield',
-                                    fieldLabel: '金额',
-                                    allowBlank: false,
-                                    name: 'money',
-                                    columnWidth: 0.99,
-                                    allowNegative: false,
-                                    minValue: 0,
-                                    labelWidth: 70,
-                                    anchor: '100%'
-                                },
-                                 { xtype: "displayfield", value: "元", columnWidth: 0.01 },
-                         ]
-                     },
-                     {
-                         xtype: 'textfield',
-                         fieldLabel: '备注',
-                         name: 'memo',
-                         labelWidth: 70,
-                         anchor: '100%'
-                     }
+                    {
+                        xtype: 'container',
+                        layout: {
+                            type: 'column'
+                        },
+                        margin: '10 0 10 0',
+                        anchor: '100%',
+                        items: [
+                            {
+                                xtype: 'numberfield',
+                                fieldLabel: '金额',
+                                allowBlank: false,
+                                name: 'money',
+                                columnWidth: 0.99,
+                                allowNegative: false,
+                                minValue: 0,
+                                labelWidth: 70,
+                                anchor: '100%'
+                            },
+                            { xtype: "displayfield", value: "元", columnWidth: 0.01 },
+                        ]
+                    },
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: '备注',
+                        name: 'memo',
+                        labelWidth: 70,
+                        anchor: '100%'
+                    }
                 ],
                 buttonAlign: 'center',
                 buttons: [
@@ -920,117 +920,117 @@ Ext.define('DBFList', {
         var me = this;
         Ext.applyIf(me, {
             items: [
-                    {
-                        xtype: 'panel',
-                        layout: {
-                            type: 'fit'
-                        },
-                        autoScroll: true,
-                        dockedItems: [
-                        ],
-                        items: [
-                                    {
-                                        xtype: 'gridpanel',
-                                        id: 'DBFListpanel',
-                                        store: dbfstore,
-                                        columnLines: true,
-                                        columns: [
-                                            {
-                                                xtype: 'rownumberer',
-                                                //这里可以设置你的宽度
-                                                width: 35,
-                                                sortable: false,
-                                                menuDisabled: true,
-                                            },
-                                            {
-                                                dataIndex: 'people',
-                                                flex: 1,
-                                                text: '司机姓名',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            },
-                                            {
-                                                dataIndex: 'tel',
-                                                flex: 1,
-                                                text: '电话',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                dataIndex: 'carNum',
-                                                flex: 1,
-                                                text: '车牌号',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                xtype: 'datecolumn',
-                                                format: 'Y-m-d',
-                                                dataIndex: 'expenseDate',
-                                                flex: 1,
-                                                text: '提货时间',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                dataIndex: 'money',
-                                                flex: 1,
-                                                text: '短驳费(元)',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                dataIndex: 'memo',
-                                                flex: 1,
-                                                text: '备注',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            },
-                                            {
-                                                xtype: 'gridcolumn',
-                                                dataIndex: 'id',
-                                                sortable: false,
-                                                menuDisabled: true,
-                                                text: '操作',
-                                                width: 100,
-                                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                                    return "<a href='JavaScript:void(0)' onclick='xgdbf(\"" + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='deldbf(\"" + value + "\")'>删除</a>";
-                                                }
-                                            }
-                                        ],
-                                        dockedItems: [
+                {
+                    xtype: 'panel',
+                    layout: {
+                        type: 'fit'
+                    },
+                    autoScroll: true,
+                    dockedItems: [
+                    ],
+                    items: [
                         {
-                            xtype: 'toolbar',
-                            dock: 'top',
-                            items: [
+                            xtype: 'gridpanel',
+                            id: 'DBFListpanel',
+                            store: dbfstore,
+                            columnLines: true,
+                            columns: [
                                 {
-                                    xtype: 'buttongroup',
+                                    xtype: 'rownumberer',
+                                    //这里可以设置你的宽度
+                                    width: 35,
+                                    sortable: false,
+                                    menuDisabled: true,
+                                },
+                                {
+                                    dataIndex: 'people',
+                                    flex: 1,
+                                    text: '司机姓名',
+                                    sortable: false,
+                                    menuDisabled: true
+                                },
+                                {
+                                    dataIndex: 'tel',
+                                    flex: 1,
+                                    text: '电话',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    dataIndex: 'carNum',
+                                    flex: 1,
+                                    text: '车牌号',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    xtype: 'datecolumn',
+                                    format: 'Y-m-d',
+                                    dataIndex: 'expenseDate',
+                                    flex: 1,
+                                    text: '提货时间',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    dataIndex: 'money',
+                                    flex: 1,
+                                    text: '短驳费(元)',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    dataIndex: 'memo',
+                                    flex: 1,
+                                    text: '备注',
+                                    sortable: false,
+                                    menuDisabled: true
+                                },
+                                {
+                                    xtype: 'gridcolumn',
+                                    dataIndex: 'id',
+                                    sortable: false,
+                                    menuDisabled: true,
+                                    text: '操作',
+                                    width: 100,
+                                    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                        return "<a href='JavaScript:void(0)' onclick='xgdbf(\"" + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='deldbf(\"" + value + "\")'>删除</a>";
+                                    }
+                                }
+                            ],
+                            dockedItems: [
+                                {
+                                    xtype: 'toolbar',
+                                    dock: 'top',
                                     items: [
                                         {
-                                            xtype: 'button',
-                                            iconCls: 'add',
-                                            text: '新增',
-                                            handler: function () {
-                                                CS('CZCLZ.YDMag.GetDriver', function (retVal) {
-                                                    driverstore.loadData(retVal);
-                                                    var win = new addDBFWin();
-                                                    win.show();
-                                                }, CS.onError)
+                                            xtype: 'buttongroup',
+                                            items: [
+                                                {
+                                                    xtype: 'button',
+                                                    iconCls: 'add',
+                                                    text: '新增',
+                                                    handler: function () {
+                                                        CS('CZCLZ.YDMag.GetDriver', function (retVal) {
+                                                            driverstore.loadData(retVal);
+                                                            var win = new addDBFWin();
+                                                            win.show();
+                                                        }, CS.onError)
 
-                                            }
+                                                    }
+                                                }
+                                            ]
                                         }
                                     ]
+                                },
+                                {
+                                    xtype: 'pagingtoolbar',
+                                    displayInfo: true,
+                                    store: dbfstore,
+                                    dock: 'bottom'
                                 }
                             ]
+
                         },
-                        {
-                            xtype: 'pagingtoolbar',
-                            displayInfo: true,
-                            store: dbfstore,
-                            dock: 'bottom'
-                        }
-                                        ]
 
-                                    },
-
-                        ]
-                    }
+                    ]
+                }
 
             ]
         });
@@ -1055,220 +1055,220 @@ Ext.define('FLFList', {
         var zhuangchedanId = me.zhuangchedanId;
         Ext.applyIf(me, {
             items: [
-                    {
-                        xtype: 'tabpanel',
-                        layout: {
-                            type: 'fit'
-                        },
-                        autoScroll: true,
-                        dockedItems: [
-                        ],
-                        items: [
-                                    {
-                                        xtype: 'gridpanel',
-                                        id: 'ZZFListpanel',
-                                        title: '中转费',
-                                        store: zzfstore,
-                                        itemId: 'tab1',
-                                        columnLines: true,
-                                        columns: [
-                                            {
-                                                xtype: 'rownumberer',
-                                                //这里可以设置你的宽度
-                                                width: 35,
-                                                sortable: false,
-                                                menuDisabled: true,
-                                            },
-                                            {
-                                                dataIndex: 'compName',
-                                                flex: 1,
-                                                text: '中转公司',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            },
-                                            {
-                                                dataIndex: 'people',
-                                                flex: 1,
-                                                text: '联系人',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                dataIndex: 'tel',
-                                                flex: 1,
-                                                text: '电话',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                xtype: 'datecolumn',
-                                                format: 'Y-m-d',
-                                                dataIndex: 'expenseDate',
-                                                flex: 1,
-                                                text: '中转时间',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                dataIndex: 'money',
-                                                flex: 1,
-                                                text: '中转费(元)',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                dataIndex: 'memo',
-                                                flex: 1,
-                                                text: '备注',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            },
-                                            {
-                                                xtype: 'gridcolumn',
-                                                dataIndex: 'id',
-                                                sortable: false,
-                                                menuDisabled: true,
-                                                text: '操作',
-                                                width: 100,
-                                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                                    return "<a href='JavaScript:void(0)' onclick='xgzzf(\"" + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='deldbf(\"" + value + "\")'>删除</a>";
-                                                }
-                                            }
-                                        ],
-                                        dockedItems: [
+                {
+                    xtype: 'tabpanel',
+                    layout: {
+                        type: 'fit'
+                    },
+                    autoScroll: true,
+                    dockedItems: [
+                    ],
+                    items: [
                         {
-                            xtype: 'toolbar',
-                            dock: 'top',
-                            items: [
-                                {
-                                    xtype: 'buttongroup',
-                                    items: [
-                                        {
-                                            xtype: 'button',
-                                            iconCls: 'add',
-                                            text: '新增',
-                                            handler: function () {
-                                                CS('CZCLZ.YDMag.GetZhongZhuan', function (retVal) {
-                                                    zhongzhuanstore.loadData(retVal);
-                                                    console.log(zhongzhuanstore);
-                                                    var win = new addZZFWin({ zhuangchedanId: zhuangchedanId });
-                                                    win.show();
-                                                }, CS.onError)
-
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'pagingtoolbar',
-                            displayInfo: true,
+                            xtype: 'gridpanel',
+                            id: 'ZZFListpanel',
+                            title: '中转费',
                             store: zzfstore,
-                            dock: 'bottom'
-                        }
-                                        ]
-
-                                    }, {
-                                        xtype: 'gridpanel',
-                                        id: 'SHFListpanel',
-                                        store: shfstore,
-                                        title: '送货费',
-                                        itemId: 'tab2',
-                                        columnLines: true,
-                                        columns: [
-                                            {
-                                                xtype: 'rownumberer',
-                                                //这里可以设置你的宽度
-                                                width: 35,
-                                                sortable: false,
-                                                menuDisabled: true,
-                                            },
-                                            {
-                                                dataIndex: 'people',
-                                                flex: 1,
-                                                text: '司机姓名',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            },
-                                            {
-                                                dataIndex: 'tel',
-                                                flex: 1,
-                                                text: '电话',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                dataIndex: 'carNum',
-                                                flex: 1,
-                                                text: '车牌号',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                xtype: 'datecolumn',
-                                                format: 'Y-m-d',
-                                                dataIndex: 'expenseDate',
-                                                flex: 1,
-                                                text: '送货时间',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                dataIndex: 'money',
-                                                flex: 1,
-                                                text: '送货费(元)',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            }, {
-                                                dataIndex: 'memo',
-                                                flex: 1,
-                                                text: '备注',
-                                                sortable: false,
-                                                menuDisabled: true
-                                            },
-                                            {
-                                                xtype: 'gridcolumn',
-                                                dataIndex: 'id',
-                                                sortable: false,
-                                                menuDisabled: true,
-                                                text: '操作',
-                                                width: 100,
-                                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                                    return "<a href='JavaScript:void(0)' onclick='xgshf(\"" + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='deldbf(\"" + value + "\")'>删除</a>";
-                                                }
-                                            }
-                                        ],
-                                        dockedItems: [
-                        {
-                            xtype: 'toolbar',
-                            dock: 'top',
-                            items: [
+                            itemId: 'tab1',
+                            columnLines: true,
+                            columns: [
                                 {
-                                    xtype: 'buttongroup',
+                                    xtype: 'rownumberer',
+                                    //这里可以设置你的宽度
+                                    width: 35,
+                                    sortable: false,
+                                    menuDisabled: true,
+                                },
+                                {
+                                    dataIndex: 'compName',
+                                    flex: 1,
+                                    text: '中转公司',
+                                    sortable: false,
+                                    menuDisabled: true
+                                },
+                                {
+                                    dataIndex: 'people',
+                                    flex: 1,
+                                    text: '联系人',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    dataIndex: 'tel',
+                                    flex: 1,
+                                    text: '电话',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    xtype: 'datecolumn',
+                                    format: 'Y-m-d',
+                                    dataIndex: 'expenseDate',
+                                    flex: 1,
+                                    text: '中转时间',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    dataIndex: 'money',
+                                    flex: 1,
+                                    text: '中转费(元)',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    dataIndex: 'memo',
+                                    flex: 1,
+                                    text: '备注',
+                                    sortable: false,
+                                    menuDisabled: true
+                                },
+                                {
+                                    xtype: 'gridcolumn',
+                                    dataIndex: 'id',
+                                    sortable: false,
+                                    menuDisabled: true,
+                                    text: '操作',
+                                    width: 100,
+                                    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                        return "<a href='JavaScript:void(0)' onclick='xgzzf(\"" + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='deldbf(\"" + value + "\")'>删除</a>";
+                                    }
+                                }
+                            ],
+                            dockedItems: [
+                                {
+                                    xtype: 'toolbar',
+                                    dock: 'top',
                                     items: [
                                         {
-                                            xtype: 'button',
-                                            iconCls: 'add',
-                                            text: '新增',
-                                            handler: function () {
-                                                CS('CZCLZ.YDMag.GetDriver', function (retVal) {
-                                                    driverstore.loadData(retVal);
-                                                    var win = new addSHFWin({ zhuangchedanId: zhuangchedanId });
-                                                    win.show();
-                                                }, CS.onError)
+                                            xtype: 'buttongroup',
+                                            items: [
+                                                {
+                                                    xtype: 'button',
+                                                    iconCls: 'add',
+                                                    text: '新增',
+                                                    handler: function () {
+                                                        CS('CZCLZ.YDMag.GetZhongZhuan', function (retVal) {
+                                                            zhongzhuanstore.loadData(retVal);
+                                                            console.log(zhongzhuanstore);
+                                                            var win = new addZZFWin({ zhuangchedanId: zhuangchedanId });
+                                                            win.show();
+                                                        }, CS.onError)
 
-                                            }
+                                                    }
+                                                }
+                                            ]
                                         }
                                     ]
+                                },
+                                {
+                                    xtype: 'pagingtoolbar',
+                                    displayInfo: true,
+                                    store: zzfstore,
+                                    dock: 'bottom'
                                 }
                             ]
-                        },
-                        {
-                            xtype: 'pagingtoolbar',
-                            displayInfo: true,
+
+                        }, {
+                            xtype: 'gridpanel',
+                            id: 'SHFListpanel',
                             store: shfstore,
-                            dock: 'bottom'
-                        }
-                                        ]
-
+                            title: '送货费',
+                            itemId: 'tab2',
+                            columnLines: true,
+                            columns: [
+                                {
+                                    xtype: 'rownumberer',
+                                    //这里可以设置你的宽度
+                                    width: 35,
+                                    sortable: false,
+                                    menuDisabled: true,
+                                },
+                                {
+                                    dataIndex: 'people',
+                                    flex: 1,
+                                    text: '司机姓名',
+                                    sortable: false,
+                                    menuDisabled: true
+                                },
+                                {
+                                    dataIndex: 'tel',
+                                    flex: 1,
+                                    text: '电话',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    dataIndex: 'carNum',
+                                    flex: 1,
+                                    text: '车牌号',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    xtype: 'datecolumn',
+                                    format: 'Y-m-d',
+                                    dataIndex: 'expenseDate',
+                                    flex: 1,
+                                    text: '送货时间',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    dataIndex: 'money',
+                                    flex: 1,
+                                    text: '送货费(元)',
+                                    sortable: false,
+                                    menuDisabled: true
+                                }, {
+                                    dataIndex: 'memo',
+                                    flex: 1,
+                                    text: '备注',
+                                    sortable: false,
+                                    menuDisabled: true
+                                },
+                                {
+                                    xtype: 'gridcolumn',
+                                    dataIndex: 'id',
+                                    sortable: false,
+                                    menuDisabled: true,
+                                    text: '操作',
+                                    width: 100,
+                                    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                        return "<a href='JavaScript:void(0)' onclick='xgshf(\"" + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='deldbf(\"" + value + "\")'>删除</a>";
                                     }
+                                }
+                            ],
+                            dockedItems: [
+                                {
+                                    xtype: 'toolbar',
+                                    dock: 'top',
+                                    items: [
+                                        {
+                                            xtype: 'buttongroup',
+                                            items: [
+                                                {
+                                                    xtype: 'button',
+                                                    iconCls: 'add',
+                                                    text: '新增',
+                                                    handler: function () {
+                                                        CS('CZCLZ.YDMag.GetDriver', function (retVal) {
+                                                            driverstore.loadData(retVal);
+                                                            var win = new addSHFWin({ zhuangchedanId: zhuangchedanId });
+                                                            win.show();
+                                                        }, CS.onError)
 
-                        ]
-                    }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: 'pagingtoolbar',
+                                    displayInfo: true,
+                                    store: shfstore,
+                                    dock: 'bottom'
+                                }
+                            ]
+
+                        }
+
+                    ]
+                }
 
             ]
         });
@@ -1332,62 +1332,62 @@ Ext.define('HDWin', {
                             }
                         }
                     },
-                     {
-                         xtype: 'datefield',
-                         allowBlank: false,
-                         format: 'Y-m-d',
-                         fieldLabel: '办事处寄回单日期',
-                         editable: false,
-                         name: 'bschuidanDate',
-                         id: 'bschuidanDate',
-                         anchor: '100%',
-                         labelWidth: 70,
-                     },
-                     {
-                         xtype: 'datefield',
-                         allowBlank: false,
-                         format: 'Y-m-d',
-                         fieldLabel: '到总部日期',
-                         editable: false,
-                         name: 'huidanDate',
-                         id: 'huidanDate',
-                         anchor: '100%',
-                         labelWidth: 70,
-                     },
-                     {
-                         xtype: 'datefield',
-                         allowBlank: false,
-                         format: 'Y-m-d',
-                         fieldLabel: '给客户日期',
-                         editable: false,
-                         name: 'huidanBack',
-                         id: 'huidanBack',
-                         anchor: '100%',
-                         labelWidth: 70,
-                     },
-                     {
-                         xtype: 'container',
-                         layout: {
-                             type: 'column'
-                         },
-                         margin: '10 0 10 0',
-                         anchor: '100%',
-                         items: [
-                                {
-                                    xtype: 'textfield',
-                                    fieldLabel: '送货方手机',
-                                    allowBlank: false,
-                                    id: 'shsj',
-                                    name: 'shsj',
-                                    columnWidth: 0.85,
-                                    allowNegative: false,
-                                    minValue: 0,
-                                    labelWidth: 70,
-                                    anchor: '100%'
-                                },
-                                 { xtype: "displayfield", value: "发短信", columnWidth: 0.15 },
-                         ]
-                     }
+                    {
+                        xtype: 'datefield',
+                        allowBlank: false,
+                        format: 'Y-m-d',
+                        fieldLabel: '办事处寄回单日期',
+                        editable: false,
+                        name: 'bschuidanDate',
+                        id: 'bschuidanDate',
+                        anchor: '100%',
+                        labelWidth: 70,
+                    },
+                    {
+                        xtype: 'datefield',
+                        allowBlank: false,
+                        format: 'Y-m-d',
+                        fieldLabel: '到总部日期',
+                        editable: false,
+                        name: 'huidanDate',
+                        id: 'huidanDate',
+                        anchor: '100%',
+                        labelWidth: 70,
+                    },
+                    {
+                        xtype: 'datefield',
+                        allowBlank: false,
+                        format: 'Y-m-d',
+                        fieldLabel: '给客户日期',
+                        editable: false,
+                        name: 'huidanBack',
+                        id: 'huidanBack',
+                        anchor: '100%',
+                        labelWidth: 70,
+                    },
+                    {
+                        xtype: 'container',
+                        layout: {
+                            type: 'column'
+                        },
+                        margin: '10 0 10 0',
+                        anchor: '100%',
+                        items: [
+                            {
+                                xtype: 'textfield',
+                                fieldLabel: '送货方手机',
+                                allowBlank: false,
+                                id: 'shsj',
+                                name: 'shsj',
+                                columnWidth: 0.85,
+                                allowNegative: false,
+                                minValue: 0,
+                                labelWidth: 70,
+                                anchor: '100%'
+                            },
+                            { xtype: "displayfield", value: "发短信", columnWidth: 0.15 },
+                        ]
+                    }
                 ],
                 buttonAlign: 'center',
                 buttons: [
@@ -1458,19 +1458,19 @@ Ext.define('BQDYWin', {
                         margin: '10 0 10 0',
                         anchor: '100%',
                         items: [
-                               {
-                                   xtype: 'numberfield',
-                                   fieldLabel: '已打印的数量',
-                                   allowBlank: false,
-                                   id: 'ydysl',
-                                   name: 'ydysl',
-                                   columnWidth: 0.85,
-                                   allowNegative: false,
-                                   labelWidth: 110,
-                                   minValue: 0,
-                                   anchor: '100%'
-                               },
-                                { xtype: "displayfield", value: "个", columnWidth: 0.15 },
+                            {
+                                xtype: 'numberfield',
+                                fieldLabel: '已打印的数量',
+                                allowBlank: false,
+                                id: 'ydysl',
+                                name: 'ydysl',
+                                columnWidth: 0.85,
+                                allowNegative: false,
+                                labelWidth: 110,
+                                minValue: 0,
+                                anchor: '100%'
+                            },
+                            { xtype: "displayfield", value: "个", columnWidth: 0.15 },
                         ]
                     },
                     {
@@ -1481,19 +1481,19 @@ Ext.define('BQDYWin', {
                         margin: '10 0 10 0',
                         anchor: '100%',
                         items: [
-                               {
-                                   xtype: 'numberfield',
-                                   fieldLabel: '本次要打印的数量',
-                                   allowBlank: false,
-                                   id: 'bcydysl',
-                                   name: 'bcydysl',
-                                   columnWidth: 0.85,
-                                   allowNegative: false,
-                                   minValue: 0,
-                                   labelWidth: 110,
-                                   anchor: '100%'
-                               },
-                                { xtype: "displayfield", value: "个", columnWidth: 0.15 },
+                            {
+                                xtype: 'numberfield',
+                                fieldLabel: '本次要打印的数量',
+                                allowBlank: false,
+                                id: 'bcydysl',
+                                name: 'bcydysl',
+                                columnWidth: 0.85,
+                                allowNegative: false,
+                                minValue: 0,
+                                labelWidth: 110,
+                                anchor: '100%'
+                            },
+                            { xtype: "displayfield", value: "个", columnWidth: 0.15 },
                         ]
                     }
                 ],
@@ -1521,7 +1521,7 @@ Ext.define('BQDYWin', {
                                     html += '<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0"><tr><td  style="line-height:180%">电话：' + Ext.getCmp("shouhuoTel").getValue() + '</td></tr></table>';
                                     html += '</td></tr></table>';
 
-                                    for (j = 0; j < length ; j++) {
+                                    for (j = 0; j < length; j++) {
                                         LODOP1.NewPage();
 
                                         LODOP1.ADD_PRINT_HTM(0, 0, "100%", "100%", html);
@@ -1600,461 +1600,461 @@ Ext.onReady(function () {
                             align: 'stretch'
                         },
                         dockedItems: [
-                           {
-                               xtype: 'toolbar',
-                               dock: 'top',
-                               items: [
-                                   {
-                                       xtype: 'buttongroup',
-                                       title: '',
-                                       items: [
-                                           {
-                                               xtype: 'button',
-                                               iconCls: 'save',
-                                               text: '保存',
-                                               handler: function () {
+                            {
+                                xtype: 'toolbar',
+                                dock: 'top',
+                                items: [
+                                    {
+                                        xtype: 'buttongroup',
+                                        title: '',
+                                        items: [
+                                            {
+                                                xtype: 'button',
+                                                iconCls: 'save',
+                                                text: '保存',
+                                                handler: function () {
 
 
-                                                   var form = Ext.getCmp('addform');
-                                                   if (form.form.isValid()) {
+                                                    var form = Ext.getCmp('addform');
+                                                    if (form.form.isValid()) {
 
-                                                       var fahuoPeople = Ext.getCmp("fahuoPeople").getValue();
-                                                       var fahuoPeople_dispaly = Ext.getCmp("fahuoPeople").getRawValue();
-                                                       var fahuoTel = Ext.getCmp("fahuoTel").getValue();
-                                                       var faAddress = Ext.getCmp("faAddress").getValue();
-                                                       if (!fahuoPeople) {
-                                                           Ext.MessageBox.confirm("提示", "检测到输入的发货人为新客户，客户档案中会新增，确认吗?", function (obj) {
-                                                               if (obj == "yes") {
-                                                                   CS('CZCLZ.YDMag.CreateKH', function (retVal) {
-                                                                       if (retVal) {
-                                                                           Ext.getCmp("fahuoPeople").setValue(retVal);
-                                                                       }
-                                                                   }, CS.onError, fahuoPeople_dispaly, fahuoTel, faAddress, Ext.getCmp("officeId").getValue());
-                                                               }
-                                                               else {
-                                                                   return;
-                                                               }
-                                                           });
-                                                       }
-
-
-
-                                                       var songhuoType = Ext.getCmp("songhuoType").getValue();
-                                                       if (songhuoType === "") {
-                                                           Ext.Msg.alert('提示', "送货方式不能为空！");
-                                                           return;
-                                                       }
-
-                                                       var payType = Ext.getCmp("payType").getValue();
-                                                       if (payType === "") {
-                                                           Ext.Msg.alert('提示', "结算方式不能为空！");
-                                                           return;
-                                                       }
-
-                                                       var huidanType = Ext.getCmp("huidanType").getValue();
-                                                       if (huidanType === "") {
-                                                           Ext.Msg.alert('提示', "回单收条不能为空！");
-                                                           return;
-                                                       }
-
-                                                       var cntHuidan = Ext.getCmp("cntHuidan").getValue();
-                                                       if (cntHuidan === "" || cntHuidan < 1) {
-                                                           Ext.Msg.alert('提示', "回单数必须大于0！");
-                                                           return;
-                                                       }
-
-                                                       var moneyXianfu = Ext.getCmp("moneyXianfu").getValue();
-                                                       var moneyQianfu = Ext.getCmp("moneyQianfu").getValue();
-                                                       var moneyDaofu = Ext.getCmp("moneyDaofu").getValue();
-                                                       var moneyHuidanfu = Ext.getCmp("moneyHuidanfu").getValue();
-                                                       var moneyYunfei = Ext.getCmp("moneyYunfei").getValue();
-
-                                                       if (moneyYunfei != moneyXianfu + moneyQianfu + moneyDaofu + moneyHuidanfu) {
-                                                           Ext.Msg.alert('提示', "运费金额必须等于：现付+到付+欠付+回单付 !");
-                                                           return;
-                                                       }
-
-                                                       var hplist = [];
-                                                       if (HPStore.data.length <= 0) {
-                                                           Ext.Msg.alert('提示', "运单至少含有一件的货品!");
-                                                           return;
-                                                       } else {
-                                                           for (var i = 0; i < HPStore.data.items.length; i++) {
-                                                               hplist.push(HPStore.data.items[i].data);
-                                                           }
-                                                       }
-
-
-                                                       //取得表单中的内容
-                                                       var values = form.form.getValues(false);
-                                                       var me = this;
-
-                                                       CS('CZCLZ.YDMag.SaveYD', function (retVal) {
-                                                           if (retVal) {
-                                                               Ext.Msg.show({
-                                                                   title: '提示',
-                                                                   msg: '保存成功!',
-                                                                   buttons: Ext.MessageBox.OK,
-                                                                   icon: Ext.MessageBox.INFO,
-                                                                   fn: function () {
-                                                                       FrameStack.popFrame();
-
-                                                                   }
-                                                               });
-                                                           }
-
-                                                       }, CS.onError, ydid, values, hplist, fahuoPeople_dispaly);
-
-                                                   }
-                                               }
-                                           }
-                                       ]
-                                   }, {
-                                       xtype: 'buttongroup',
-                                       title: '',
-                                       items: [
-                                           {
-                                               xtype: "button",
-                                               text: "费用设置",
-                                               iconCls: "application",
-                                               arrowAlign: "right",
-                                               menu: [
-                                                   {
-                                                       text: "短驳费", handler: function () {
-                                                           if (ydid) {
-                                                               var win = new DBFList();
-                                                               win.show();
-                                                               BindDBF(1);
-                                                           } else {
-                                                               Ext.Msg.alert('提示', "未保存的运单禁止设置费用！");
-                                                               return;
-                                                           }
-                                                       }
-                                                   },
-                                                   {
-                                                       text: "分流费", handler: function () {
-                                                           if (ydid) {
-                                                               CS('CZCLZ.YDMag.PDZC', function (retVal) {
-                                                                   if (retVal) {
-                                                                       var win = new FLFList({ zhuangchedanId: retVal });
-                                                                       win.show();
-                                                                       BindSHF(1);
-                                                                       BindZZF(1);
-                                                                   }
-                                                                   else {
-                                                                       Ext.Msg.alert('提示', "该运单还存在未装车的单子！");
-                                                                       return;
-                                                                   }
-                                                               }, CS.onError, ydid, Ext.getCmp("yundanNum").getValue())
-                                                           } else {
-                                                               Ext.Msg.alert('提示', "未保存的运单禁止设置分流费用！");
-                                                               return;
-                                                           }
-                                                       }
-                                                   }
-                                               ]
-                                           }]
-                                   },
-                                   {
-                                       xtype: 'buttongroup',
-                                       title: '',
-                                       items: [
-                                   {
-                                       xtype: "button",
-                                       text: "打印",
-                                       iconCls: "printer",
-                                       arrowAlign: "right",
-                                       menu: [
-                                           {
-                                               text: "标签", handler: function () {
-                                                   if (ydid) {
-                                                       var win = new BQDYWin();
-                                                       win.show();
-                                                   } else {
-                                                       Ext.Msg.alert('提示', "请先保存运单！");
-                                                       return;
-                                                   }
-
-                                               }
-                                           },
-                                           {
-                                               text: "信封（预览）", handler: function () {
-                                                   if (ydid) {
-                                                       CS('CZCLZ.PrinterMag.GetPrintByKind', function (retVal) {
-                                                           var LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
-                                                           LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
-                                                           LODOP.SET_PRINT_PAGESIZE(0, 2500, 1200, "A4");                                                           LODOP.SET_PRINT_STYLE("FontSize", 18);
-                                                           LODOP.SET_PRINT_STYLE("Bold", 1);
-                                                           if (retVal.ztdt.length > 0) {
-                                                               if (retVal.printdt.length > 0) {
-                                                                   for (var i = 0; i < retVal.printdt.length; i++) {
-
-                                                                       if (Ext.getCmp("songhuoType").getValue() == 0) {
-                                                                           if (retVal.printdt[i]["fieldMC"] == "自提") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 20, 20, "自提");
-                                                                           }
-                                                                       } else {
-                                                                           if (retVal.printdt[i]["fieldMC"] == "送货") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 20, 20, "送货");
-                                                                           }
-                                                                       }
-
-                                                                       if (Ext.getCmp("huidanType").getValue() == 0) {
-                                                                           if (retVal.printdt[i]["fieldMC"] == "回单") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, "回单:" + Ext.getCmp("cntHuidan").getValue());
-                                                                           }
-                                                                       } else {
-                                                                           if (retVal.printdt[i]["fieldMC"] == "收条") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, "收条:" + Ext.getCmp("cntHuidan").getValue());
-                                                                           }
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "备注") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("memo").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "运单号") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("yundanNum").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "货物名称") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsName);
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "件数") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsAmount);
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "包装") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsPack);
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "重量") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsWeight + "T");
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "体积") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsVolume + "m³");
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "地址") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoAddress").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "联系人") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoPeople").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "电话") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoTel").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "到付") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("moneyDaofu").getValue());
-                                                                       }
-
-
-                                                                   }
-                                                               }
-                                                               var topBJ = 0;
-                                                               if (retVal.ztdt[0]["topBJ"]) {
-                                                                   topBJ = retVal.ztdt[0]["topBJ"];
-                                                               }
-                                                               var leftBJ = 0;
-                                                               if (retVal.ztdt[0]["leftBJ"]) {
-                                                                   leftBJ = retVal.ztdt[0]["leftBJ"];
-                                                               }
-                                                               LODOP.ADD_PRINT_HTM(topBJ, leftBJ, "100%", "100%");
-                                                           }
-                                                           LODOP.PREVIEW();
-                                                       }, CS.onError, 0);
-                                                   } else {
-                                                       Ext.Msg.alert('提示', "请先保存运单！");
-                                                       return;
-                                                   }
-                                               }
-                                           },
-                                           {
-                                               text: "运单（预览）", iconCls: "preview", handler: function () {
-                                                   if (ydid) {
-                                                       CS('CZCLZ.PrinterMag.GetPrintYD', function (retVal) {
-                                                           var LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
-                                                           LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
-                                                           LODOP.SET_PRINT_PAGESIZE(0, 3000, 3000, "A4");                                                           LODOP.SET_PRINT_STYLE("FontSize", 18);
-                                                           LODOP.SET_PRINT_STYLE("Bold", 1);
-                                                           if (retVal.ztdt.length > 0) {
-                                                               if (retVal.printdt.length > 0) {
-                                                                   for (var i = 0; i < retVal.printdt.length; i++) {
-
-                                                                       if (Ext.getCmp("songhuoType").getValue() == 0) {
-                                                                           if (retVal.printdt[i]["fieldMC"] == "自提") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 20, 20, "自提");
-                                                                           }
-                                                                       } else {
-                                                                           if (retVal.printdt[i]["fieldMC"] == "送货") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 20, 20, "送货");
-                                                                           }
-                                                                       }
-
-                                                                       if (Ext.getCmp("huidanType").getValue() == 0) {
-                                                                           if (retVal.printdt[i]["fieldMC"] == "回单数") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 200, 20, "回单:" + Ext.getCmp("cntHuidan").getValue());
-                                                                           }
-                                                                       } else {
-                                                                           if (retVal.printdt[i]["fieldMC"] == "收条数") {
-                                                                               LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"],retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 200, 20, "收条:" + Ext.getCmp("cntHuidan").getValue());
-                                                                           }
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "公司地址1（到达办事处）") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("officeId").getRawValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "公司地址2（起始办事处）") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("toOfficeId").getRawValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "起运地点") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("officeId").getRawValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "到达网点") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("toAddress").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "欠付") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("moneyQianfu").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "已付") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("moneyYunfei").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "备注") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("memo").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "运单编号") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("yundanNum").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "收货人（单位）") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoPeople").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "收货地址") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoAddress").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "收货电话") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoTel").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "托运人（单位）") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("fahuoPeople").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "托运地址") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("faAddress").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "托运电话") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("fahuoTel").getValue());
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "货物名称") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsName);
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "件数") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsAmount);
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "包装") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsPack);
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "重量") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsWeight + "T");
-                                                                       }
-                                                                       if (retVal.printdt[i]["fieldMC"] == "体积") {
-                                                                           LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsVolume + "m³");
-                                                                       }
+                                                        var fahuoPeople = Ext.getCmp("fahuoPeople").getValue();
+                                                        var fahuoPeople_dispaly = Ext.getCmp("fahuoPeople").getRawValue();
+                                                        var fahuoTel = Ext.getCmp("fahuoTel").getValue();
+                                                        var faAddress = Ext.getCmp("faAddress").getValue();
+                                                        if (!fahuoPeople) {
+                                                            Ext.MessageBox.confirm("提示", "检测到输入的发货人为新客户，客户档案中会新增，确认吗?", function (obj) {
+                                                                if (obj == "yes") {
+                                                                    CS('CZCLZ.YDMag.CreateKH', function (retVal) {
+                                                                        if (retVal) {
+                                                                            Ext.getCmp("fahuoPeople").setValue(retVal);
+                                                                        }
+                                                                    }, CS.onError, fahuoPeople_dispaly, fahuoTel, faAddress, Ext.getCmp("officeId").getValue());
+                                                                }
+                                                                else {
+                                                                    return;
+                                                                }
+                                                            });
+                                                        }
 
 
 
-                                                                   }
-                                                               }
-                                                               var topBJ = 0;
-                                                               if (retVal.ztdt[0]["topBJ"]) {
-                                                                   topBJ = retVal.ztdt[0]["topBJ"];
-                                                               }
-                                                               var leftBJ = 0;
-                                                               if (retVal.ztdt[0]["leftBJ"]) {
-                                                                   leftBJ = retVal.ztdt[0]["leftBJ"];
-                                                               }
-                                                               LODOP.ADD_PRINT_HTM(topBJ, leftBJ, "100%", "100%");
-                                                           }
-                                                           LODOP.PREVIEW();
-                                                       }, CS.onError);
-                                                   } else {
-                                                       Ext.Msg.alert('提示', "请先保存运单！");
-                                                       return;
-                                                   }
+                                                        var songhuoType = Ext.getCmp("songhuoType").getValue();
+                                                        if (songhuoType === "") {
+                                                            Ext.Msg.alert('提示', "送货方式不能为空！");
+                                                            return;
+                                                        }
 
-                                               }
-                                           }
-                                           
-                                       ]
-                                   }]
-                                   },
-                                   {
-                                       xtype: 'buttongroup',
-                                       title: '',
-                                       items: [
-                                           {
-                                               xtype: "button",
-                                               text: "更多",
-                                               iconCls: "application",
-                                               arrowAlign: "right",
-                                               menu: [
-                                                   {
-                                                       text: "运单拆分", handler: function () {
-                                                           if (ydid) {
-                                                               FrameStack.pushFrame({
-                                                                   url: "CFYD.html?ydid=" + ydid
-                                                               });
-                                                           } else {
-                                                               Ext.Msg.alert('提示', "未保存的运单禁止拆分！");
-                                                               return;
-                                                           }
+                                                        var payType = Ext.getCmp("payType").getValue();
+                                                        if (payType === "") {
+                                                            Ext.Msg.alert('提示', "结算方式不能为空！");
+                                                            return;
+                                                        }
 
-                                                       }
-                                                   },
-                                                   {
-                                                       text: "回单设置", handler: function () {
-                                                           if (ydid) {
+                                                        var huidanType = Ext.getCmp("huidanType").getValue();
+                                                        if (huidanType === "") {
+                                                            Ext.Msg.alert('提示', "回单收条不能为空！");
+                                                            return;
+                                                        }
 
-                                                               CS('CZCLZ.YDMag.GetHDByID', function (retVal) {
-                                                                   if (retVal) {
-                                                                       var win = new HDWin();
-                                                                       win.show();
-                                                                       Ext.getCmp("shsj").setValue(retVal[0]["fahuoTel"]);
-                                                                       if (retVal[0]["isSign"] == 1) {
+                                                        var cntHuidan = Ext.getCmp("cntHuidan").getValue();
+                                                        if (cntHuidan === "" || cntHuidan < 1) {
+                                                            Ext.Msg.alert('提示', "回单数必须大于0！");
+                                                            return;
+                                                        }
 
-                                                                           Ext.getCmp("isSign").setValue(1);
-                                                                           Ext.getCmp("bschuidanDate").enable();
-                                                                           Ext.getCmp("bschuidanDate").setValue(retVal[0]["bschuidanDate"]);
-                                                                           Ext.getCmp("huidanDate").enable();
-                                                                           Ext.getCmp("huidanDate").setValue(retVal[0]["huidanDate"]);
-                                                                           Ext.getCmp("huidanBack").enable();
-                                                                           Ext.getCmp("huidanBack").setValue(retVal[0]["huidanBack"]);
-                                                                       } else {
-                                                                           Ext.getCmp("isSign").setValue(0);
-                                                                           Ext.getCmp("bschuidanDate").disable();
-                                                                           Ext.getCmp("huidanDate").disable();
-                                                                           Ext.getCmp("huidanBack").disable();
-                                                                       }
-                                                                   }
-                                                               }, CS.onError, ydid);
+                                                        var moneyXianfu = Ext.getCmp("moneyXianfu").getValue();
+                                                        var moneyQianfu = Ext.getCmp("moneyQianfu").getValue();
+                                                        var moneyDaofu = Ext.getCmp("moneyDaofu").getValue();
+                                                        var moneyHuidanfu = Ext.getCmp("moneyHuidanfu").getValue();
+                                                        var moneyYunfei = Ext.getCmp("moneyYunfei").getValue();
 
-                                                           } else {
-                                                               Ext.Msg.alert('提示', "未保存的运单禁止设置！");
-                                                               return;
-                                                           }
-                                                       }
-                                                   },
-                                                   { text: "核销日志" }
-                                               ]
-                                           }]
-                                   },
-                                   {
-                                       xtype: 'buttongroup',
-                                       title: '',
-                                       items: [
-                                           {
-                                               xtype: 'button',
-                                               iconCls: 'close',
-                                               text: '返回',
-                                               handler: function () {
-                                                   FrameStack.popFrame();
-                                               }
-                                           }
-                                       ]
-                                   }
-                               ]
-                           }
+                                                        if (moneyYunfei != moneyXianfu + moneyQianfu + moneyDaofu + moneyHuidanfu) {
+                                                            Ext.Msg.alert('提示', "运费金额必须等于：现付+到付+欠付+回单付 !");
+                                                            return;
+                                                        }
+
+                                                        var hplist = [];
+                                                        if (HPStore.data.length <= 0) {
+                                                            Ext.Msg.alert('提示', "运单至少含有一件的货品!");
+                                                            return;
+                                                        } else {
+                                                            for (var i = 0; i < HPStore.data.items.length; i++) {
+                                                                hplist.push(HPStore.data.items[i].data);
+                                                            }
+                                                        }
+
+
+                                                        //取得表单中的内容
+                                                        var values = form.form.getValues(false);
+                                                        var me = this;
+
+                                                        CS('CZCLZ.YDMag.SaveYD', function (retVal) {
+                                                            if (retVal) {
+                                                                Ext.Msg.show({
+                                                                    title: '提示',
+                                                                    msg: '保存成功!',
+                                                                    buttons: Ext.MessageBox.OK,
+                                                                    icon: Ext.MessageBox.INFO,
+                                                                    fn: function () {
+                                                                        FrameStack.popFrame();
+
+                                                                    }
+                                                                });
+                                                            }
+
+                                                        }, CS.onError, ydid, values, hplist, fahuoPeople_dispaly);
+
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }, {
+                                        xtype: 'buttongroup',
+                                        title: '',
+                                        items: [
+                                            {
+                                                xtype: "button",
+                                                text: "费用设置",
+                                                iconCls: "application",
+                                                arrowAlign: "right",
+                                                menu: [
+                                                    {
+                                                        text: "短驳费", handler: function () {
+                                                            if (ydid) {
+                                                                var win = new DBFList();
+                                                                win.show();
+                                                                BindDBF(1);
+                                                            } else {
+                                                                Ext.Msg.alert('提示', "未保存的运单禁止设置费用！");
+                                                                return;
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        text: "分流费", handler: function () {
+                                                            if (ydid) {
+                                                                CS('CZCLZ.YDMag.PDZC', function (retVal) {
+                                                                    if (retVal) {
+                                                                        var win = new FLFList({ zhuangchedanId: retVal });
+                                                                        win.show();
+                                                                        BindSHF(1);
+                                                                        BindZZF(1);
+                                                                    }
+                                                                    else {
+                                                                        Ext.Msg.alert('提示', "该运单还存在未装车的单子！");
+                                                                        return;
+                                                                    }
+                                                                }, CS.onError, ydid, Ext.getCmp("yundanNum").getValue())
+                                                            } else {
+                                                                Ext.Msg.alert('提示', "未保存的运单禁止设置分流费用！");
+                                                                return;
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }]
+                                    },
+                                    {
+                                        xtype: 'buttongroup',
+                                        title: '',
+                                        items: [
+                                            {
+                                                xtype: "button",
+                                                text: "打印",
+                                                iconCls: "printer",
+                                                arrowAlign: "right",
+                                                menu: [
+                                                    {
+                                                        text: "标签", handler: function () {
+                                                            if (ydid) {
+                                                                var win = new BQDYWin();
+                                                                win.show();
+                                                            } else {
+                                                                Ext.Msg.alert('提示', "请先保存运单！");
+                                                                return;
+                                                            }
+
+                                                        }
+                                                    },
+                                                    {
+                                                        text: "信封（预览）", handler: function () {
+                                                            if (ydid) {
+                                                                CS('CZCLZ.PrinterMag.GetPrintByKind', function (retVal) {
+                                                                    var LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+                                                                    LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
+                                                                    LODOP.SET_PRINT_PAGESIZE(0, 2500, 1200, "A4");                                                                    LODOP.SET_PRINT_STYLE("FontSize", 18);
+                                                                    LODOP.SET_PRINT_STYLE("Bold", 1);
+                                                                    if (retVal.ztdt.length > 0) {
+                                                                        if (retVal.printdt.length > 0) {
+                                                                            for (var i = 0; i < retVal.printdt.length; i++) {
+
+                                                                                if (Ext.getCmp("songhuoType").getValue() == 0) {
+                                                                                    if (retVal.printdt[i]["fieldMC"] == "自提") {
+                                                                                        LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 20, 20, "自提");
+                                                                                    }
+                                                                                } else {
+                                                                                    if (retVal.printdt[i]["fieldMC"] == "送货") {
+                                                                                        LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 20, 20, "送货");
+                                                                                    }
+                                                                                }
+
+                                                                                if (Ext.getCmp("huidanType").getValue() == 0) {
+                                                                                    if (retVal.printdt[i]["fieldMC"] == "回单") {
+                                                                                        LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, "回单:" + Ext.getCmp("cntHuidan").getValue());
+                                                                                    }
+                                                                                } else {
+                                                                                    if (retVal.printdt[i]["fieldMC"] == "收条") {
+                                                                                        LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, "收条:" + Ext.getCmp("cntHuidan").getValue());
+                                                                                    }
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "备注") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("memo").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "运单号") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("yundanNum").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "货物名称") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsName);
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "件数") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsAmount);
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "包装") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsPack);
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "重量") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsWeight + "T");
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "体积") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsVolume + "m³");
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "地址") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoAddress").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "联系人") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoPeople").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "电话") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoTel").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "到付") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("moneyDaofu").getValue());
+                                                                                }
+
+
+                                                                            }
+                                                                        }
+                                                                        var topBJ = 0;
+                                                                        if (retVal.ztdt[0]["topBJ"]) {
+                                                                            topBJ = retVal.ztdt[0]["topBJ"];
+                                                                        }
+                                                                        var leftBJ = 0;
+                                                                        if (retVal.ztdt[0]["leftBJ"]) {
+                                                                            leftBJ = retVal.ztdt[0]["leftBJ"];
+                                                                        }
+                                                                        LODOP.ADD_PRINT_HTM(topBJ, leftBJ, "100%", "100%");
+                                                                    }
+                                                                    LODOP.PREVIEW();
+                                                                }, CS.onError, 0);
+                                                            } else {
+                                                                Ext.Msg.alert('提示', "请先保存运单！");
+                                                                return;
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        text: "运单（预览）", iconCls: "preview", handler: function () {
+                                                            if (ydid) {
+                                                                CS('CZCLZ.PrinterMag.GetPrintYD', function (retVal) {
+                                                                    var LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+                                                                    LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_表单一");
+                                                                    LODOP.SET_PRINT_PAGESIZE(0, 3000, 3000, "A4");                                                                    LODOP.SET_PRINT_STYLE("FontSize", 18);
+                                                                    LODOP.SET_PRINT_STYLE("Bold", 1);
+                                                                    if (retVal.ztdt.length > 0) {
+                                                                        if (retVal.printdt.length > 0) {
+                                                                            for (var i = 0; i < retVal.printdt.length; i++) {
+
+                                                                                if (Ext.getCmp("songhuoType").getValue() == 0) {
+                                                                                    if (retVal.printdt[i]["fieldMC"] == "自提") {
+                                                                                        LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 20, 20, "自提");
+                                                                                    }
+                                                                                } else {
+                                                                                    if (retVal.printdt[i]["fieldMC"] == "送货") {
+                                                                                        LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 20, 20, "送货");
+                                                                                    }
+                                                                                }
+
+                                                                                if (Ext.getCmp("huidanType").getValue() == 0) {
+                                                                                    if (retVal.printdt[i]["fieldMC"] == "回单数") {
+                                                                                        LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 200, 20, "回单:" + Ext.getCmp("cntHuidan").getValue());
+                                                                                    }
+                                                                                } else {
+                                                                                    if (retVal.printdt[i]["fieldMC"] == "收条数") {
+                                                                                        LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] == null ? 0 : retVal.printdt[i]["topBJ"], retVal.printdt[i]["leftBJ"] == null ? 0 : retVal.printdt[i]["leftBJ"], 200, 20, "收条:" + Ext.getCmp("cntHuidan").getValue());
+                                                                                    }
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "公司地址1（到达办事处）") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("officeId").getRawValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "公司地址2（起始办事处）") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("toOfficeId").getRawValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "起运地点") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("officeId").getRawValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "到达网点") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("toAddress").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "欠付") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("moneyQianfu").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "已付") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"], 200, 20, Ext.getCmp("moneyYunfei").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "备注") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("memo").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "运单编号") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("yundanNum").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "收货人（单位）") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoPeople").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "收货地址") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoAddress").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "收货电话") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("shouhuoTel").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "托运人（单位）") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("fahuoPeople").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "托运地址") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("faAddress").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "托运电话") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, Ext.getCmp("fahuoTel").getValue());
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "货物名称") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsName);
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "件数") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsAmount);
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "包装") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsPack);
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "重量") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsWeight + "T");
+                                                                                }
+                                                                                if (retVal.printdt[i]["fieldMC"] == "体积") {
+                                                                                    LODOP.ADD_PRINT_TEXT(retVal.printdt[i]["topBJ"] * 5, retVal.printdt[i]["leftBJ"] * 4, 200, 20, HPStore.data.items[0].data.yundan_goodsVolume + "m³");
+                                                                                }
+
+
+
+                                                                            }
+                                                                        }
+                                                                        var topBJ = 0;
+                                                                        if (retVal.ztdt[0]["topBJ"]) {
+                                                                            topBJ = retVal.ztdt[0]["topBJ"];
+                                                                        }
+                                                                        var leftBJ = 0;
+                                                                        if (retVal.ztdt[0]["leftBJ"]) {
+                                                                            leftBJ = retVal.ztdt[0]["leftBJ"];
+                                                                        }
+                                                                        LODOP.ADD_PRINT_HTM(topBJ, leftBJ, "100%", "100%");
+                                                                    }
+                                                                    LODOP.PREVIEW();
+                                                                }, CS.onError);
+                                                            } else {
+                                                                Ext.Msg.alert('提示', "请先保存运单！");
+                                                                return;
+                                                            }
+
+                                                        }
+                                                    }
+
+                                                ]
+                                            }]
+                                    },
+                                    {
+                                        xtype: 'buttongroup',
+                                        title: '',
+                                        items: [
+                                            {
+                                                xtype: "button",
+                                                text: "更多",
+                                                iconCls: "application",
+                                                arrowAlign: "right",
+                                                menu: [
+                                                    {
+                                                        text: "运单拆分", handler: function () {
+                                                            if (ydid) {
+                                                                FrameStack.pushFrame({
+                                                                    url: "CFYD.html?ydid=" + ydid
+                                                                });
+                                                            } else {
+                                                                Ext.Msg.alert('提示', "未保存的运单禁止拆分！");
+                                                                return;
+                                                            }
+
+                                                        }
+                                                    },
+                                                    {
+                                                        text: "回单设置", handler: function () {
+                                                            if (ydid) {
+
+                                                                CS('CZCLZ.YDMag.GetHDByID', function (retVal) {
+                                                                    if (retVal) {
+                                                                        var win = new HDWin();
+                                                                        win.show();
+                                                                        Ext.getCmp("shsj").setValue(retVal[0]["fahuoTel"]);
+                                                                        if (retVal[0]["isSign"] == 1) {
+
+                                                                            Ext.getCmp("isSign").setValue(1);
+                                                                            Ext.getCmp("bschuidanDate").enable();
+                                                                            Ext.getCmp("bschuidanDate").setValue(retVal[0]["bschuidanDate"]);
+                                                                            Ext.getCmp("huidanDate").enable();
+                                                                            Ext.getCmp("huidanDate").setValue(retVal[0]["huidanDate"]);
+                                                                            Ext.getCmp("huidanBack").enable();
+                                                                            Ext.getCmp("huidanBack").setValue(retVal[0]["huidanBack"]);
+                                                                        } else {
+                                                                            Ext.getCmp("isSign").setValue(0);
+                                                                            Ext.getCmp("bschuidanDate").disable();
+                                                                            Ext.getCmp("huidanDate").disable();
+                                                                            Ext.getCmp("huidanBack").disable();
+                                                                        }
+                                                                    }
+                                                                }, CS.onError, ydid);
+
+                                                            } else {
+                                                                Ext.Msg.alert('提示', "未保存的运单禁止设置！");
+                                                                return;
+                                                            }
+                                                        }
+                                                    },
+                                                    { text: "核销日志" }
+                                                ]
+                                            }]
+                                    },
+                                    {
+                                        xtype: 'buttongroup',
+                                        title: '',
+                                        items: [
+                                            {
+                                                xtype: 'button',
+                                                iconCls: 'close',
+                                                text: '返回',
+                                                handler: function () {
+                                                    FrameStack.popFrame();
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
                         ],
                         items: [
                             {
@@ -2070,745 +2070,745 @@ Ext.onReady(function () {
                                 region: 'center',
                                 items: [
 
-                                                 {
-                                                     xtype: 'container',
-                                                     columnWidth: 1,
-                                                     layout: {
-                                                         type: 'column'
-                                                     },
-                                                     items: [
-                                                {
-                                                    xtype: 'textfield',
-                                                    name: 'yundanNum',
-                                                    id: 'yundanNum',
-                                                    columnWidth: 0.33,
-                                                    margin: '5 10 5 10',
-                                                    fieldLabel: '运单号',
-                                                    labelWidth: 70,
-                                                    value: new Date().Format("yyyyMMddhhmmssS"),
-                                                    readOnly: true,
-                                                    fieldStyle: 'color:#999999; background-color: #E6E6E6; background-image: none;'
-                                                },
-                                                {
-                                                    xtype: 'combobox',
-                                                    id: 'officeId',
-                                                    name: 'officeId',
-                                                    allowBlank: false,
-                                                    displayField: 'officeName',
-                                                    valueField: 'officeId',
-                                                    queryMode: 'local',
-                                                    columnWidth: 0.33,
-                                                    margin: '5 10 5 10',
-                                                    editable: false,
-                                                    store: qszstore,
-                                                    fieldLabel: '起始站',
-                                                    labelWidth: 70,
-                                                    listeners: {
-                                                        'select': function () {
-                                                            CS('CZCLZ.YDMag.GetYWYByQSZ', function (retVal) {
-                                                                ywystore.loadData(retVal);
-                                                                Ext.getCmp("traderName").setValue(retVal[0]["employId"]);
-                                                            }, CS.onError, Ext.getCmp("officeId").value);
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        layout: {
+                                            type: 'column'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'textfield',
+                                                name: 'yundanNum',
+                                                id: 'yundanNum',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '运单号',
+                                                labelWidth: 70,
+                                                value: new Date().Format("yyyyMMddhhmmssS"),
+                                                readOnly: true,
+                                                fieldStyle: 'color:#999999; background-color: #E6E6E6; background-image: none;'
+                                            },
+                                            {
+                                                xtype: 'combobox',
+                                                id: 'officeId',
+                                                name: 'officeId',
+                                                allowBlank: false,
+                                                displayField: 'officeName',
+                                                valueField: 'officeId',
+                                                queryMode: 'local',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                editable: false,
+                                                store: qszstore,
+                                                fieldLabel: '起始站',
+                                                labelWidth: 70,
+                                                listeners: {
+                                                    'select': function () {
+                                                        CS('CZCLZ.YDMag.GetYWYByQSZ', function (retVal) {
+                                                            ywystore.loadData(retVal);
+                                                            Ext.getCmp("traderName").setValue(retVal[0]["employId"]);
+                                                        }, CS.onError, Ext.getCmp("officeId").value);
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                xtype: 'datefield',
+                                                allowBlank: false,
+                                                format: 'Y-m-d',
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '单据日期',
+                                                editable: false,
+                                                name: 'yundanDate',
+                                                id: 'yundanDate',
+                                                columnWidth: 0.33,
+                                                labelWidth: 70,
+                                                value: new Date()
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        layout: {
+                                            type: 'column'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'textfield',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '手工编号',
+                                                name: 'realNum',
+                                                id: 'realNum',
+                                                labelWidth: 70
+                                            },
+                                            {
+                                                xtype: 'combobox',
+                                                allowBlank: false,
+                                                displayField: 'officeName',
+                                                valueField: 'officeId',
+                                                queryMode: 'local',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                editable: false,
+                                                fieldLabel: '收货网点',
+                                                name: 'toOfficeId',
+                                                id: 'toOfficeId',
+                                                labelWidth: 70,
+                                                store: zdzstore
+                                            },
+                                            {
+                                                xtype: 'textfield',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '分货网点',
+                                                name: 'fenhuoSite',
+                                                id: 'fenhuoSite',
+                                                labelWidth: 70
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        layout: {
+                                            type: 'column'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'textfield',
+                                                allowBlank: false,
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '目的地',
+                                                name: 'toAddress',
+                                                id: 'toAddress',
+                                                labelWidth: 70
+                                            },
+                                            {
+                                                xtype: 'textfield',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '制单人',
+                                                name: 'zhidanRen',
+                                                id: 'zhidanRen',
+                                                labelWidth: 70,
+                                                readOnly: true,
+                                                fieldStyle: 'color:#999999;background-color: #E6E6E6; background-image: none;'
+                                            },
+                                            {
+                                                xtype: 'combobox',
+                                                allowBlank: false,
+                                                displayField: 'employName',
+                                                valueField: 'employId',
+                                                queryMode: 'local',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                editable: false,
+                                                fieldLabel: '业务员',
+                                                name: 'traderName',
+                                                id: 'traderName',
+                                                labelWidth: 70,
+                                                store: ywystore
+                                            },
+                                        ]
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        layout: {
+                                            type: 'column'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'combobox',
+                                                allowBlank: false,
+                                                displayField: 'people',
+                                                valueField: 'clientId',
+                                                queryMode: 'local',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '发货人',
+                                                name: 'fahuoPeople',
+                                                id: 'fahuoPeople',
+                                                labelWidth: 70,
+                                                store: khstore,
+                                                listeners: {
+                                                    'select': function (o) {
+                                                        Ext.getCmp("fahuoTel").setValue(o.valueModels[0].data.tel);
+                                                        Ext.getCmp("faAddress").setValue(o.valueModels[0].data.address);
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                xtype: 'textfield',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '手机电话',
+                                                name: 'fahuoTel',
+                                                id: 'fahuoTel',
+                                                labelWidth: 70
+                                            },
+                                            {
+                                                xtype: 'textfield',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '地址',
+                                                name: 'faAddress',
+                                                id: 'faAddress',
+                                                labelWidth: 70
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        layout: {
+                                            type: 'column'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'textfield',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '收货人',
+                                                name: 'shouhuoPeople',
+                                                id: 'shouhuoPeople',
+                                                labelWidth: 70
+                                            },
+                                            {
+                                                xtype: 'textfield',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '手机电话',
+                                                allowBlank: false,
+                                                name: 'shouhuoTel',
+                                                id: 'shouhuoTel',
+                                                labelWidth: 70
+                                            },
+                                            {
+                                                xtype: 'textfield',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '收货地址',
+                                                name: 'shouhuoAddress',
+                                                id: 'shouhuoAddress',
+                                                labelWidth: 70
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        layout: {
+                                            type: 'column'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'combobox',
+                                                allowBlank: false,
+                                                displayField: 'TXT',
+                                                valueField: 'VAL',
+                                                queryMode: 'local',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                editable: false,
+                                                fieldLabel: '送货方式',
+                                                name: 'songhuoType',
+                                                id: 'songhuoType',
+                                                labelWidth: 70,
+                                                store: new Ext.data.ArrayStore({
+                                                    fields: ['TXT', 'VAL'],
+                                                    data: [
+                                                        ['送货方式', ""],
+                                                        ['自提', 0],
+                                                        ['送货', 1]
+                                                    ]
+                                                }),
+                                                value: ''
+                                            },
+                                            {
+                                                xtype: 'numberfield',
+                                                columnWidth: 0.32,
+                                                margin: '5 10 5 10',
+                                                fieldLabel: '运费',
+                                                name: 'moneyYunfei',
+                                                id: 'moneyYunfei',
+                                                labelWidth: 70
+                                            },
+                                            { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
+                                            {
+                                                xtype: 'combobox',
+                                                allowBlank: false,
+                                                displayField: 'TXT',
+                                                valueField: 'VAL',
+                                                queryMode: 'local',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                editable: false,
+                                                fieldLabel: '结算方式',
+                                                name: 'payType',
+                                                id: 'payType',
+                                                labelWidth: 70,
+                                                store: new Ext.data.ArrayStore({
+                                                    fields: ['TXT', 'VAL'],
+                                                    data: [
+                                                        ['结算方式', ""],
+                                                        ['现金', "11"],
+                                                        ['欠付', "1"],
+                                                        ['到付', "2"],
+                                                        ['回单付', "3"],
+                                                        ['现付+欠付', "4"],
+                                                        ['现付+到付', "5"],
+                                                        ['到付+欠付', "6"],
+                                                        ['现付+回单付', "7"],
+                                                        ['欠付+回单付', "8"],
+                                                        ['到付+回单付', "9"],
+                                                        ['现付+到付+欠付', "10"]
+                                                    ]
+                                                }),
+                                                value: "",
+                                                listeners: {
+                                                    'select': function (record) {
+                                                        if (Ext.getCmp("payType").getValue() != "") {
+                                                            var paytype = Ext.getCmp("payType").getValue();
+                                                            if (paytype == 11) {
+                                                                Ext.getCmp("moneyXianfu").enable();
+                                                                Ext.getCmp("moneyQianfu").disable();
+                                                                Ext.getCmp("moneyQianfu").setValue(0);
+                                                                Ext.getCmp("moneyDaofu").disable();
+                                                                Ext.getCmp("moneyDaofu").setValue(0);
+                                                                Ext.getCmp("moneyHuidanfu").disable();
+                                                                Ext.getCmp("moneyHuidanfu").setValue(0);
+                                                            } else if (paytype == 1) {
+                                                                Ext.getCmp("moneyXianfu").disable();
+                                                                Ext.getCmp("moneyXianfu").setValue(0);
+                                                                Ext.getCmp("moneyQianfu").enable();
+                                                                Ext.getCmp("moneyDaofu").disable();
+                                                                Ext.getCmp("moneyDaofu").setValue(0);
+                                                                Ext.getCmp("moneyHuidanfu").disable();
+                                                                Ext.getCmp("moneyHuidanfu").setValue(0);
+                                                            } else if (paytype == 2) {
+                                                                Ext.getCmp("moneyXianfu").disable();
+                                                                Ext.getCmp("moneyXianfu").setValue(0);
+                                                                Ext.getCmp("moneyQianfu").disable();
+                                                                Ext.getCmp("moneyQianfu").setValue(0);
+                                                                Ext.getCmp("moneyDaofu").enable();
+                                                                Ext.getCmp("moneyHuidanfu").disable();
+                                                                Ext.getCmp("moneyHuidanfu").setValue(0);
+                                                            } else if (paytype == 3) {
+                                                                Ext.getCmp("moneyXianfu").disable();
+                                                                Ext.getCmp("moneyXianfu").setValue(0);
+                                                                Ext.getCmp("moneyQianfu").disable();
+                                                                Ext.getCmp("moneyQianfu").setValue(0);
+                                                                Ext.getCmp("moneyDaofu").disable();
+                                                                Ext.getCmp("moneyDaofu").setValue(0);
+                                                                Ext.getCmp("moneyHuidanfu").enable();
+                                                            } else if (paytype == 4) {
+                                                                Ext.getCmp("moneyXianfu").enable();
+                                                                Ext.getCmp("moneyQianfu").enable();
+                                                                Ext.getCmp("moneyDaofu").disable();
+                                                                Ext.getCmp("moneyDaofu").setValue(0);
+                                                                Ext.getCmp("moneyHuidanfu").disable();
+                                                                Ext.getCmp("moneyHuidanfu").setValue(0);
+                                                            } else if (paytype == 5) {
+                                                                Ext.getCmp("moneyXianfu").enable();
+                                                                Ext.getCmp("moneyQianfu").disable();
+                                                                Ext.getCmp("moneyQianfu").setValue(0);
+                                                                Ext.getCmp("moneyDaofu").enable();
+                                                                Ext.getCmp("moneyHuidanfu").disable();
+                                                                Ext.getCmp("moneyHuidanfu").setValue(0);
+                                                            } else if (paytype == 6) {
+                                                                Ext.getCmp("moneyXianfu").disable();
+                                                                Ext.getCmp("moneyXianfu").setValue(0);
+                                                                Ext.getCmp("moneyQianfu").enable();
+                                                                Ext.getCmp("moneyDaofu").enable();
+                                                                Ext.getCmp("moneyHuidanfu").disable();
+                                                                Ext.getCmp("moneyHuidanfu").setValue(0);
+                                                            } else if (paytype == 7) {
+                                                                Ext.getCmp("moneyXianfu").enable();
+                                                                Ext.getCmp("moneyQianfu").disable();
+                                                                Ext.getCmp("moneyQianfu").setValue(0);
+                                                                Ext.getCmp("moneyDaofu").disable();
+                                                                Ext.getCmp("moneyDaofu").setValue(0);
+                                                                Ext.getCmp("moneyHuidanfu").enable();
+                                                            } else if (paytype == 8) {
+                                                                Ext.getCmp("moneyXianfu").disable();
+                                                                Ext.getCmp("moneyXianfu").setValue(0);
+                                                                Ext.getCmp("moneyQianfu").enable();
+                                                                Ext.getCmp("moneyDaofu").disable();
+                                                                Ext.getCmp("moneyDaofu").setValue(0);
+                                                                Ext.getCmp("moneyHuidanfu").enable();
+                                                            } else if (paytype == 9) {
+                                                                Ext.getCmp("moneyXianfu").disable();
+                                                                Ext.getCmp("moneyXianfu").setValue(0);
+                                                                Ext.getCmp("moneyQianfu").disable();
+                                                                Ext.getCmp("moneyQianfu").setValue(0);
+                                                                Ext.getCmp("moneyDaofu").enable();
+                                                                Ext.getCmp("moneyHuidanfu").enable();
+                                                            } else if (paytype == 10) {
+                                                                Ext.getCmp("moneyXianfu").enable();
+                                                                Ext.getCmp("moneyQianfu").enable();
+                                                                Ext.getCmp("moneyDaofu").enable();
+                                                                Ext.getCmp("moneyHuidanfu").disable();
+                                                                Ext.getCmp("moneyHuidanfu").setValue(0);
+                                                            } else {
+                                                                Ext.getCmp("moneyXianfu").disable();
+                                                                Ext.getCmp("moneyXianfu").setValue(0);
+                                                                Ext.getCmp("moneyQianfu").disable();
+                                                                Ext.getCmp("moneyQianfu").setValue(0);
+                                                                Ext.getCmp("moneyDaofu").disable();
+                                                                Ext.getCmp("moneyDaofu").setValue(0);
+                                                                Ext.getCmp("moneyHuidanfu").disable();
+                                                                Ext.getCmp("moneyHuidanfu").setValue(0);
+                                                                Ext.Msg.alert('提示', "结算方式不能为空！");
+                                                                return;
+                                                            }
+                                                        } else {
+                                                            Ext.getCmp("moneyXianfu").disable();
+                                                            Ext.getCmp("moneyXianfu").setValue(0);
+                                                            Ext.getCmp("moneyQianfu").disable();
+                                                            Ext.getCmp("moneyQianfu").setValue(0);
+                                                            Ext.getCmp("moneyDaofu").disable();
+                                                            Ext.getCmp("moneyDaofu").setValue(0);
+                                                            Ext.getCmp("moneyHuidanfu").disable();
+                                                            Ext.getCmp("moneyHuidanfu").setValue(0);
+                                                            Ext.Msg.alert('提示', "结算方式不能为空！");
+                                                            return;
                                                         }
                                                     }
-                                                },
-                                                 {
-                                                     xtype: 'datefield',
-                                                     allowBlank: false,
-                                                     format: 'Y-m-d',
-                                                     margin: '5 10 5 10',
-                                                     fieldLabel: '单据日期',
-                                                     editable: false,
-                                                     name: 'yundanDate',
-                                                     id: 'yundanDate',
-                                                     columnWidth: 0.33,
-                                                     labelWidth: 70,
-                                                     value: new Date()
-                                                 }
-                                                     ]
-                                                 },
-                                                 {
-                                                     xtype: 'container',
-                                                     columnWidth: 1,
-                                                     layout: {
-                                                         type: 'column'
-                                                     },
-                                                     items: [
-                                                {
-                                                    xtype: 'textfield',
-                                                    columnWidth: 0.33,
-                                                    margin: '5 10 5 10',
-                                                    fieldLabel: '手工编号',
-                                                    name: 'realNum',
-                                                    id: 'realNum',
-                                                    labelWidth: 70
-                                                },
-                                                {
-                                                    xtype: 'combobox',
-                                                    allowBlank: false,
-                                                    displayField: 'officeName',
-                                                    valueField: 'officeId',
-                                                    queryMode: 'local',
-                                                    columnWidth: 0.33,
-                                                    margin: '5 10 5 10',
-                                                    editable: false,
-                                                    fieldLabel: '收货网点',
-                                                    name: 'toOfficeId',
-                                                    id: 'toOfficeId',
-                                                    labelWidth: 70,
-                                                    store: zdzstore
-                                                },
-                                                  {
-                                                      xtype: 'textfield',
-                                                      columnWidth: 0.33,
-                                                      margin: '5 10 5 10',
-                                                      fieldLabel: '分货网点',
-                                                      name: 'fenhuoSite',
-                                                      id: 'fenhuoSite',
-                                                      labelWidth: 70
-                                                  }
-                                                     ]
-                                                 },
-                                                 {
-                                                     xtype: 'container',
-                                                     columnWidth: 1,
-                                                     layout: {
-                                                         type: 'column'
-                                                     },
-                                                     items: [
-                                                {
-                                                    xtype: 'textfield',
-                                                    allowBlank: false,
-                                                    columnWidth: 0.33,
-                                                    margin: '5 10 5 10',
-                                                    fieldLabel: '目的地',
-                                                    name: 'toAddress',
-                                                    id: 'toAddress',
-                                                    labelWidth: 70
-                                                },
-                                               {
-                                                   xtype: 'textfield',
-                                                   columnWidth: 0.33,
-                                                   margin: '5 10 5 10',
-                                                   fieldLabel: '制单人',
-                                                   name: 'zhidanRen',
-                                                   id: 'zhidanRen',
-                                                   labelWidth: 70,
-                                                   readOnly: true,
-                                                   fieldStyle: 'color:#999999;background-color: #E6E6E6; background-image: none;'
-                                               },
-                                                  {
-                                                      xtype: 'combobox',
-                                                      allowBlank: false,
-                                                      displayField: 'employName',
-                                                      valueField: 'employId',
-                                                      queryMode: 'local',
-                                                      columnWidth: 0.33,
-                                                      margin: '5 10 5 10',
-                                                      editable: false,
-                                                      fieldLabel: '业务员',
-                                                      name: 'traderName',
-                                                      id: 'traderName',
-                                                      labelWidth: 70,
-                                                      store: ywystore
-                                                  },
-                                                     ]
-                                                 },
-                                                 {
-                                                     xtype: 'container',
-                                                     columnWidth: 1,
-                                                     layout: {
-                                                         type: 'column'
-                                                     },
-                                                     items: [
-                                                {
-                                                    xtype: 'combobox',
-                                                    allowBlank: false,
-                                                    displayField: 'people',
-                                                    valueField: 'clientId',
-                                                    queryMode: 'local',
-                                                    columnWidth: 0.33,
-                                                    margin: '5 10 5 10',
-                                                    fieldLabel: '发货人',
-                                                    name: 'fahuoPeople',
-                                                    id: 'fahuoPeople',
-                                                    labelWidth: 70,
-                                                    store: khstore,
-                                                    listeners: {
-                                                        'select': function (o) {
-                                                            Ext.getCmp("fahuoTel").setValue(o.valueModels[0].data.tel);
-                                                            Ext.getCmp("faAddress").setValue(o.valueModels[0].data.address);
-                                                        }
-                                                    }
-                                                },
-                                               {
-                                                   xtype: 'textfield',
-                                                   columnWidth: 0.33,
-                                                   margin: '5 10 5 10',
-                                                   fieldLabel: '手机电话',
-                                                   name: 'fahuoTel',
-                                                   id: 'fahuoTel',
-                                                   labelWidth: 70
-                                               },
-                                                  {
-                                                      xtype: 'textfield',
-                                                      columnWidth: 0.33,
-                                                      margin: '5 10 5 10',
-                                                      fieldLabel: '地址',
-                                                      name: 'faAddress',
-                                                      id: 'faAddress',
-                                                      labelWidth: 70
-                                                  }
-                                                     ]
-                                                 },
-                                                 {
-                                                     xtype: 'container',
-                                                     columnWidth: 1,
-                                                     layout: {
-                                                         type: 'column'
-                                                     },
-                                                     items: [
-                                                {
-                                                    xtype: 'textfield',
-                                                    columnWidth: 0.33,
-                                                    margin: '5 10 5 10',
-                                                    fieldLabel: '收货人',
-                                                    name: 'shouhuoPeople',
-                                                    id: 'shouhuoPeople',
-                                                    labelWidth: 70
-                                                },
-                                               {
-                                                   xtype: 'textfield',
-                                                   columnWidth: 0.33,
-                                                   margin: '5 10 5 10',
-                                                   fieldLabel: '手机电话',
-                                                   allowBlank: false,
-                                                   name: 'shouhuoTel',
-                                                   id: 'shouhuoTel',
-                                                   labelWidth: 70
-                                               },
-                                                  {
-                                                      xtype: 'textfield',
-                                                      columnWidth: 0.33,
-                                                      margin: '5 10 5 10',
-                                                      fieldLabel: '收货地址',
-                                                      name: 'shouhuoAddress',
-                                                      id: 'shouhuoAddress',
-                                                      labelWidth: 70
-                                                  }
-                                                     ]
-                                                 },
-                                                 {
-                                                     xtype: 'container',
-                                                     columnWidth: 1,
-                                                     layout: {
-                                                         type: 'column'
-                                                     },
-                                                     items: [
-                                                {
-                                                    xtype: 'combobox',
-                                                    allowBlank: false,
-                                                    displayField: 'TXT',
-                                                    valueField: 'VAL',
-                                                    queryMode: 'local',
-                                                    columnWidth: 0.33,
-                                                    margin: '5 10 5 10',
-                                                    editable: false,
-                                                    fieldLabel: '送货方式',
-                                                    name: 'songhuoType',
-                                                    id: 'songhuoType',
-                                                    labelWidth: 70,
-                                                    store: new Ext.data.ArrayStore({
-                                                        fields: ['TXT', 'VAL'],
-                                                        data: [
-                                                            ['送货方式', ""],
-                                                            ['自提', 0],
-                                                            ['送货', 1]
-                                                        ]
-                                                    }),
-                                                    value: ''
-                                                },
-                                               {
-                                                   xtype: 'numberfield',
-                                                   columnWidth: 0.32,
-                                                   margin: '5 10 5 10',
-                                                   fieldLabel: '运费',
-                                                   name: 'moneyYunfei',
-                                                   id: 'moneyYunfei',
-                                                   labelWidth: 70
-                                               },
-                                               { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
-                                                  {
-                                                      xtype: 'combobox',
-                                                      allowBlank: false,
-                                                      displayField: 'TXT',
-                                                      valueField: 'VAL',
-                                                      queryMode: 'local',
-                                                      columnWidth: 0.33,
-                                                      margin: '5 10 5 10',
-                                                      editable: false,
-                                                      fieldLabel: '结算方式',
-                                                      name: 'payType',
-                                                      id: 'payType',
-                                                      labelWidth: 70,
-                                                      store: new Ext.data.ArrayStore({
-                                                          fields: ['TXT', 'VAL'],
-                                                          data: [
-                                                              ['结算方式', ""],
-                                                              ['现金', "11"],
-                                                              ['欠付', "1"],
-                                                              ['到付', "2"],
-                                                              ['回单付', "3"],
-                                                              ['现付+欠付', "4"],
-                                                              ['现付+到付', "5"],
-                                                              ['到付+欠付', "6"],
-                                                              ['现付+回单付', "7"],
-                                                              ['欠付+回单付', "8"],
-                                                              ['到付+回单付', "9"],
-                                                              ['现付+到付+欠付', "10"]
-                                                          ]
-                                                      }),
-                                                      value: "",
-                                                      listeners: {
-                                                          'select': function (record) {
-                                                              if (Ext.getCmp("payType").getValue() != "") {
-                                                                  var paytype = Ext.getCmp("payType").getValue();
-                                                                  if (paytype == 11) {
-                                                                      Ext.getCmp("moneyXianfu").enable();
-                                                                      Ext.getCmp("moneyQianfu").disable();
-                                                                      Ext.getCmp("moneyQianfu").setValue(0);
-                                                                      Ext.getCmp("moneyDaofu").disable();
-                                                                      Ext.getCmp("moneyDaofu").setValue(0);
-                                                                      Ext.getCmp("moneyHuidanfu").disable();
-                                                                      Ext.getCmp("moneyHuidanfu").setValue(0);
-                                                                  } else if (paytype == 1) {
-                                                                      Ext.getCmp("moneyXianfu").disable();
-                                                                      Ext.getCmp("moneyXianfu").setValue(0);
-                                                                      Ext.getCmp("moneyQianfu").enable();
-                                                                      Ext.getCmp("moneyDaofu").disable();
-                                                                      Ext.getCmp("moneyDaofu").setValue(0);
-                                                                      Ext.getCmp("moneyHuidanfu").disable();
-                                                                      Ext.getCmp("moneyHuidanfu").setValue(0);
-                                                                  } else if (paytype == 2) {
-                                                                      Ext.getCmp("moneyXianfu").disable();
-                                                                      Ext.getCmp("moneyXianfu").setValue(0);
-                                                                      Ext.getCmp("moneyQianfu").disable();
-                                                                      Ext.getCmp("moneyQianfu").setValue(0);
-                                                                      Ext.getCmp("moneyDaofu").enable();
-                                                                      Ext.getCmp("moneyHuidanfu").disable();
-                                                                      Ext.getCmp("moneyHuidanfu").setValue(0);
-                                                                  } else if (paytype == 3) {
-                                                                      Ext.getCmp("moneyXianfu").disable();
-                                                                      Ext.getCmp("moneyXianfu").setValue(0);
-                                                                      Ext.getCmp("moneyQianfu").disable();
-                                                                      Ext.getCmp("moneyQianfu").setValue(0);
-                                                                      Ext.getCmp("moneyDaofu").disable();
-                                                                      Ext.getCmp("moneyDaofu").setValue(0);
-                                                                      Ext.getCmp("moneyHuidanfu").enable();
-                                                                  } else if (paytype == 4) {
-                                                                      Ext.getCmp("moneyXianfu").enable();
-                                                                      Ext.getCmp("moneyQianfu").enable();
-                                                                      Ext.getCmp("moneyDaofu").disable();
-                                                                      Ext.getCmp("moneyDaofu").setValue(0);
-                                                                      Ext.getCmp("moneyHuidanfu").disable();
-                                                                      Ext.getCmp("moneyHuidanfu").setValue(0);
-                                                                  } else if (paytype == 5) {
-                                                                      Ext.getCmp("moneyXianfu").enable();
-                                                                      Ext.getCmp("moneyQianfu").disable();
-                                                                      Ext.getCmp("moneyQianfu").setValue(0);
-                                                                      Ext.getCmp("moneyDaofu").enable();
-                                                                      Ext.getCmp("moneyHuidanfu").disable();
-                                                                      Ext.getCmp("moneyHuidanfu").setValue(0);
-                                                                  } else if (paytype == 6) {
-                                                                      Ext.getCmp("moneyXianfu").disable();
-                                                                      Ext.getCmp("moneyXianfu").setValue(0);
-                                                                      Ext.getCmp("moneyQianfu").enable();
-                                                                      Ext.getCmp("moneyDaofu").enable();
-                                                                      Ext.getCmp("moneyHuidanfu").disable();
-                                                                      Ext.getCmp("moneyHuidanfu").setValue(0);
-                                                                  } else if (paytype == 7) {
-                                                                      Ext.getCmp("moneyXianfu").enable();
-                                                                      Ext.getCmp("moneyQianfu").disable();
-                                                                      Ext.getCmp("moneyQianfu").setValue(0);
-                                                                      Ext.getCmp("moneyDaofu").disable();
-                                                                      Ext.getCmp("moneyDaofu").setValue(0);
-                                                                      Ext.getCmp("moneyHuidanfu").enable();
-                                                                  } else if (paytype == 8) {
-                                                                      Ext.getCmp("moneyXianfu").disable();
-                                                                      Ext.getCmp("moneyXianfu").setValue(0);
-                                                                      Ext.getCmp("moneyQianfu").enable();
-                                                                      Ext.getCmp("moneyDaofu").disable();
-                                                                      Ext.getCmp("moneyDaofu").setValue(0);
-                                                                      Ext.getCmp("moneyHuidanfu").enable();
-                                                                  } else if (paytype == 9) {
-                                                                      Ext.getCmp("moneyXianfu").disable();
-                                                                      Ext.getCmp("moneyXianfu").setValue(0);
-                                                                      Ext.getCmp("moneyQianfu").disable();
-                                                                      Ext.getCmp("moneyQianfu").setValue(0);
-                                                                      Ext.getCmp("moneyDaofu").enable();
-                                                                      Ext.getCmp("moneyHuidanfu").enable();
-                                                                  } else if (paytype == 10) {
-                                                                      Ext.getCmp("moneyXianfu").enable();
-                                                                      Ext.getCmp("moneyQianfu").enable();
-                                                                      Ext.getCmp("moneyDaofu").enable();
-                                                                      Ext.getCmp("moneyHuidanfu").disable();
-                                                                      Ext.getCmp("moneyHuidanfu").setValue(0);
-                                                                  } else {
-                                                                      Ext.getCmp("moneyXianfu").disable();
-                                                                      Ext.getCmp("moneyXianfu").setValue(0);
-                                                                      Ext.getCmp("moneyQianfu").disable();
-                                                                      Ext.getCmp("moneyQianfu").setValue(0);
-                                                                      Ext.getCmp("moneyDaofu").disable();
-                                                                      Ext.getCmp("moneyDaofu").setValue(0);
-                                                                      Ext.getCmp("moneyHuidanfu").disable();
-                                                                      Ext.getCmp("moneyHuidanfu").setValue(0);
-                                                                      Ext.Msg.alert('提示', "结算方式不能为空！");
-                                                                      return;
-                                                                  }
-                                                              } else {
-                                                                  Ext.getCmp("moneyXianfu").disable();
-                                                                  Ext.getCmp("moneyXianfu").setValue(0);
-                                                                  Ext.getCmp("moneyQianfu").disable();
-                                                                  Ext.getCmp("moneyQianfu").setValue(0);
-                                                                  Ext.getCmp("moneyDaofu").disable();
-                                                                  Ext.getCmp("moneyDaofu").setValue(0);
-                                                                  Ext.getCmp("moneyHuidanfu").disable();
-                                                                  Ext.getCmp("moneyHuidanfu").setValue(0);
-                                                                  Ext.Msg.alert('提示', "结算方式不能为空！");
-                                                                  return;
-                                                              }
-                                                          }
-                                                      }
-                                                  }
-                                                     ]
-                                                 },
-                                                 {
-                                                     xtype: 'container',
-                                                     columnWidth: 1,
-                                                     layout: {
-                                                         type: 'column'
-                                                     },
-                                                     items: [
-                                                {
-                                                    xtype: 'numberfield',
-                                                    columnWidth: 0.32,
-                                                    margin: '5 2 5 10',
-                                                    fieldLabel: '现付',
-                                                    name: 'moneyXianfu',
-                                                    id: 'moneyXianfu',
-                                                    allowNegative: false,
-                                                    minValue: 0,
-                                                    labelWidth: 70,
-                                                    value: 0,
-                                                    allowblank: false,
-                                                    disabled: true
-
-                                                },
-                                                { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
-                                               {
-                                                   xtype: 'numberfield',
-                                                   columnWidth: 0.32,
-                                                   margin: '5 2 5 10',
-                                                   fieldLabel: '到付',
-                                                   name: 'moneyDaofu',
-                                                   id: 'moneyDaofu',
-                                                   allowNegative: false,
-                                                   minValue: 0,
-                                                   labelWidth: 70,
-                                                   value: 0,
-                                                   allowblank: false,
-                                                   disabled: true
-
-                                               },
-                                                { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
-                                                  {
-                                                      xtype: 'numberfield',
-                                                      columnWidth: 0.32,
-                                                      margin: '5 2 5 10',
-                                                      fieldLabel: '欠付',
-                                                      allowNegative: false,
-                                                      minValue: 0,
-                                                      name: 'moneyQianfu',
-                                                      id: 'moneyQianfu',
-                                                      labelWidth: 70,
-                                                      value: 0,
-                                                      allowblank: false,
-                                                      disabled: true
-
-                                                  },
-                                                { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, }
-                                                     ]
-                                                 },
-                                                 {
-                                                     xtype: 'container',
-                                                     columnWidth: 1,
-                                                     layout: {
-                                                         type: 'column'
-                                                     },
-                                                     items: [
-                                                {
-                                                    xtype: 'numberfield',
-                                                    columnWidth: 0.32,
-                                                    margin: '5 2 5 10',
-                                                    fieldLabel: '回单付',
-                                                    name: 'moneyHuidanfu',
-                                                    id: 'moneyHuidanfu',
-                                                    allowNegative: false,
-                                                    minValue: 0,
-                                                    labelWidth: 70,
-                                                    value: 0,
-                                                    allowblank: false,
-                                                    disabled: true
-
-                                                },
-                                                { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
-                                               {
-                                                   xtype: 'numberfield',
-                                                   columnWidth: 0.32,
-                                                   margin: '5 2 5 10',
-                                                   fieldLabel: '回扣金额',
-                                                   allowNegative: false,
-                                                   minValue: 0,
-                                                   name: 'moneyHuikouQianFan',
-                                                   id: 'moneyHuikouQianFan',
-                                                   labelWidth: 70
-
-                                               },
-                                               { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
-                                                {
-                                                    xtype: 'combobox',
-                                                    displayField: 'TXT',
-                                                    valueField: 'VAL',
-                                                    queryMode: 'local',
-                                                    columnWidth: 0.33,
-                                                    margin: '5 10 5 10',
-                                                    editable: false,
-                                                    fieldLabel: '回扣现付',
-                                                    name: 'moneyHuikouXianFan',
-                                                    id: 'moneyHuikouXianFan',
-                                                    labelWidth: 70,
-                                                    store: new Ext.data.ArrayStore({
-                                                        fields: ['TXT', 'VAL'],
-                                                        data: [
-                                                            ['回扣现付', ""],
-                                                            ['是', 0],
-                                                            ['否', 1]
-                                                        ]
-                                                    }),
-                                                    value: ""
                                                 }
-                                                     ]
-                                                 },
-                                                 {
-                                                     xtype: 'container',
-                                                     columnWidth: 1,
-                                                     layout: {
-                                                         type: 'column'
-                                                     },
-                                                     items: [
-                                                {
-                                                    xtype: 'numberfield',
-                                                    columnWidth: 0.32,
-                                                    margin: '5 2 5 10',
-                                                    fieldLabel: '代收货款',
-                                                    allowNegative: false,
-                                                    minValue: 0,
-                                                    name: 'moneyDaishou',
-                                                    id: 'moneyDaishou',
-                                                    labelWidth: 70
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        layout: {
+                                            type: 'column'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'numberfield',
+                                                columnWidth: 0.32,
+                                                margin: '5 2 5 10',
+                                                fieldLabel: '现付',
+                                                name: 'moneyXianfu',
+                                                id: 'moneyXianfu',
+                                                allowNegative: false,
+                                                minValue: 0,
+                                                labelWidth: 70,
+                                                value: 0,
+                                                allowblank: false,
+                                                disabled: true
 
-                                                },
-                                                { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
-                                               {
-                                                   xtype: 'numberfield',
-                                                   columnWidth: 0.32,
-                                                   margin: '5 2 5 10',
-                                                   fieldLabel: '代收手续费',
-                                                   allowNegative: false,
-                                                   minValue: 0,
-                                                   name: 'moneyDaishouShouxu',
-                                                   id: 'moneyDaishouShouxu',
-                                                   labelWidth: 70
+                                            },
+                                            { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
+                                            {
+                                                xtype: 'numberfield',
+                                                columnWidth: 0.32,
+                                                margin: '5 2 5 10',
+                                                fieldLabel: '到付',
+                                                name: 'moneyDaofu',
+                                                id: 'moneyDaofu',
+                                                allowNegative: false,
+                                                minValue: 0,
+                                                labelWidth: 70,
+                                                value: 0,
+                                                allowblank: false,
+                                                disabled: true
 
-                                               },
-                                                { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
-                                                {
-                                                    xtype: 'combobox',
-                                                    allowBlank: false,
-                                                    displayField: 'TXT',
-                                                    valueField: 'VAL',
-                                                    queryMode: 'local',
-                                                    columnWidth: 0.33,
-                                                    margin: '5 10 5 10',
-                                                    editable: false,
-                                                    fieldLabel: '回单收条',
-                                                    name: 'huidanType',
-                                                    id: 'huidanType',
-                                                    labelWidth: 70,
-                                                    store: new Ext.data.ArrayStore({
-                                                        fields: ['TXT', 'VAL'],
-                                                        data: [
-                                                            ['回单收条', ""],
-                                                            ['回单', 0],
-                                                            ['收条', 1]
-                                                        ]
-                                                    }),
-                                                    value: ""
-                                                }
-                                                     ]
-                                                 },
-                                                 {
-                                                     xtype: 'container',
-                                                     columnWidth: 1,
-                                                     layout: {
-                                                         type: 'column'
-                                                     },
-                                                     items: [
-                                                {
-                                                    xtype: 'numberfield',
-                                                    columnWidth: 0.32,
-                                                    margin: '5 2 5 10',
-                                                    fieldLabel: '回单数',
-                                                    allowDecimals: false,
-                                                    allowNegative: false,
-                                                    minValue: 1,
-                                                    name: 'cntHuidan',
-                                                    id: 'cntHuidan',
-                                                    labelWidth: 70,
-                                                    allowBlank: false,
-                                                },
-                                                { xtype: "displayfield", value: "张", margin: '5 10 5 0', columnWidth: 0.01, }
+                                            },
+                                            { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
+                                            {
+                                                xtype: 'numberfield',
+                                                columnWidth: 0.32,
+                                                margin: '5 2 5 10',
+                                                fieldLabel: '欠付',
+                                                allowNegative: false,
+                                                minValue: 0,
+                                                name: 'moneyQianfu',
+                                                id: 'moneyQianfu',
+                                                labelWidth: 70,
+                                                value: 0,
+                                                allowblank: false,
+                                                disabled: true
 
-                                                     ]
-                                                 },
-                                                 {
-                                                     xtype: 'container',
-                                                     columnWidth: 1,
-                                                     layout: {
-                                                         type: 'column'
-                                                     },
-                                                     items: [
-                                                {
-                                                    xtype: 'textarea',
-                                                    margin: '5 30 5 10',
-                                                    columnWidth: 1,
-                                                    fieldLabel: '备注',
-                                                    name: 'memo',
-                                                    id: 'memo',
-                                                    labelWidth: 70
-                                                }
+                                            },
+                                            { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, }
+                                        ]
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        layout: {
+                                            type: 'column'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'numberfield',
+                                                columnWidth: 0.32,
+                                                margin: '5 2 5 10',
+                                                fieldLabel: '回单付',
+                                                name: 'moneyHuidanfu',
+                                                id: 'moneyHuidanfu',
+                                                allowNegative: false,
+                                                minValue: 0,
+                                                labelWidth: 70,
+                                                value: 0,
+                                                allowblank: false,
+                                                disabled: true
 
-                                                     ]
-                                                 }
+                                            },
+                                            { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
+                                            {
+                                                xtype: 'numberfield',
+                                                columnWidth: 0.32,
+                                                margin: '5 2 5 10',
+                                                fieldLabel: '回扣金额',
+                                                allowNegative: false,
+                                                minValue: 0,
+                                                name: 'moneyHuikouQianFan',
+                                                id: 'moneyHuikouQianFan',
+                                                labelWidth: 70
+
+                                            },
+                                            { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
+                                            {
+                                                xtype: 'combobox',
+                                                displayField: 'TXT',
+                                                valueField: 'VAL',
+                                                queryMode: 'local',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                editable: false,
+                                                fieldLabel: '回扣现付',
+                                                name: 'moneyHuikouXianFan',
+                                                id: 'moneyHuikouXianFan',
+                                                labelWidth: 70,
+                                                store: new Ext.data.ArrayStore({
+                                                    fields: ['TXT', 'VAL'],
+                                                    data: [
+                                                        ['回扣现付', ""],
+                                                        ['是', 0],
+                                                        ['否', 1]
+                                                    ]
+                                                }),
+                                                value: ""
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        layout: {
+                                            type: 'column'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'numberfield',
+                                                columnWidth: 0.32,
+                                                margin: '5 2 5 10',
+                                                fieldLabel: '代收货款',
+                                                allowNegative: false,
+                                                minValue: 0,
+                                                name: 'moneyDaishou',
+                                                id: 'moneyDaishou',
+                                                labelWidth: 70
+
+                                            },
+                                            { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
+                                            {
+                                                xtype: 'numberfield',
+                                                columnWidth: 0.32,
+                                                margin: '5 2 5 10',
+                                                fieldLabel: '代收手续费',
+                                                allowNegative: false,
+                                                minValue: 0,
+                                                name: 'moneyDaishouShouxu',
+                                                id: 'moneyDaishouShouxu',
+                                                labelWidth: 70
+
+                                            },
+                                            { xtype: "displayfield", value: "元", margin: '5 10 5 0', columnWidth: 0.01, },
+                                            {
+                                                xtype: 'combobox',
+                                                allowBlank: false,
+                                                displayField: 'TXT',
+                                                valueField: 'VAL',
+                                                queryMode: 'local',
+                                                columnWidth: 0.33,
+                                                margin: '5 10 5 10',
+                                                editable: false,
+                                                fieldLabel: '回单收条',
+                                                name: 'huidanType',
+                                                id: 'huidanType',
+                                                labelWidth: 70,
+                                                store: new Ext.data.ArrayStore({
+                                                    fields: ['TXT', 'VAL'],
+                                                    data: [
+                                                        ['回单收条', ""],
+                                                        ['回单', 0],
+                                                        ['收条', 1]
+                                                    ]
+                                                }),
+                                                value: ""
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        layout: {
+                                            type: 'column'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'numberfield',
+                                                columnWidth: 0.32,
+                                                margin: '5 2 5 10',
+                                                fieldLabel: '回单数',
+                                                allowDecimals: false,
+                                                allowNegative: false,
+                                                minValue: 1,
+                                                name: 'cntHuidan',
+                                                id: 'cntHuidan',
+                                                labelWidth: 70,
+                                                allowBlank: false,
+                                            },
+                                            { xtype: "displayfield", value: "张", margin: '5 10 5 0', columnWidth: 0.01, }
+
+                                        ]
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        layout: {
+                                            type: 'column'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'textarea',
+                                                margin: '5 30 5 10',
+                                                columnWidth: 1,
+                                                fieldLabel: '备注',
+                                                name: 'memo',
+                                                id: 'memo',
+                                                labelWidth: 70
+                                            }
+
+                                        ]
+                                    }
                                 ]
 
                             },
 
 
 
-                     {
-                         xtype: 'panel',
-                         padding: '10 10 10 10',
-                         layout: {
-                             type: 'fit'
-                         },
-                         flex: 1,
-                         items: [
-                    {
-                        xtype: 'gridpanel',
-                        id: 'hpgrid',
-                        region: 'center',
-                        border: true,
-                        store: HPStore,
-                        columnLines: true,
-                        columns: [
                             {
-                                xtype: 'gridcolumn',
-                                dataIndex: 'yundan_goodsName',
-                                format: 'Y-m',
+                                xtype: 'panel',
+                                padding: '10 10 10 10',
+                                layout: {
+                                    type: 'fit'
+                                },
                                 flex: 1,
-                                text: "货品名称",
-                                menuDisabled: true,
-                                sortable: false
-                            },
-                            {
-                                xtype: 'gridcolumn',
-                                dataIndex: 'yundan_goodsPack',
-                                flex: 1,
-                                text: '包装',
-                                menuDisabled: true,
-                                sortable: false
-
-                            },
-                             {
-                                 xtype: 'gridcolumn',
-                                 dataIndex: 'yundan_goodsAmount',
-                                 flex: 1,
-                                 text: '件数',
-                                 menuDisabled: true,
-                                 sortable: false
-
-                             },
-                            {
-                                xtype: 'gridcolumn',
-                                dataIndex: 'yundan_goodsWeight',
-                                flex: 1,
-                                text: '重量',
-                                menuDisabled: true,
-                                sortable: false
-                            },
-                            {
-                                xtype: 'gridcolumn',
-                                dataIndex: 'yundan_goodsVolume',
-                                flex: 1,
-                                text: '体积',
-                                menuDisabled: true,
-                                sortable: false
-                            },
-                            {
-                                xtype: 'gridcolumn',
-                                dataIndex: 'yundan_goods_id',
-                                sortable: false,
-                                menuDisabled: true,
-                                text: '操作',
-                                width: 200,
-                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                    return "<a href='JavaScript:void(0)' onclick='xghp(\""
-                                        + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='delhp(\""
-                                        + value + "\")'>删除</a>";
-                                }
-                            }
-
-                        ],
-                        viewConfig: {
-
-                        },
-                        dockedItems: [
-                            {
-                                xtype: 'toolbar',
-                                dock: 'top',
                                 items: [
                                     {
-                                        xtype: 'buttongroup',
-                                        title: '',
-                                        items: [
+                                        xtype: 'gridpanel',
+                                        id: 'hpgrid',
+                                        region: 'center',
+                                        border: true,
+                                        store: HPStore,
+                                        columnLines: true,
+                                        columns: [
                                             {
-                                                xtype: 'button',
-                                                iconCls: 'add',
-                                                text: '新增',
-                                                handler: function () {
-                                                    var win = new addHPWin();
-                                                    win.show();
+                                                xtype: 'gridcolumn',
+                                                dataIndex: 'yundan_goodsName',
+                                                format: 'Y-m',
+                                                flex: 1,
+                                                text: "货品名称",
+                                                menuDisabled: true,
+                                                sortable: false
+                                            },
+                                            {
+                                                xtype: 'gridcolumn',
+                                                dataIndex: 'yundan_goodsPack',
+                                                flex: 1,
+                                                text: '包装',
+                                                menuDisabled: true,
+                                                sortable: false
+
+                                            },
+                                            {
+                                                xtype: 'gridcolumn',
+                                                dataIndex: 'yundan_goodsAmount',
+                                                flex: 1,
+                                                text: '件数',
+                                                menuDisabled: true,
+                                                sortable: false
+
+                                            },
+                                            {
+                                                xtype: 'gridcolumn',
+                                                dataIndex: 'yundan_goodsWeight',
+                                                flex: 1,
+                                                text: '重量',
+                                                menuDisabled: true,
+                                                sortable: false
+                                            },
+                                            {
+                                                xtype: 'gridcolumn',
+                                                dataIndex: 'yundan_goodsVolume',
+                                                flex: 1,
+                                                text: '体积',
+                                                menuDisabled: true,
+                                                sortable: false
+                                            },
+                                            {
+                                                xtype: 'gridcolumn',
+                                                dataIndex: 'yundan_goods_id',
+                                                sortable: false,
+                                                menuDisabled: true,
+                                                text: '操作',
+                                                width: 200,
+                                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                                    return "<a href='JavaScript:void(0)' onclick='xghp(\""
+                                                        + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='delhp(\""
+                                                        + value + "\")'>删除</a>";
                                                 }
+                                            }
+
+                                        ],
+                                        viewConfig: {
+
+                                        },
+                                        dockedItems: [
+                                            {
+                                                xtype: 'toolbar',
+                                                dock: 'top',
+                                                items: [
+                                                    {
+                                                        xtype: 'buttongroup',
+                                                        title: '',
+                                                        items: [
+                                                            {
+                                                                xtype: 'button',
+                                                                iconCls: 'add',
+                                                                text: '新增',
+                                                                handler: function () {
+                                                                    var win = new addHPWin();
+                                                                    win.show();
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
                                             }
                                         ]
                                     }
                                 ]
                             }
-                        ]
-                    }
-                         ]
-                     }
                         ]
                     }
                 ]

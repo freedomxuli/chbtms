@@ -9,6 +9,7 @@ using System.Text;
 using System.Data.SqlClient;
 using SmartFramework4v2.Web.Common.JSON;
 using SmartFramework4v2.Data;
+using System.Collections;
 
 /// <summary>
 ///YwyMag 的摘要说明
@@ -46,7 +47,7 @@ public class YwyMag
                           + " and " + dbc.C_Like("a.employName", keyword.Trim(), LikeStyle.LeftAndRightLike);
                 }
                 string str = @"select a.*,b.officeName from jichu_employ a left join jichu_office b on a.officeId=b.officeId
-                          where a.status=0 " + where + " and a.companyId='"+SystemUser.CurrentUser.CompanyID+"' order by addtime desc";
+                          where a.status=0 " + where + " and a.companyId='" + SystemUser.CurrentUser.CompanyID + "' order by addtime desc";
                 //开始取分页数据   
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -75,7 +76,7 @@ public class YwyMag
             {
                 string str = "select * from jichu_employ where employId=@employId";
                 SqlCommand cmd = new SqlCommand(str);
-                cmd.Parameters.Add("@employId", employId);
+                cmd.Parameters.Add(new SqlParameter("@employId", employId));
                 DataTable dt = dbc.ExecuteDataTable(cmd);
                 return dt;
             }
@@ -120,11 +121,11 @@ public class YwyMag
                     dr["employName"] = employName;
                     dr["tel"] = jsr["tel"];
                     dr["isFire"] = Convert.ToInt32(jsr["isFire"].ToString());
-                    dr["status"]=0;
+                    dr["status"] = 0;
                     dr["addtime"] = DateTime.Now;
                     dr["adduser"] = userid;
                     dr["updatetime"] = DateTime.Now;
-                    dr["updateuser"]= userid;
+                    dr["updateuser"] = userid;
                     dr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
@@ -191,5 +192,58 @@ public class YwyMag
         }
     }
 
-    
+    [CSMethod("GetEmployByOffice")]
+    public DataTable GetEmployByOffice(string userid, JSReader offidArr, int zt)
+    {
+        using (var dbc = new DBConnection())
+        {
+            try
+            {
+                string companyID = SystemUser.CurrentUser.CompanyID;
+                string whereSql = "";
+                string whereSql2 = "";
+                if (!string.IsNullOrEmpty(userid))
+                {
+                    whereSql += " and b.userId=" + dbc.ToSqlValue(userid);
+                }
+                if (offidArr.ToArray().Length > 0)
+                {
+                    List<string> ids = new List<string>();
+                    for (int i = 0; i < offidArr.ToArray().Length; i++)
+                    {
+                        ids.Add(offidArr.ToArray()[i]);
+                    }
+                    whereSql2 += " and a.officeId in('" + string.Join("','", ids) + "')";
+                }
+                else
+                {
+                    if (zt == 0)
+                    {
+                        //初始化显示全部
+                    }
+                    else
+                    {
+                        //无选择，删除全部加载
+                        whereSql2 += " and 1=2";
+                    }
+                }
+                string sql = @"select a.employId,a.employName,a.officeId,
+                case
+                when b.traderId is null then 0
+                else 1
+                END as glzt
+                from dbo.jichu_employ a
+                left
+                join tb_b_user_trader b on a.employId = b.traderId  and b.companyId = " + dbc.ToSqlValue(companyID) + whereSql + @"
+                 where a.status = 0 and a.companyId = " + dbc.ToSqlValue(companyID) + whereSql2 + @"
+                order by a.employCode,a.addtime desc";
+                DataTable dt_employ = dbc.ExecuteDataTable(sql);
+                return dt_employ;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
 }

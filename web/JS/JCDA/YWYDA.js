@@ -59,6 +59,7 @@ function xg(id) {
         if (retVal) {
             var win = new addWin();
             win.show(null, function () {
+                GetBsc();
                 var form = Ext.getCmp('addform');
                 form.form.setValues(retVal[0]);
             });
@@ -218,7 +219,7 @@ Ext.define('addWin', {
 //************************************弹出界面***************************************
 
 //************************************主界面*****************************************
-Ext.onReady(function() {
+Ext.onReady(function () {
     Ext.define('YwyView', {
         extend: 'Ext.container.Viewport',
 

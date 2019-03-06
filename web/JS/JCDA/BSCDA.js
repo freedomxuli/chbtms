@@ -7,21 +7,21 @@ var BscStore = createSFW4Store({
     total: 1,
     currentPage: 1,
     fields: [
-       { name: 'officeId' },
-       { name: 'officeCode' },
-       { name: 'officeName' },
-       { name: 'officeGroup' },
-       { name: 'officeTel' },
-       { name: 'officePeople' },
-       { name: 'officeAddress' },
-       { name: 'officeHead' },
-       { name: 'officeMemo' },
-       { name: 'status' },
-       { name: 'addtime' },
-       { name: 'adduser' },
-       { name: 'updatetime' },
-       { name: 'updateuser' },
-    ],          
+        { name: 'officeId' },
+        { name: 'officeCode' },
+        { name: 'officeName' },
+        { name: 'officeGroup' },
+        { name: 'officeTel' },
+        { name: 'officePeople' },
+        { name: 'officeAddress' },
+        { name: 'officeHead' },
+        { name: 'officeMemo' },
+        { name: 'status' },
+        { name: 'addtime' },
+        { name: 'adduser' },
+        { name: 'updatetime' },
+        { name: 'updateuser' },
+    ],
     //sorters: [{ property: 'b', direction: 'DESC'}],
     onPageChange: function (sto, nPage, sorters) {
         BindData(nPage);
@@ -53,18 +53,29 @@ function xg(id) {
 }
 
 function del(id) {
-    Ext.MessageBox.confirm("提示", "是否删除你所选?", function (obj) {
-        if (obj == "yes") {
-            CS('CZCLZ.BscMag.DeleteBsc', function (retVal) {
-                if (retVal) {
-                    BindData(1);
-                }
-            }, CS.onError, id);
-        }
-        else {
+    CS('CZCLZ.YDMag.DelBscByOfficeIsExistCheck', function (retVal) {
+        if (retVal.length > 0) {
+            Ext.Msg.show({
+                title: '提示',
+                msg: '该办事处存在运单，无法删除!',
+                buttons: Ext.MessageBox.OK,
+                icon: Ext.MessageBox.INFO
+            });
             return;
         }
-    });
+        Ext.MessageBox.confirm("提示", "是否删除你所选?", function (obj) {
+            if (obj == "yes") {
+                CS('CZCLZ.BscMag.DeleteBsc', function (retVal) {
+                    if (retVal) {
+                        BindData(1);
+                    }
+                }, CS.onError, id);
+            }
+            else {
+                return;
+            }
+        });
+    }, CS.onError, id);
 }
 
 //************************************页面方法***************************************
@@ -78,16 +89,16 @@ Ext.define('addWin', {
     layout: {
         type: 'fit'
     },
-    closeAction:'destroy',
-    modal:true,
+    closeAction: 'destroy',
+    modal: true,
     title: '办事处档案编辑',
 
-    initComponent: function() {
+    initComponent: function () {
         var me = this;
         me.items = [
             {
                 xtype: 'form',
-                id:'addform',
+                id: 'addform',
                 frame: true,
                 bodyPadding: 10,
                 title: '',
@@ -98,7 +109,7 @@ Ext.define('addWin', {
                         id: 'officeId',
                         name: 'officeId',
                         labelWidth: 70,
-                        hidden:true,
+                        hidden: true,
                         anchor: '100%'
                     },
                     {
@@ -125,7 +136,7 @@ Ext.define('addWin', {
                         name: 'officeGroup',
                         fieldLabel: '办事处分组',
                         editable: false,
-                        store:  Ext.create('Ext.data.Store', {
+                        store: Ext.create('Ext.data.Store', {
                             fields: ['VALUE', 'TEXT'],
                             data: [
                                 { 'VALUE': 0, 'TEXT': '总部' }, { 'VALUE': 1, 'TEXT': '普通网点' }
@@ -155,22 +166,22 @@ Ext.define('addWin', {
                         labelWidth: 70,
                         anchor: '100%'
                     },
-                     {
-                         xtype: 'textfield',
-                         fieldLabel: '联系人',
-                         id: 'officePeople',
-                         name: 'officePeople',
-                         labelWidth: 70,
-                         anchor: '100%'
-                     },
-                     {
-                         xtype: 'textfield',
-                         fieldLabel: '地址',
-                         id: 'officeAddress',
-                         name: 'officeAddress',
-                         labelWidth: 70,
-                         anchor: '100%'
-                     },
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: '联系人',
+                        id: 'officePeople',
+                        name: 'officePeople',
+                        labelWidth: 70,
+                        anchor: '100%'
+                    },
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: '地址',
+                        id: 'officeAddress',
+                        name: 'officeAddress',
+                        labelWidth: 70,
+                        anchor: '100%'
+                    },
                     {
                         xtype: 'textareafield',
                         id: 'officeMemo',
@@ -180,8 +191,8 @@ Ext.define('addWin', {
                         anchor: '100%'
                     }
                 ],
-                buttonAlign:'center',
-                buttons:[
+                buttonAlign: 'center',
+                buttons: [
                     {
                         text: '确定',
                         handler: function () {
@@ -195,15 +206,13 @@ Ext.define('addWin', {
                             //    return;
                             //}
 
-                            var form=Ext.getCmp('addform');
-                            if (form.form.isValid())
-                            {
+                            var form = Ext.getCmp('addform');
+                            if (form.form.isValid()) {
                                 //取得表单中的内容
                                 var values = form.form.getValues(false);
-                                var me=this;
+                                var me = this;
                                 CS('CZCLZ.BscMag.SaveBsc', function (retVal) {
-                                    if(retVal)
-                                    {
+                                    if (retVal) {
                                         Ext.Msg.show({
                                             title: '提示',
                                             msg: '保存成功!',
@@ -213,13 +222,13 @@ Ext.define('addWin', {
                                         BindData(1);
                                     }
                                     me.up('window').close()
-                                },CS.onError,values);
+                                }, CS.onError, values);
                             }
                         }
                     },
                     {
                         text: '取消',
-                        handler: function() {
+                        handler: function () {
                             this.up('window').close();
                         }
                     }
@@ -233,7 +242,7 @@ Ext.define('addWin', {
 //************************************弹出界面***************************************
 
 //************************************主界面*****************************************
-Ext.onReady(function() {
+Ext.onReady(function () {
     Ext.define('BscView', {
         extend: 'Ext.container.Viewport',
 
@@ -241,99 +250,99 @@ Ext.onReady(function() {
             type: 'fit'
         },
 
-        initComponent: function() {
+        initComponent: function () {
             var me = this;
             me.items = [
                 {
                     xtype: 'gridpanel',
-                    id:'BscGrid',
-                    store:BscStore,
-                    columnLines:true,
+                    id: 'BscGrid',
+                    store: BscStore,
+                    columnLines: true,
                     columns: [Ext.create('Ext.grid.RowNumberer'),
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'officeCode',
-                            sortable: false,
-                            menuDisabled: true,
-                            width:200,
-                            text: '办事处代码'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'officeName',
-                            sortable: false,
-                            menuDisabled: true,
-                            flex:1,
-                            text: '办事处名称'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'officeGroup',
-                            sortable: false,
-                            menuDisabled: true,
-                            width: 200,
-                            text: '办事处分组',
-                            renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                var str = "";
-                                if (value == 0) {
-                                    str = "总部";
-                                } else if (value == 1) {
-                                    str = "普通网点";
-                                }
-                                return str;
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'officeCode',
+                        sortable: false,
+                        menuDisabled: true,
+                        width: 200,
+                        text: '办事处代码'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'officeName',
+                        sortable: false,
+                        menuDisabled: true,
+                        flex: 1,
+                        text: '办事处名称'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'officeGroup',
+                        sortable: false,
+                        menuDisabled: true,
+                        width: 200,
+                        text: '办事处分组',
+                        renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                            var str = "";
+                            if (value == 0) {
+                                str = "总部";
+                            } else if (value == 1) {
+                                str = "普通网点";
                             }
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'officeHead',
-                            sortable: false,
-                            menuDisabled: true,
-                            width: 200,
-                            text: '单据前缀'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'officeTel',
-                            sortable: false,
-                            menuDisabled: true,
-                            width: 200,
-                            text: '电话'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'officePeople',
-                            sortable: false,
-                            menuDisabled: true,
-                            width: 200,
-                            text: '联系人'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'officeAddress',
-                            sortable: false,
-                            menuDisabled: true,
-                            flex:1,
-                            text: '地址'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'officeMemo',
-                            sortable: false,
-                            menuDisabled: true,
-                            flex:1,
-                            text: '备注'
-                        },
-                        {
-                            xtype: 'gridcolumn',
-                            dataIndex: 'officeId',
-                            sortable: false,
-                            menuDisabled: true,
-                            text: '操作',
-                            width:200,
-                            renderer : function(value, cellmeta, record, rowIndex, columnIndex, store){ 
-                                return "<a href='JavaScript:void(0)' onclick='xg(\"" + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='del(\"" + value + "\")'>删除</a>";
-                            }
+                            return str;
                         }
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'officeHead',
+                        sortable: false,
+                        menuDisabled: true,
+                        width: 200,
+                        text: '单据前缀'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'officeTel',
+                        sortable: false,
+                        menuDisabled: true,
+                        width: 200,
+                        text: '电话'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'officePeople',
+                        sortable: false,
+                        menuDisabled: true,
+                        width: 200,
+                        text: '联系人'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'officeAddress',
+                        sortable: false,
+                        menuDisabled: true,
+                        flex: 1,
+                        text: '地址'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'officeMemo',
+                        sortable: false,
+                        menuDisabled: true,
+                        flex: 1,
+                        text: '备注'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'officeId',
+                        sortable: false,
+                        menuDisabled: true,
+                        text: '操作',
+                        width: 200,
+                        renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                            return "<a href='JavaScript:void(0)' onclick='xg(\"" + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='del(\"" + value + "\")'>删除</a>";
+                        }
+                    }
                     ],
                     viewConfig: {
 
@@ -371,8 +380,8 @@ Ext.onReady(function() {
                                             xtype: 'button',
                                             iconCls: 'add',
                                             text: '新增',
-                                            handler:function(){
-                                                var win=new addWin();
+                                            handler: function () {
+                                                var win = new addWin();
                                                 win.show();
                                             }
                                         }
@@ -392,7 +401,7 @@ Ext.onReady(function() {
             me.callParent(arguments);
         }
     });
-    
+
     new BscView();
     BindData(1);
 })
