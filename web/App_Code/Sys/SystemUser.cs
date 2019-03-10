@@ -44,6 +44,11 @@ public class SystemUser
         get { return m_data["companyId"].ToString(); }
     }
 
+    public string CsOfficeId
+    {
+        get { return m_data["csOfficeId"].ToString(); }
+    }
+
     public static string GetDWIDByUserID(string uid)
     {
         using (var dbc = new DBConnection())
@@ -64,7 +69,7 @@ public class SystemUser
     {
         using (DBConnection dbc = new DBConnection())
         {
-            string sqlStr = "select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId from tb_b_user a left join tb_b_user_role b on a.UserID = b.userId left join tb_b_company c on a.companyId = c.companyId where a.UserName=@LoginName and a.Password=@Password and c.companyBS = @companyBS and (a.ClientKind = 0 or a.ClientKind = 99)";
+            string sqlStr = "select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId,a.csOfficeId from tb_b_user a left join tb_b_user_role b on a.UserID = b.userId left join tb_b_company c on a.companyId = c.companyId where a.UserName=@LoginName and a.Password=@Password and c.companyBS = @companyBS and (a.ClientKind = 0 or a.ClientKind = 99)";
             SqlCommand cmd = new SqlCommand(sqlStr);
             cmd.Parameters.AddWithValue("@LoginName", username);
             cmd.Parameters.AddWithValue("@Password", password);
@@ -142,7 +147,7 @@ public class SystemUser
 
     public static SystemUser GetUserByID(string userid)
     {
-        string sqlStr = "select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId from tb_b_user a left join tb_b_user_role b on a.UserID = b.userId where a.UserID = @yh_id";
+        string sqlStr = "select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId,a.csOfficeId from tb_b_user a left join tb_b_user_role b on a.UserID = b.userId where a.UserID = @yh_id";
         SqlCommand cmd = new SqlCommand(sqlStr);
         cmd.Parameters.AddWithValue("@yh_id", userid);
         using (DBConnection dbc = new DBConnection())
@@ -159,7 +164,7 @@ public class SystemUser
     }
     public static SystemUser GetUserByUserName(string username)
     {
-        string sqlStr = "select User_ID YH_ID, LoginName YH_DLM,User_XM YH_XM,QY_ID,User_DM,case when '7E53492E-CF66-411F-83C4-7923467F59B4' in (select JS_ID from tb_b_User_JS_Gl where User_ID = tb_b_Users.User_ID and delflag=0)  then '1' else '0' end YH_TP from tb_b_Users where User_DelFlag=0  and LoginName = @yh_dlm";
+        string sqlStr = "select User_ID YH_ID, LoginName YH_DLM,User_XM YH_XM,QY_ID,User_DM,case when '7E53492E-CF66-411F-83C4-7923467F59B4' in (select JS_ID from tb_b_User_JS_Gl where User_ID = tb_b_Users.User_ID and delflag=0)  then '1' else '0',csOfficeId end YH_TP from tb_b_Users where User_DelFlag=0  and LoginName = @yh_dlm";
         SqlCommand cmd = new SqlCommand(sqlStr);
         cmd.Parameters.AddWithValue("@yh_dlm", username);
         using (DBConnection dbc = new DBConnection())

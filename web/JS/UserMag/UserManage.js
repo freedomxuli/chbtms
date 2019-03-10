@@ -15,7 +15,9 @@ var store = createSFW4Store({
         { name: 'roleId' },
         { name: 'roleName' },
         { name: 'UserXM' },
-        { name: 'UserTel' }
+        { name: 'UserTel' },
+        { name: 'csOfficeId' },
+        { name: 'csOfficeName' }
     ],
     onPageChange: function (sto, nPage, sorters) {
         getUser(nPage);
@@ -37,6 +39,12 @@ var roleStore1 = Ext.create('Ext.data.Store', {
     ]
 });
 
+var officeStore = Ext.create('Ext.data.Store', {
+    fields: [
+        { name: 'VALUE' },
+        { name: 'TEXT' }
+    ]
+});
 
 
 var EmployStore = Ext.create('Ext.data.Store', {
@@ -76,6 +84,7 @@ function EditUser(id) {
             roleStore1.loadData(retVal, false);
             var win = new addWin();
             win.show(null, function () {
+                showCsOffice();
                 win.setTitle("用户修改");
                 var form = Ext.getCmp('addform');
                 form.form.setValues(r);
@@ -91,7 +100,7 @@ function showEmploy(userid, zt) {
     CS('CZCLZ.YwyMag.GetEmployByOffice', function (retVal) {
         EmployStore.removeAll();
         EmployStore.loadData(retVal);
-        
+
         for (var i = 0; i < EmployStore.data.length; i++) {
             if (EmployStore.getAt(i).data.glzt == 1) {
                 Ext.getCmp('emgri').selModel.select(EmployStore.getAt(i), true, false);
@@ -112,10 +121,19 @@ function showOffice(userId) {
                 }
             }
             showEmploy(userId, 0);
+
         }
     }, CS.onError, userId)
 }
 
+function showCsOffice() {
+    CS('CZCLZ.BscMag.GetBsc', function (retVal) {
+        if (retVal.length > 0) {
+            officeStore.add([{ 'TEXT': '', 'VALUE': '' }]);
+            officeStore.loadData(retVal, true);
+        }
+    }, CS.onError)
+}
 //************************************页面方法***************************************
 
 //************************************弹出界面***************************************
@@ -144,7 +162,7 @@ Ext.define('addWin', {
                     {
                         xtype: 'panel',
                         region: 'north',
-                        height: 150,
+                        height: 200,
                         items: [
                             {
                                 xtype: 'textfield',
@@ -203,6 +221,21 @@ Ext.define('addWin', {
                                 queryMode: 'local',
                                 displayField: 'roleName',
                                 valueField: 'roleId',
+                                value: ''
+                            },
+                            {
+                                xtype: 'combobox',
+                                id: 'csOfficeId',
+                                name: 'csOfficeId',
+                                anchor: '100%',
+                                fieldLabel: '从属办事处',
+                                allowBlank: false,
+                                editable: false,
+                                labelWidth: 70,
+                                store: officeStore,
+                                queryMode: 'local',
+                                displayField: 'TEXT',
+                                valueField: 'VALUE',
                                 value: ''
                             }
                         ]

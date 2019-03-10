@@ -288,6 +288,7 @@ public class BscMag
  where a.status=0 and a.companyId=" + dbc.ToSqlValue(companyID) + @" 
 order by a.employCode,a.addtime desc";
                 DataTable ywyGlDt = dbc.ExecuteDataTable(str);
+
                 return new { officeGlDt = dt, ywyGlDt = ywyGlDt };
             }
             catch (Exception ex)

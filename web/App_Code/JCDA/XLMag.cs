@@ -95,7 +95,7 @@ public class XLMag
             {
                 string str = "select * from jichu_xianlu where traderId=@traderId";
                 SqlCommand cmd = new SqlCommand(str);
-                cmd.Parameters.Add("@traderId", traderId);
+                cmd.Parameters.AddWithValue("@traderId", traderId);
                 DataTable dt = dbc.ExecuteDataTable(cmd);
                 return dt;
             }

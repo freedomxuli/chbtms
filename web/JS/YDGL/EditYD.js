@@ -4,6 +4,7 @@ var fromofficeid = "";
 var toofficeid = "";
 var clientId = "";
 //var LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+var cftype = 0;
 
 var qszstore = Ext.create('Ext.data.Store', {
     fields: ['officeId', 'officeName'],
@@ -32,7 +33,8 @@ var HPStore = Ext.create('Ext.data.Store', {
     { name: 'yundan_goodsVolume' },
     { name: 'status' },
     { name: 'addtime' },
-    { name: 'adduser' }
+    { name: 'adduser' },
+    { name: 'SP_ID' }
     ],
     data: [
     ]
@@ -323,6 +325,15 @@ Ext.define('addHPWin', {
                     },
                     {
                         xtype: 'textfield',
+                        fieldLabel: 'SP_ID',
+                        id: 'SP_ID',
+                        name: 'SP_ID',
+                        labelWidth: 70,
+                        hidden: true,
+                        anchor: '100%'
+                    },
+                    {
+                        xtype: 'textfield',
                         fieldLabel: '货品名称',
                         id: 'yundan_goodsName',
                         name: 'yundan_goodsName',
@@ -343,11 +354,21 @@ Ext.define('addHPWin', {
                         id: 'yundan_goodsAmount',
                         name: 'yundan_goodsAmount',
                         allowDecimals: false,
+                        decimalPrecision: 0,
                         allowNegative: false,
                         minValue: 1,
                         labelWidth: 70,
                         allowBlank: false,
-                        anchor: '100%'
+                        anchor: '100%',
+                        listeners: {
+                            "change": function (field, newValue, oldValue) {
+                                if (cftype == 1 && newValue < oldValue) {
+                                    Ext.Msg.alert('提示', "该运单拆分过，件数不能小于！");
+                                    return;
+                                    ydid
+                                }
+                            }
+                        }
                     },
                     {
                         xtype: 'container',
@@ -357,13 +378,14 @@ Ext.define('addHPWin', {
                         anchor: '100%',
                         items: [
                             {
-                                xtype: 'textfield',
+                                xtype: 'numberfield',
                                 fieldLabel: '重量',
                                 id: 'yundan_goodsWeight',
                                 name: 'yundan_goodsWeight',
                                 columnWidth: 0.99,
                                 labelWidth: 70,
-                                anchor: '100%'
+                                anchor: '100%',
+                                decimalPrecision: 6
                             },
                             { xtype: "displayfield", value: "吨", columnWidth: 0.01 },
                         ]
@@ -377,13 +399,14 @@ Ext.define('addHPWin', {
                         anchor: '100%',
                         items: [
                             {
-                                xtype: 'textfield',
+                                xtype: 'numberfield',
                                 fieldLabel: '体积',
                                 id: 'yundan_goodsVolume',
                                 name: 'yundan_goodsVolume',
                                 columnWidth: 0.99,
                                 labelWidth: 70,
-                                anchor: '100%'
+                                anchor: '100%',
+                                decimalPrecision: 6
                             },
                             { xtype: "displayfield", value: "方", columnWidth: 0.01 },
                         ]
@@ -399,15 +422,36 @@ Ext.define('addHPWin', {
                             var form = Ext.getCmp('addHPform');
                             if (form.form.isValid()) {
                                 var yundan_goods_id = Ext.getCmp("yundan_goods_id").getValue();
+                                var SP_ID = Ext.getCmp("SP_ID").getValue();
                                 var yundan_goodsName = Ext.getCmp("yundan_goodsName").getValue();
                                 var yundan_goodsPack = Ext.getCmp("yundan_goodsPack").getValue();
                                 var yundan_goodsAmount = Ext.getCmp("yundan_goodsAmount").getValue();
                                 var yundan_goodsWeight = Ext.getCmp("yundan_goodsWeight").getValue();
                                 var yundan_goodsVolume = Ext.getCmp("yundan_goodsVolume").getValue();
 
+                                if (cftype == 1) {
+                                    CS('CZCLZ.YDMag.GetHpNum', function (retVal) {
+                                        if (retVal) {
+                                            if (retVal.amount > yundan_goodsAmount) {
+                                                Ext.Msg.alert('提示', "该运单拆分过，件数不能小于" + retVal.amount+"！");
+                                                return;
+                                            }
+                                            if (retVal.weight > yundan_goodsWeight) {
+                                                Ext.Msg.alert('提示', "该运单拆分过，重量不能小于" + retVal.weight + "！");
+                                                return;
+                                            }
+                                            if (retVal.volume > yundan_goodsVolume) {
+                                                Ext.Msg.alert('提示', "该运单拆分过，体积不能小于" + retVal.volume + "！");
+                                                return;
+                                            }
+                                        }
+                                    }, CS.onError, ydid, SP_ID);
+                                }
+
                                 if (yundan_goods_id) {
                                     for (var i = 0; i < HPStore.data.length; i++) {
                                         if (HPStore.data.items[i].data.yundan_goods_id == yundan_goods_id) {
+                                            HPStore.data.items[i].data.SP_ID = SP_ID;
                                             HPStore.data.items[i].data.yundan_goodsName = yundan_goodsName;
                                             HPStore.data.items[i].data.yundan_goodsPack = yundan_goodsPack;
                                             HPStore.data.items[i].data.yundan_goodsAmount = yundan_goodsAmount;
@@ -420,6 +464,7 @@ Ext.define('addHPWin', {
                                         if (retVal) {
                                             HPStore.add([{
                                                 "yundan_goods_id": retVal,
+                                                "SP_ID": SP_ID,
                                                 "yundan_goodsName": yundan_goodsName,
                                                 "yundan_goodsPack": yundan_goodsPack,
                                                 "yundan_goodsAmount": yundan_goodsAmount,
@@ -1684,7 +1729,6 @@ Ext.onReady(function () {
                                                             }
                                                         }
 
-
                                                         //取得表单中的内容
                                                         var values = form.form.getValues(false);
                                                         var me = this;
@@ -2724,8 +2768,16 @@ Ext.onReady(function () {
                                         columns: [
                                             {
                                                 xtype: 'gridcolumn',
+                                                dataIndex: 'SP_ID',
+                                                flex: 1,
+                                                text: "商品ID",
+                                                menuDisabled: true,
+                                                sortable: false,
+                                                hidden: true
+                                            },
+                                            {
+                                                xtype: 'gridcolumn',
                                                 dataIndex: 'yundan_goodsName',
-                                                format: 'Y-m',
                                                 flex: 1,
                                                 text: "货品名称",
                                                 menuDisabled: true,
@@ -2900,6 +2952,8 @@ Ext.onReady(function () {
                 }
 
                 HPStore.loadData(retVal.hpdt);
+                cftype = retVal.cftype;
+
             }
         }, CS.onError, ydid);
 

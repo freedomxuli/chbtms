@@ -128,8 +128,11 @@ public class UserMag
                     where += " and " + dbc.C_Like("a.UserXM", xm.Trim(), LikeStyle.LeftAndRightLike);
                 }
 
-                string str = @"select a.*,c.roleName,b.roleId from tb_b_user a left join tb_b_user_role b on a.UserID=b.UserID
-                                left join tb_b_roledb c on b.roleId=c.roleId where 1=1  ";
+                string str = @"select a.*,c.roleName,b.roleId,d.officeName csOfficeName from tb_b_user a 
+                                left join tb_b_user_role b on a.UserID=b.UserID
+                                left join tb_b_roledb c on b.roleId=c.roleId 
+                                left join jichu_office d on a.csOfficeId=d.officeId
+                                where 1=1  ";
                 str += where;
 
                 //开始取分页数据
@@ -453,6 +456,7 @@ public class UserMag
                     rdr["userId"] = new Guid(YHID);
                     rdr["roleId"] = jsr["roleId"].ToString();
                     rdr["companyId"] = companyId;
+                    rdr["csOfficeId"] = jsr["csOfficeId"].ToString();
                     rdt.Rows.Add(rdr);
                     dbc.InsertTable(rdt);
 
@@ -477,6 +481,7 @@ public class UserMag
                     dr["Password"] = jsr["Password"].ToString();
                     dr["UserXM"] = jsr["UserXM"].ToString();
                     dr["UserTel"] = jsr["UserTel"].ToString();
+                    dr["csOfficeId"] = jsr["csOfficeId"].ToString();
                     dt.Rows.Add(dr);
                     dbc.UpdateTable(dt, dtt);
 
