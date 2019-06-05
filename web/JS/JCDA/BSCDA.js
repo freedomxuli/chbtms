@@ -43,7 +43,7 @@ function BindData(nPage) {
 function xg(id) {
     CS('CZCLZ.BscMag.GetBscById', function (retVal) {
         if (retVal) {
-            var win = new addWin();
+            var win = new addWin({ id: id });
             win.show(null, function () {
                 var form = Ext.getCmp('addform');
                 form.form.setValues(retVal[0]);
@@ -95,6 +95,7 @@ Ext.define('addWin', {
 
     initComponent: function () {
         var me = this;
+        var offid = me.id;
         me.items = [
             {
                 xtype: 'form',
@@ -264,7 +265,7 @@ Ext.onReady(function () {
                         dataIndex: 'officeCode',
                         sortable: false,
                         menuDisabled: true,
-                        width: 200,
+                        width: 100,
                         text: '办事处代码'
                     },
                     {
@@ -280,7 +281,7 @@ Ext.onReady(function () {
                         dataIndex: 'officeGroup',
                         sortable: false,
                         menuDisabled: true,
-                        width: 200,
+                        width: 100,
                         text: '办事处分组',
                         renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
                             var str = "";
@@ -297,7 +298,7 @@ Ext.onReady(function () {
                         dataIndex: 'officeHead',
                         sortable: false,
                         menuDisabled: true,
-                        width: 200,
+                        width: 100,
                         text: '单据前缀'
                     },
                     {
@@ -305,7 +306,7 @@ Ext.onReady(function () {
                         dataIndex: 'officeTel',
                         sortable: false,
                         menuDisabled: true,
-                        width: 200,
+                        width: 120,
                         text: '电话'
                     },
                     {
@@ -321,7 +322,7 @@ Ext.onReady(function () {
                         dataIndex: 'officeAddress',
                         sortable: false,
                         menuDisabled: true,
-                        flex: 1,
+                        width: 100,
                         text: '地址'
                     },
                     {
@@ -338,7 +339,7 @@ Ext.onReady(function () {
                         sortable: false,
                         menuDisabled: true,
                         text: '操作',
-                        width: 200,
+                        width: 100,
                         renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
                             return "<a href='JavaScript:void(0)' onclick='xg(\"" + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='del(\"" + value + "\")'>删除</a>";
                         }

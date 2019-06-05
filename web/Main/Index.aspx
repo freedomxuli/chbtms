@@ -29,19 +29,19 @@
 
     <link rel="Stylesheet" href="../CSS/Main.css" />
     <link href="../CSS/icon.css" rel="stylesheet" type="text/css" />
-    <link href="../JS/BoxSelect/BoxSelect.css" rel="stylesheet" type="text/css" />
+    <%--<link href="../JS/BoxSelect/BoxSelect.css" rel="stylesheet" type="text/css" />--%>
 
     <script type="text/javascript" src="../JS/extjs/ext-all-debug-w-comments.js"></script>
 
     <script type="text/javascript" src="../js/extjs/ext-lang-zh_CN.js"></script>
-    <script type="text/javascript" src="../JS/BoxSelect/BoxSelect.js"></script>
+    <%--<script type="text/javascript" src="../JS/BoxSelect/BoxSelect.js"></script>--%>
 
     <script type="text/javascript" src="../js/json.js"></script>
     <script type="text/javascript" src="../js/fun.js"></script>
     <script type="text/javascript" src="../js/LodopFuncs.js"></script>
     <script type="text/javascript" src="../js/cb.js"></script>
     <link href="css/msgs-dialog.css" rel="stylesheet" type="text/css" />
-    <script type="text/javascript" src="../JS/PrivateMessage/pm.js"></script>
+    <%--<script type="text/javascript" src="../JS/PrivateMessage/pm.js"></script>--%>
     <script type="text/javascript" src="../JS/jquery-1.7.1.min.js"></script>
 
     <script type="text/javascript">
@@ -142,7 +142,9 @@
         <div class="header">
             <div class="left"></div>
             <div class="center"><span>我的消息</span><a href="javascript:void(0);" onclick="msgLib.close();">
-                <img src="images/msg-dialog-close-btn.png" style="float: right; margin-top: 9px; margin-right: 10px;" /></a></div>
+               <%-- <img src="images/msg-dialog-close-btn.png" style="float: right; margin-top: 9px; margin-right: 10px;" />--%>
+
+                                                 </a></div>
             <div class="right"></div>
         </div>
         <ul class="content">

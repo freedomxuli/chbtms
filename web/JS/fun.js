@@ -119,7 +119,6 @@ function loadScript(path, nocache, loaded) {
         script.setAttribute("src", path);
         script.setAttribute('type', 'text/javascript');
         script.onreadystatechange = script.onload = cb;
-        console.log(script);
         document.body.appendChild(script);
     }
     catch(ex)

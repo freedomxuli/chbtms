@@ -17,7 +17,8 @@ var YDStore = createSFW4Store({
        { name: 'songhuoType' },
        { name: 'payType' },
        { name: 'moneyYunfei' },
-       { name: 'moneyHuikouXianFan' },
+        { name: 'moneyHuikouXianFan' },
+        { name: 'moneyHuikouQianFan' },
        { name: 'zhidanRen' },
        { name: 'memo' }
     ],
@@ -45,9 +46,7 @@ function del(id) {
     Ext.MessageBox.confirm("提示", "是否删除你所选?", function (obj) {
         if (obj == "yes") {
             CS('CZCLZ.YDMag.DeleteYD', function (retVal) {
-                if (retVal) {
-                    BindData(1);
-                }
+                BindData(1);
             }, CS.onError, id);
         }
         else {
@@ -92,7 +91,7 @@ Ext.onReady(function () {
                             dataIndex: 'yundanNum',
                             sortable: false,
                             menuDisabled: true,
-                            width: 200,
+                            width: 140,
                             text: '运单号'
                         },
                         {
@@ -197,11 +196,19 @@ Ext.onReady(function () {
                         },
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'moneyHuikouXianFan',
+                            dataIndex: 'isHuikouXF',
                             sortable: false,
                             menuDisabled: true,
                             flex: 1,
-                            text: '回扣'
+                            text: '回扣',
+                            renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                
+                                if (value == 1) {
+                                    return record.data.moneyHuikouXianFan;
+                                } else {
+                                    return record.data.moneyHuikouQianFan;
+                                }
+                            }
                         },
                         {
                             xtype: 'gridcolumn',
@@ -210,7 +217,7 @@ Ext.onReady(function () {
                             flex: 1,
                             text: '实际运费',
                             renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                return record.data.moneyYunfei - record.data.moneyHuikouXianFan;
+                                return record.data.moneyYunfei;
                             }
                         },
                         {
@@ -235,7 +242,7 @@ Ext.onReady(function () {
                             sortable: false,
                             menuDisabled: true,
                             text: '操作',
-                            width: 200,
+                            width: 80,
                             renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
                                 return "<a href='JavaScript:void(0)' onclick='Edit(\"" + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='del(\"" + value + "\")'>删除</a>";
                             }

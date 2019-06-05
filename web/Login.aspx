@@ -28,7 +28,7 @@
         }
 
         body {
-            background: url(Images/login/index_bg.jpg) no-repeat no-repeat center center;
+            /*background: url(Images/login/index_bg.jpg) no-repeat no-repeat center center;*/
         }
         #companybs {
             border-style: none;

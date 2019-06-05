@@ -33,7 +33,7 @@ var tobscstore = Ext.create('Ext.data.Store', {
 var userstore = Ext.create('Ext.data.Store', {
     fields: [
         { name: 'UserID', type: 'string' },
-        { name: 'UserName', type: 'string' }
+        { name: 'UserXM', type: 'string' }
     ]
 })
 
@@ -236,7 +236,7 @@ Ext.define('SZQT', {
                                                 menuDisabled: true
                                             },
                                             {
-                                                dataIndex: 'UserName',
+                                                dataIndex: 'UserXM',
                                                 flex: 1,
                                                 text: '用户名称',
                                                 sortable: false,

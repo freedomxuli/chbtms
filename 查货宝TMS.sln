@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2015
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "web", "web\", "{29522DB1-9E08-41F7-89ED-29500E23F4A9}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
@@ -22,8 +20,9 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "web", "web\", "{29522DB1-9E
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "41972"
-		SlnRelativePath = "web\"
+		VWDVirtualPath = "/web"
 		DefaultWebSiteLanguage = "Visual C#"
+		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
 Global
@@ -50,7 +49,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		VisualSVNWorkingCopyRoot = .
 		SolutionGuid = {7878903A-137C-4188-A45F-9902A09A0F49}
+		VisualSVNWorkingCopyRoot = .
 	EndGlobalSection
 EndGlobal

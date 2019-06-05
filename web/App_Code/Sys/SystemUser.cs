@@ -44,11 +44,28 @@ public class SystemUser
         get { return m_data["companyId"].ToString(); }
     }
 
+    public string CompanyName
+    {
+        get { return m_data["companyName"].ToString(); }
+    }
+
+    public string CompanyTel
+    {
+        get { return "34105011 864855640"; }
+    }
+
     public string CsOfficeId
     {
         get { return m_data["csOfficeId"].ToString(); }
     }
-
+    public string CsOfficeName
+    {
+        get { return m_data["csOfficeName"].ToString(); }
+    }
+    public string CsOfficeCode
+    {
+        get { return m_data["csOfficeCode"].ToString(); }
+    }
     public static string GetDWIDByUserID(string uid)
     {
         using (var dbc = new DBConnection())
@@ -69,7 +86,11 @@ public class SystemUser
     {
         using (DBConnection dbc = new DBConnection())
         {
-            string sqlStr = "select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId,a.csOfficeId from tb_b_user a left join tb_b_user_role b on a.UserID = b.userId left join tb_b_company c on a.companyId = c.companyId where a.UserName=@LoginName and a.Password=@Password and c.companyBS = @companyBS and (a.ClientKind = 0 or a.ClientKind = 99)";
+            string sqlStr = @"select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId,c.companyName,a.csOfficeId,d.officeName csOfficeName,d.officeCode csOfficeCode from tb_b_user a 
+                            left join tb_b_user_role b on a.UserID = b.userId 
+                            left join tb_b_company c on a.companyId = c.companyId 
+                            left join jichu_office d on a.csOfficeId=d.officeId
+                            where a.UserName=@LoginName and a.Password=@Password and c.companyBS = @companyBS and (a.ClientKind = 0 or a.ClientKind = 99)";
             SqlCommand cmd = new SqlCommand(sqlStr);
             cmd.Parameters.AddWithValue("@LoginName", username);
             cmd.Parameters.AddWithValue("@Password", password);
@@ -147,7 +168,11 @@ public class SystemUser
 
     public static SystemUser GetUserByID(string userid)
     {
-        string sqlStr = "select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId,a.csOfficeId from tb_b_user a left join tb_b_user_role b on a.UserID = b.userId where a.UserID = @yh_id";
+        string sqlStr = @"select a.UserID YH_ID, a.UserName YH_DLM,a.UserXM YH_XM,a.Password,b.roleId,b.companyId,c.companyName,a.csOfficeId,d.officeName csOfficeName,d.officeCode csOfficeCode from tb_b_user a 
+left join tb_b_user_role b on a.UserID = b.userId 
+left join tb_b_company c on a.companyId = c.companyId 
+left join jichu_office d on a.csOfficeId=d.officeId
+where a.UserID = @yh_id";
         SqlCommand cmd = new SqlCommand(sqlStr);
         cmd.Parameters.AddWithValue("@yh_id", userid);
         using (DBConnection dbc = new DBConnection())
@@ -164,7 +189,12 @@ public class SystemUser
     }
     public static SystemUser GetUserByUserName(string username)
     {
-        string sqlStr = "select User_ID YH_ID, LoginName YH_DLM,User_XM YH_XM,QY_ID,User_DM,case when '7E53492E-CF66-411F-83C4-7923467F59B4' in (select JS_ID from tb_b_User_JS_Gl where User_ID = tb_b_Users.User_ID and delflag=0)  then '1' else '0',csOfficeId end YH_TP from tb_b_Users where User_DelFlag=0  and LoginName = @yh_dlm";
+        string sqlStr = @"select a.*,b.officeName csOfficeName,b.officeCode csOfficeCode from (
+select User_ID YH_ID, LoginName YH_DLM,User_XM YH_XM,QY_ID,User_DM,
+case when '7E53492E-CF66-411F-83C4-7923467F59B4' in (select JS_ID from tb_b_User_JS_Gl where User_ID = tb_b_Users.User_ID and delflag=0)  then '1' else '0' end YH_TP ,csOfficeId
+from tb_b_Users 
+where User_DelFlag=0  and LoginName = @yh_dlm)a
+left join dbo.jichu_office b on a.csOfficeId=b.officeId";
         SqlCommand cmd = new SqlCommand(sqlStr);
         cmd.Parameters.AddWithValue("@yh_dlm", username);
         using (DBConnection dbc = new DBConnection())
@@ -186,13 +216,13 @@ public class SystemUser
     /// <param name="password">密码</param>
     /// <param name="dwid">所属单位ID</param>
     /// <returns>是否创建成功</returns>
-    public static bool CreateUser(string 登陆名, string 姓名, string 密码, string 部门ID, string 电话, string 职务, string 手机,string 电子邮件,string 地址)
+    public static bool CreateUser(string 登陆名, string 姓名, string 密码, string 部门ID, string 电话, string 职务, string 手机, string 电子邮件, string 地址)
     {
         string sqlStr = "insert into TZJGJC_T_YH (User_ID,LoginName,Password,User_XM,User_ZW,User_DH,User_SJ,User_Email,User_DZ,User_Enable,User_DelFlag,addtime,updatetime,updateuser) " +
                 "values (@User_ID,@LoginName,@Password,@User_XM,@User_ZW,@User_DH,@User_SJ,@User_Email,@User_DZ,@User_Enable,@User_DelFlag,@addtime,@updatetime,@updateuser)";
         var YHID = Guid.NewGuid().ToString();
         var EditUser = SystemUser.CurrentUser;
-        SqlCommand  cmd = new SqlCommand(sqlStr);
+        SqlCommand cmd = new SqlCommand(sqlStr);
         cmd.Parameters.AddWithValue("@User_ID", YHID);
         cmd.Parameters.AddWithValue("@LoginName", 登陆名);
         cmd.Parameters.AddWithValue("@Password", 密码);
@@ -227,7 +257,7 @@ public class SystemUser
         StringBuilder sqlCmd = new StringBuilder();
         SqlCommand cmd = new SqlCommand();
         sqlCmd.Append("SELECT count(*) FROM tb_b_YH_YHQX WHERE UserID=@UserID ");
-        cmd.Parameters.Add("@UserID",SqlDbType.UniqueIdentifier).Value = new Guid(UserID);
+        cmd.Parameters.Add("@UserID", SqlDbType.UniqueIdentifier).Value = new Guid(UserID);
         if (pids != null)
         {
             sqlCmd.Append(" AND (");
@@ -356,7 +386,7 @@ public class SystemUser
     public void RemovePriviledge(Guid Priviledge)
     {
         DBConnection conn = new DBConnection();
-        SqlCommand cmd = new SqlCommand ();
+        SqlCommand cmd = new SqlCommand();
         cmd.CommandText = "delete from tb_b_YH_YHQX where PrivilegeCode = @PrivilegeCode and UserID=@UserID";
         cmd.Parameters.Add("@PrivilegeCode", SqlDbType.UniqueIdentifier).Value = Priviledge;
         cmd.Parameters.Add("@UserID", SqlDbType.UniqueIdentifier).Value = new Guid(UserID);

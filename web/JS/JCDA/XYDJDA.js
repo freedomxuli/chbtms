@@ -8,6 +8,7 @@ var XydjStore = createSFW4Store({
     currentPage: 1,
     fields: [
        { name: 'creditId' },
+       { name: 'DJ' },
        { name: 'grade' },
        { name: 'minlimit' },
        { name: 'maxlimit' },
@@ -16,7 +17,7 @@ var XydjStore = createSFW4Store({
        { name: 'addtime' },
        { name: 'adduser' },
        { name: 'updatetime' },
-       { name: 'updateuser' },
+       { name: 'updateuser' }
     ],          
     //sorters: [{ property: 'b', direction: 'DESC'}],
     onPageChange: function (sto, nPage, sorters) {
@@ -105,7 +106,8 @@ Ext.define('addWin', {
                         labelWidth: 70,
                         allowDecimals: false,
                         allowBlank: false,
-                        anchor: '100%'
+                        anchor: '100%',
+                        minValue: 0
                     },
                     {
                         xtype: 'numberfield',
@@ -115,7 +117,8 @@ Ext.define('addWin', {
                         labelWidth: 70,
                         allowBlank: false,
                         allowDecimals: false,
-                        anchor: '100%'
+                        anchor: '100%',
+                        minValue: 0
                     },
                     {
                         xtype: 'numberfield',
@@ -125,7 +128,8 @@ Ext.define('addWin', {
                         labelWidth: 70,
                         allowBlank: false,
                         allowDecimals: false,
-                        anchor: '100%'
+                        anchor: '100%',
+                        minValue: 0
                     },
                     {
                         xtype: 'numberfield',
@@ -135,7 +139,8 @@ Ext.define('addWin', {
                         labelWidth: 70,
                         allowBlank: false,
                         allowDecimals: false,
-                        anchor: '100%'
+                        anchor: '100%',
+                        minValue: 0
                     }
                     
                 ],
@@ -201,12 +206,19 @@ Ext.onReady(function() {
                     columns: [Ext.create('Ext.grid.RowNumberer'),
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'grade',
+                            dataIndex: 'DJ',
                             sortable: false,
                             menuDisabled: true,
                             width:200,
-                            text: '信用等级',
-                            
+                            text: '信用等级'
+                        },
+                        {
+                            xtype: 'gridcolumn',
+                            dataIndex: 'minlimit',
+                            sortable: false,
+                            menuDisabled: true,
+                            flex: 1,
+                            text: '最小额度'
                         },
                         {
                             xtype: 'gridcolumn',
@@ -233,7 +245,7 @@ Ext.onReady(function() {
                         },
                         {
                             xtype: 'gridcolumn',
-                            dataIndex: 'officeId',
+                            dataIndex: 'creditId',
                             sortable: false,
                             menuDisabled: true,
                             text: '操作',

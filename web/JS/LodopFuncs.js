@@ -7,7 +7,7 @@ function needCLodop() {
         var ua = navigator.userAgent;
         if (ua.match(/Windows\sPhone/i))
             return true;
-        if (ua.match(/iPhone|iPod/i))
+        if (ua.match(/iPhone|iPod|iPad/i))
             return true;
         if (ua.match(/Android/i))
             return true;
@@ -77,16 +77,16 @@ function getLodop(oOBJECT, oEMBED) {
         if (needCLodop()) {
             try {
                 LODOP = getCLodop();
-            } catch (err) {}
+            } catch (err) { }
             if (!LODOP && document.readyState !== "complete") {
-                //alert("网页还没下载完毕，请稍等一下再操作.");
+                alert("网页还没下载完毕，请稍等一下再操作.");
                 return;
             }
             if (!LODOP) {
-                document.body.innerHTML = strCLodopInstall_1 + (CLodopIsLocal ? strCLodopInstall_2 : "") + strCLodopInstall_3 + document.body.innerHTML;
+                document.body.innerHTML = strCLodopInstall_1 + (CLodopIsLocal ? strCLodopInstall_2 : "") + strCLodopInstall_3 + document.body.innerHTML;                
                 return;
             } else {
-                if (CLODOP.CVERSION < "3.0.4.8") {
+                if (CLODOP.CVERSION < "3.0.8.3") {
                     document.body.innerHTML = strCLodopUpdate + document.body.innerHTML;
                 }
                 if (oEMBED && oEMBED.parentNode)
@@ -125,12 +125,12 @@ function getLodop(oOBJECT, oEMBED) {
                 return LODOP;
             }
         }
-        if (LODOP.VERSION < "6.2.2.3") {
+        if (LODOP.VERSION < "6.2.2.6") {
             if (!needCLodop())
                 document.body.innerHTML = (is64IE ? strHtm64_Update : strHtmUpdate) + document.body.innerHTML;
-            return LODOP;
         }
-        //===如下空白位置适合调用统一功能(如注册语句、语言选择等):===
+        //===如下空白位置适合调用统一功能(如注册语句、语言选择等):==
+        //LODOP.SET_LICENSES("常州力荐信息科技有限公司", "664717080837475919278901905623", "", "");
 
         //=======================================================
         return LODOP;

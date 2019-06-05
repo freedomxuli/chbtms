@@ -51,7 +51,7 @@ public class ZZMag
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
 
-                return new { dt = dtPage, cp = cp, ac = ac };
+                return new { dt = dtPage, cp = cp, ac = ac ,csbsc = SystemUser.CurrentUser.CsOfficeId};
             }
             catch (Exception ex)
             {

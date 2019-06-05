@@ -1,4 +1,5 @@
 ﻿var pageSize = 20;
+var csbsc = '';
 //************************************数据源*****************************************
 var ZZStore = createSFW4Store({
     data: [],
@@ -27,15 +28,14 @@ var ZZStore = createSFW4Store({
 });
 
 var bscstore = Ext.create('Ext.data.Store', {
-    fields: ['VALUE', 'TEXT'],
+    fields: ['officeId', 'officeName'],
     data: [
     ]
 });
 
 function GetBsc() {
-    CS('CZCLZ.BscMag.GetBsc', function (retVal) {
+    InlineCS('CZCLZ.BscMag.GetBsc2', function (retVal) {
         bscstore.loadData(retVal);
-        Ext.getCmp("officeId").setValue(retVal[0]["VALUE"]);
     }, CS.onError)
 }
 
@@ -47,22 +47,23 @@ function BindData(nPage) {
             total: retVal.ac,
             currentPage: retVal.cp
         });
+        csbsc = retVal.csbsc;
     }, CS.onError, nPage, pageSize, Ext.getCmp("cx_keyword").getValue());
 }
 //************************************数据源*****************************************
 
 //************************************页面方法***************************************
 function xg(id) {
-    CS('CZCLZ.ZZMag.GetZZById', function (retVal) {
-        if (retVal) {
-            var win = new addWin();
-            win.show(null, function () {
-                GetBsc();
+    var win = new addWin();
+    win.show(null, function () {
+        GetBsc();
+        CS('CZCLZ.ZZMag.GetZZById', function (retVal) {
+            if (retVal) {
                 var form = Ext.getCmp('addform');
                 form.form.setValues(retVal[0]);
-            });
-        }
-    }, CS.onError, id);
+            }
+        }, CS.onError, id);
+    });
 }
 
 function del(id) {
@@ -122,8 +123,8 @@ Ext.define('addWin', {
                         editable: false,
                         store: bscstore,
                         queryMode: 'local',
-                        displayField: 'TEXT',
-                        valueField: 'VALUE',
+                        displayField: 'officeName',
+                        valueField: 'officeId',
                         labelWidth: 70,
                         allowBlank: false,
                         anchor: '100%'
@@ -321,6 +322,7 @@ Ext.onReady(function () {
                                                 var win = new addWin();
                                                 win.show();
                                                 GetBsc();
+                                                Ext.getCmp("officeId").setValue(csbsc);
                                             }
                                         }
                                     ]

@@ -33,15 +33,14 @@ var CombinKHStore = new Ext.data.Store({
 });
 
 var bscstore = Ext.create('Ext.data.Store', {
-    fields: ['VALUE', 'TEXT'],
+    fields: ['officeId', 'officeName'],
     data: [
     ]
 });
 
 function GetBsc() {
-    CS('CZCLZ.BscMag.GetBsc', function (retVal) {
+    InlineCS('CZCLZ.BscMag.GetBsc2', function (retVal) {
         bscstore.loadData(retVal);
-        Ext.getCmp("officeId").setValue(retVal[0]["VALUE"]);
     }, CS.onError)
 }
 
@@ -59,16 +58,17 @@ function BindData(nPage) {
 
 //************************************页面方法***************************************
 function xg(id) {
-    CS('CZCLZ.KHMag.GetKHById', function (retVal) {
-        if (retVal) {
-            var win = new addWin();
-            win.show(null, function () {
-                GetBsc();
+    var win = new addWin();
+    win.show(null, function () {
+        GetBsc();
+        CS('CZCLZ.KHMag.GetKHById', function (retVal) {
+            if (retVal) {
                 var form = Ext.getCmp('addform');
                 form.form.setValues(retVal[0]);
-            });
-        }
-    }, CS.onError, id);
+                //Ext.getCmp("officeId").setValue(retVal[0]["VALUE"]);
+            }
+        }, CS.onError, id);
+    });
 }
 
 function del(id) {
@@ -120,6 +120,7 @@ Ext.define('CombinKHWindow', {
     },
     title: '合并客户',
     modal: true,
+    id:'hbWin',
     initComponent: function () {
         var me = this;
         Ext.applyIf(me, {
@@ -161,14 +162,14 @@ Ext.define('CombinKHWindow', {
                                                                 var selRecord = grid.getSelectionModel().getSelection();
                                                                 var count = selRecord.length;
                                                                 if (count < 1) {
-                                                                    Ext.Msg.alert('提示', "请选择合并主商品！");
+                                                                    Ext.Msg.alert('提示', "请选择合并主客户！");
                                                                     return;
                                                                 }
                                                                 else if (count > 1) {
-                                                                    Ext.Msg.alert('提示', "只能选择一个主商品！");
+                                                                    Ext.Msg.alert('提示', "只能选择一个主客户！");
                                                                     return;
                                                                 }
-                                                                Ext.MessageBox.confirm('确认', '是否合并这些商品', function (btn) {
+                                                                Ext.MessageBox.confirm('确认', '是否合并这些客户', function (btn) {
                                                                     if (btn === "yes") {
                                                                         var newid = selRecord[0].data.clientId;
                                                                         CS('CZCLZ.KHMag.CombinKH', function (retVal) {
@@ -179,8 +180,15 @@ Ext.define('CombinKHWindow', {
                                                                                     buttons: Ext.MessageBox.OK,
                                                                                     icon: Ext.MessageBox.INFO
                                                                                 });
-                                                                                BindStore(1);
-                                                                                me.close();
+                                                                                BindData(1);
+                                                                                Ext.getCmp('hbWin').close();
+                                                                            } else {
+                                                                                Ext.Msg.show({
+                                                                                    title: '提示',
+                                                                                    msg: '合并失败!',
+                                                                                    buttons: Ext.MessageBox.OK,
+                                                                                    icon: Ext.MessageBox.INFO
+                                                                                });
                                                                             }
                                                                         }, CS.onError, newid, combinList);
                                                                     }
@@ -284,11 +292,17 @@ Ext.define('addWin', {
                         editable: false,
                         store: bscstore,
                         queryMode: 'local',
-                        displayField: 'TEXT',
-                        valueField: 'VALUE',
+                        displayField: 'officeName',
+                        valueField: 'officeId',
                         labelWidth: 70,
                         allowBlank: false,
                         anchor: '100%'
+                        //listeners: {
+                        //    afterRender: function (combo) {
+                        //        var firstValue = store.reader.jsonData[0].text;
+                        //        combo.setValue(firstValue);//同时下拉框会将与name为firstValue值对应的 text显示
+                        //    }
+                        //}
                     },
                     {
                         xtype: 'textfield',

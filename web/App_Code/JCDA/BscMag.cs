@@ -236,6 +236,11 @@ public class BscMag
         }
     }
 
+    #region 查询条件用
+    /// <summary>
+    /// 1.获取当前用户所在公司的所有办事处
+    /// </summary>
+    /// <returns></returns>
     [CSMethod("GetBsc")]
     public object GetBsc()
     {
@@ -256,6 +261,54 @@ public class BscMag
 
     }
 
+    /// <summary>
+    /// 1.获取当前用户所在公司的所有办事处
+    /// </summary>
+    /// <returns></returns>
+    [CSMethod("GetBsc2")]
+    public object GetBsc2()
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string str = @"select officeId,officeName from jichu_office 
+                    where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " order by officeCode,addtime desc";
+                DataTable dt = dbc.ExecuteDataTable(str);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+    }
+
+    [CSMethod("GetOtherBsc")]
+    public object GetOtherBsc()
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string str = @"select officeId,officeName from jichu_office 
+                    where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and officeId not in(" + dbc.ToSqlValue(SystemUser.CurrentUser.CsOfficeId) + ") order by officeCode,addtime desc";
+                DataTable dt = dbc.ExecuteDataTable(str);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+    }
+    #endregion
+
+
+
+
     [CSMethod("GetUserBsc")]
     public object GetUserBsc(string userid)
     {
@@ -271,8 +324,7 @@ public class BscMag
                                 case
                                 when b.officeId is null then 0
                                 else 1
-                                END as glzt 
-                                from jichu_office a
+                                end as glzt from jichu_office a
                                 left join tb_b_user_office b on a.officeId=b.officeId and b.userId=" + dbc.ToSqlValue(userid) + " and b.companyId=" + dbc.ToSqlValue(companyID) + @"
                                 where a.status=0 and a.companyId=" + dbc.ToSqlValue(companyID) + @" 
                                 order by a.officeCode,a.addtime desc";

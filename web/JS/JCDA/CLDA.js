@@ -1,6 +1,7 @@
 ﻿//0 大车 1 小车
 var kind = queryString.kind;
 var pageSize = 20;
+var csbsc = '';
 //************************************数据源*****************************************
 var ClStore = createSFW4Store({
     data: [],
@@ -30,15 +31,14 @@ var ClStore = createSFW4Store({
     }
 });
 var bscstore = Ext.create('Ext.data.Store', {
-    fields: ['VALUE', 'TEXT'],
+    fields: ['officeId', 'officeName'],
     data: [
     ]
 });
 
 function GetBsc() {
-    CS('CZCLZ.BscMag.GetBsc', function (retVal) {
+    InlineCS('CZCLZ.BscMag.GetBsc2', function (retVal) {
         bscstore.loadData(retVal);
-        Ext.getCmp("officeId").setValue(retVal[0]["VALUE"]);
     }, CS.onError)
 }
 
@@ -51,22 +51,24 @@ function BindData(nPage) {
             total: retVal.ac,
             currentPage: retVal.cp
         });
+        csbsc = retVal.csbsc;
     }, CS.onError, nPage, pageSize,kind, Ext.getCmp("cx_keyword").getValue());
 }
 //************************************数据源*****************************************
 
 //************************************页面方法***************************************
 function xg(id) {
-    CS('CZCLZ.ClMag.GetClById', function (retVal) {
-        if (retVal) {
-            var win = new addWin();
-            win.show(null, function () {
-                GetBsc();
+    var win = new addWin();
+    win.show(null, function () {
+        GetBsc();
+        CS('CZCLZ.ClMag.GetClById', function (retVal) {
+            if (retVal) {
                 var form = Ext.getCmp('addform');
                 form.form.setValues(retVal[0]);
-            });
-        }
-    }, CS.onError, id);
+            }
+        }, CS.onError, id);
+    });
+    
 }
 
 function del(id) {
@@ -126,8 +128,8 @@ Ext.define('addWin', {
                         editable: false,
                         store: bscstore,
                         queryMode: 'local',
-                        displayField: 'TEXT',
-                        valueField: 'VALUE',
+                        displayField: 'officeName',
+                        valueField: 'officeId',
                         labelWidth: 70,
                         allowBlank: false,
                         anchor: '100%'
@@ -248,7 +250,7 @@ Ext.onReady(function() {
                             dataIndex: 'officeName',
                             sortable: false,
                             menuDisabled: true,
-                            width:200,
+                            width:100,
                             text: '办事处'
                         },
                         {
@@ -256,7 +258,7 @@ Ext.onReady(function() {
                             dataIndex: 'people',
                             sortable: false,
                             menuDisabled: true,
-                            width: 200,
+                            width: 100,
                             text: '联系人'
                         },
                         {
@@ -264,7 +266,7 @@ Ext.onReady(function() {
                             dataIndex: 'peopleCode',
                             sortable: false,
                             menuDisabled: true,
-                            width: 200,
+                            width: 80,
                             text: '助记码'
                         },
                         {
@@ -272,7 +274,7 @@ Ext.onReady(function() {
                             dataIndex: 'tel',
                             sortable: false,
                             menuDisabled: true,
-                            width: 200,
+                            width: 100,
                             text: '电话'
                         },
                         {
@@ -280,7 +282,7 @@ Ext.onReady(function() {
                             dataIndex: 'shenfenzheng',
                             sortable: false,
                             menuDisabled: true,
-                            width: 200,
+                            width: 140,
                             text: '身份证'
                         },
                         {
@@ -288,7 +290,7 @@ Ext.onReady(function() {
                             dataIndex: 'address',
                             sortable: false,
                             menuDisabled: true,
-                            width: 200,
+                            flex:1,
                             text: '地址'
                         },
                         {
@@ -296,7 +298,7 @@ Ext.onReady(function() {
                             dataIndex: 'carNum',
                             sortable: false,
                             menuDisabled: true,
-                            width: 200,
+                            width: 90,
                             text: '车牌号'
                         },
                         {
@@ -305,7 +307,7 @@ Ext.onReady(function() {
                             sortable: false,
                             menuDisabled: true,
                             text: '操作',
-                            width:200,
+                            width:90,
                             renderer : function(value, cellmeta, record, rowIndex, columnIndex, store){ 
                                 return "<a href='JavaScript:void(0)' onclick='xg(\"" + value + "\")'>修改</a>&nbsp;<a href='JavaScript:void(0)' onclick='del(\"" + value + "\")'>删除</a>";
                             }
@@ -356,7 +358,7 @@ Ext.onReady(function() {
                                                 } else { win.setTitle("车辆档案编辑"); }
                                                 win.show();
                                                 GetBsc();
-                                                
+                                                Ext.getCmp("officeId").setValue(csbsc);
                                             }
                                         }
                                     ]

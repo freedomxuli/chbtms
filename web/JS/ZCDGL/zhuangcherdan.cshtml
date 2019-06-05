@@ -1,0 +1,106 @@
+﻿@using RazorEngine.Text;
+@using System.Data;
+@{
+    //string mc = Model.Data.JCXM_MC;
+    //DataTable fmDt = Model.Data.JZFM_DT;
+    //DataTable mldt = Model.Data.JZML_DT;
+    //DataTable mlnrdt = Model.Data.JZMLNR_DT;
+    DataTable dt = Model.Data.dt;
+}
+<style>
+
+    .th th, .th td {
+        font-size: 14px;
+        border: 1px solid gray;
+        border-collapse: collapse;
+    }
+
+    .sbox td {
+        border: 1px solid gray;
+        border-collapse: collapse;
+    }
+
+    .foot {
+        font-weight: bold;
+    }
+
+    .qt th, .qt td {
+        font-size: 14px;
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+</style>
+<table cellspacing=0 align=center style='width:100%;text-align:center;border-collapse:collapse;'>
+    <thead>
+        <tr>
+            <th colspan=6 align=left>车辆牌照:</th>
+            <th colspan=6 align=left>驾驶员:</th>
+            <th colspan=6 align=left>联系电话:</th>
+        </tr>
+        <tr>
+            <th colspan=6 align=left>装车日期:</th>
+            <th colspan=6 style='font-weight:600' align=left>合同号:</th>
+            <th colspan=6 style='font-weight:600' align=left>发车时间:</th>
+        </tr>
+        <tr class='th'><th>序号</th><th>运单号</th><th>发件人</th><th>发件人电话</th><th>收件人</th><th>收件人电话</th><th>货名</th><th>包装</th><th>数量</th><th>重量</th><th>体积</th><th>收件人地址</th><th>到付</th><!-- <th>实际运费</th> --><th>回单类型</th><th>运输方式</th><th>大车送</th><!-- <th>分流费</th> --><th>备注</th></tr><!--<th>到站</th><th>退款</th><th>预付</th><th>欠付</th>-->
+    </thead>
+    <tr class='th foot' style='height:28px;'>
+        <td colspan=12 align='right'>合计：</td>
+        <!-- <td></td>
+        <td></td>
+        <td></td>
+        <td></td>-->
+        <!-- <td></td>
+        <td></td>
+        <td></td> -->
+        <td></td>
+        <!-- 		<td></td>
+         -->
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+
+    <tr>
+        <td colspan=14 align=right>
+            <table width=100% border=0 style='font-weight:600'>
+                <tr>
+                    <td>司机总运费为:</td>
+                    <td></td>
+                    <td>现付:</td>
+                    <td></td>
+                    <td>欠付:</td>
+                    <td></td>
+                    <td>主货到付:</td>
+                    <td></td>
+                    <td>点上付:</td>
+                    <td></td>
+                    <td>押金:</td>
+                    <td></td>
+                    <td rowspan=3 colspan=2></td>
+                </tr>
+                <tr>
+                    <td colspan=6 align='left'>承运人签字:</td>
+                    <td colspan=6 align='left'>托运人签字:</td>
+                </tr>
+                <tr>
+                    <td colspan=6 align='left'>点上签字:</td>
+                    <td colspan=6 align='left' style='font-size:10px'>(如收到所有货物数量齐全,货物完好无损)</td>
+
+                </tr>
+            </table>
+        </td>
+        <td colspan="3" align=right>
+            <table cellspacing=0 width=100% class='qt' style='font-weight:600'>
+                <th>
+                <td></td></th>
+                <tr><td>总分流费：</td><td width=50%></td></tr>
+                <tr><td>总配运费：</td><td width=50%></td></tr>
+                <tr><td>最后结余：</td><td width=50%></td></tr>
+            </table>
+        </td>
+    </tr>
+    <tr><td colspan=9 align="left" style='font-size:13px;font-weight:600;'>备注:</td><td colspan=9 align=left style='font-size:13px;'>到达日期:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;年&nbsp;&nbsp;&nbsp;&nbsp;月&nbsp;&nbsp;&nbsp;&nbsp;日</td></tr>
+
+</table>

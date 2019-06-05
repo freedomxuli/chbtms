@@ -1,16 +1,32 @@
 ﻿var pageSize = 15;
+var page = 1;
+
 
 var bscStore = Ext.create('Ext.data.Store', {
     fields: [
-       { name: 'id' },
-       { name: 'mc' }
+        { name: 'officeId' },
+        { name: 'officeName' }
+    ]
+});
+
+var bscStore2 = Ext.create('Ext.data.Store', {
+    fields: [
+        { name: 'officeId' },
+        { name: 'officeName' }
     ]
 });
 
 var itemStore = Ext.create('Ext.data.Store', {
     fields: [
-       { name: 'id' },
-       { name: 'mc' }
+        { name: 'id' },
+        { name: 'itemName' }
+    ]
+});
+
+var itemStore2 = Ext.create('Ext.data.Store', {
+    fields: [
+        { name: 'id' },
+        { name: 'itemName' }
     ]
 });
 
@@ -20,17 +36,76 @@ var skStore = createSFW4Store({
     total: 1,
     currentPage: 1,
     fields: [
-       { name: 'id' },
-       { name: 'officeName' },
-       { name: 'incomeDate' },
-       { name: 'itemName' },
-       { name: 'money' },
-       { name: 'memo' }
+        { name: 'id' },
+        { name: 'officeName' },
+        { name: 'incomeDate' },
+        { name: 'itemName' },
+        { name: 'money' },
+        { name: 'memo' }
     ],
     onPageChange: function (sto, nPage, sorters) {
-        getSKList(nPage);
+        page = nPage;
+        searchIncome(nPage);
     }
 });
+
+function searchIncome(nPage) {
+    var offid = Ext.getCmp('cx_bsc').getValue();
+    var itemid = Ext.getCmp('cx_item').getValue();
+    var st = Ext.getCmp('start_time').getValue();
+    var ed = Ext.getCmp('end_time').getValue();
+    CS('CZCLZ.Cwdj.GetIncomeByPage', function (retVal) {
+        skStore.setData({
+            data: retVal.dt,
+            pageSize: pageSize,
+            total: retVal.ac,
+            currentPage: retVal.cp
+        });
+    }, CS.onError, nPage, pageSize, offid, itemid, st, ed);
+}
+
+function edit(id) {
+    var win = new addWin({ skid: id });
+    win.show(null, function () {
+        MCS(
+            function (ret) {
+                var retVal = ret[0].retVal;
+                bscStore.loadData(retVal);
+                var retVal2 = ret[1].retVal;
+                itemStore.loadData(retVal2);
+                var retVal3 = ret[2].retVal[0];
+                console.log(retVal3);
+                var form = Ext.getCmp('addform');
+                form.form.setValues(retVal3);
+
+            }, CS.onError,
+            {
+                ctx: 'CZCLZ.BscMag.GetBsc2', args: []
+            }
+            ,
+            {
+                ctx: 'CZCLZ.SFKMag.GetAllSkxm', args: []
+            }
+            ,
+            {
+                ctx: 'CZCLZ.Cwdj.GetIncomeByID', args: [id]
+            }
+        );
+    });
+}
+
+function del(id) {
+    Ext.MessageBox.confirm("提示", "是否删除?", function (obj) {
+        if (obj == "yes") {
+            CS('CZCLZ.Cwdj.DelIncome', function (retVal) {
+                searchIncome(page);
+            }, CS.onError, id);
+        }
+        else {
+            return;
+        }
+    });
+}
 
 Ext.define('addWin', {
     extend: 'Ext.window.Window',
@@ -45,7 +120,7 @@ Ext.define('addWin', {
 
     initComponent: function () {
         var me = this;
-
+        var id = me.skid;
         Ext.applyIf(me, {
             items: [
                 {
@@ -57,6 +132,7 @@ Ext.define('addWin', {
                     items: [
                         {
                             xtype: 'form',
+                            id: 'addform',
                             flex: 1,
                             width: 410,
                             layout: {
@@ -67,54 +143,62 @@ Ext.define('addWin', {
                             items: [
                                 {
                                     xtype: 'combobox',
-                                    id: 'add_officeId',
+                                    id: 'officeId',
+                                    name: 'officeId',
                                     columnWidth: 1,
                                     fieldLabel: '办事处',
                                     editable: false,
                                     labelWidth: 60,
                                     store: bscStore,
                                     queryMode: 'local',
-                                    displayField: 'mc',
-                                    valueField: 'id',
-                                    padding: 10,
-                                    value: ''
+                                    displayField: 'officeName',
+                                    valueField: 'officeId',
+                                    allowBlank: false,
+                                    padding: 10
                                 },
                                 {
                                     xtype: 'datefield',
-                                    id: 'add_incomeDate',
+                                    id: 'incomeDate',
+                                    name: 'incomeDate',
                                     columnWidth: 1,
                                     labelWidth: 60,
                                     format: 'Y-m-d',
                                     padding: 10,
+                                    allowBlank: false,
                                     fieldLabel: '收款时间'
                                 },
                                 {
                                     xtype: 'combobox',
-                                    id: 'add_itemId',
+                                    id: 'itemId',
+                                    name: 'itemId',
                                     columnWidth: 1,
                                     fieldLabel: '收款科目',
                                     editable: false,
                                     labelWidth: 60,
                                     store: itemStore,
                                     queryMode: 'local',
-                                    displayField: 'mc',
+                                    displayField: 'itemName',
                                     valueField: 'id',
+                                    allowBlank: false,
                                     padding: 10
                                 },
                                 {
                                     xtype: 'numberfield',
-                                    id: 'add_money',
+                                    id: 'money',
+                                    name: 'money',
                                     columnWidth: 1,
                                     labelWidth: 60,
                                     padding: 10,
                                     minValue: 1,
                                     allowDecimals: true,
                                     decimalPrecision: 2,
+                                    allowBlank: false,
                                     fieldLabel: '金额'
                                 },
                                 {
                                     xtype: 'textareafield',
-                                    id: 'add_memo',
+                                    id: 'memo',
+                                    name: 'memo',
                                     columnWidth: 1,
                                     labelWidth: 60,
                                     padding: 10,
@@ -128,7 +212,25 @@ Ext.define('addWin', {
                         {
                             text: '保存',
                             handler: function () {
-                                me.close();
+                                var form = Ext.getCmp('addform');
+                                if (form.form.isValid()) {
+                                    var values = form.form.getValues(false);
+                                    CS('CZCLZ.Cwdj.AddInCome', function (ret) {
+                                        if (ret) {
+                                            Ext.Msg.show({
+                                                title: '提示',
+                                                msg: '保存成功!',
+                                                buttons: Ext.MessageBox.OK,
+                                                icon: Ext.MessageBox.INFO,
+                                                fn: function () {
+                                                    searchIncome(page);
+                                                    me.close();
+                                                }
+                                            });
+                                        }
+
+                                    }, CS.onError, id, values);
+                                }
                             }
                         },
                         {
@@ -172,7 +274,10 @@ Ext.onReady(function () {
                                 sortable: false,
                                 menuDisabled: true,
                                 flex: 1,
-                                text: '操作'
+                                text: '操作',
+                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                    return "<a href='JavaScript:void(0)' onclick='edit(\"" + value + "\")'>修改</a>  <a href='JavaScript:void(0)' onclick='del(\"" + value + "\")'>删除</a>";
+                                }
                             },
                             {
                                 xtype: 'gridcolumn',
@@ -228,11 +333,10 @@ Ext.onReady(function () {
                                         fieldLabel: '办事处',
                                         editable: false,
                                         labelWidth: 50,
-                                        store: bscStore,
+                                        store: bscStore2,
                                         queryMode: 'local',
-                                        displayField: 'mc',
-                                        valueField: 'id',
-                                        value: ''
+                                        displayField: 'officeName',
+                                        valueField: 'officeId'
                                     },
                                     {
                                         xtype: 'datefield',
@@ -240,7 +344,7 @@ Ext.onReady(function () {
                                         width: 160,
                                         labelWidth: 60,
                                         format: 'Y-m-d',
-                                        fieldLabel: '运单时间'
+                                        fieldLabel: '收款时间'
                                     },
                                     {
                                         xtype: 'label',
@@ -259,21 +363,17 @@ Ext.onReady(function () {
                                         fieldLabel: '收款科目',
                                         editable: false,
                                         labelWidth: 60,
-                                        store: itemStore,
                                         queryMode: 'local',
-                                        displayField: 'mc',
                                         valueField: 'id',
-                                        value: ''
+                                        displayField: 'itemName',
+                                        store: itemStore2
                                     },
                                     {
                                         xtype: 'button',
                                         iconCls: 'search',
                                         text: '查询',
                                         handler: function () {
-                                            var win = new addWin();
-                                            win.show(null, function () {
-
-                                            });
+                                            searchIncome(page);
                                         }
                                     },
                                     {
@@ -281,9 +381,26 @@ Ext.onReady(function () {
                                         iconCls: 'add',
                                         text: '新增项目',
                                         handler: function () {
-                                            var win = new addWin();
+                                            var win = new addWin({ id: "" });
                                             win.show(null, function () {
+                                                MCS(
+                                                    function (ret) {
+                                                        var retVal = ret[0].retVal;
+                                                        bscStore.loadData(retVal);
+                                                        Ext.getCmp('officeId').setValue('');
+                                                        var retVal2 = ret[1].retVal;
+                                                        itemStore.loadData(retVal2);
+                                                        Ext.getCmp('itemId').setValue('');
 
+                                                    }, CS.onError,
+                                                    {
+                                                        ctx: 'CZCLZ.BscMag.GetBsc2', args: []
+                                                    }
+                                                    ,
+                                                    {
+                                                        ctx: 'CZCLZ.SFKMag.GetAllSkxm', args: []
+                                                    }
+                                                );
                                             });
                                         }
                                     }
@@ -305,11 +422,16 @@ Ext.onReady(function () {
         }
 
     });
-
     new MainView();
+    InlineCS('CZCLZ.SFKMag.GetAllSkxm', function (retVal) {
+        itemStore2.add({ 'id': '', 'itemName': '收款科目' });
+        itemStore2.loadData(retVal, true);
+        Ext.getCmp('cx_item').setValue('');
+    }, CS.onError);
+    InlineCS('CZCLZ.BscMag.GetBsc2', function (retVal) {
+        bscStore2.add({ 'officeId': '', 'officeName': '办事处' });
+        bscStore2.loadData(retVal, true);
+        Ext.getCmp('cx_bsc').setValue('');
+    }, CS.onError);
+    searchIncome(1);
 });
-
-function getSKList(nPage) {
-
-}
-

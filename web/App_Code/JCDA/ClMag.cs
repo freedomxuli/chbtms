@@ -51,12 +51,12 @@ public class ClMag
                     where += " and " + dbc.C_EQ("a.kind", Convert.ToInt32(kind));
                 }
                 string str = @"select a.*,b.officeName from jichu_driver a left join jichu_office b on a.officeId=b.officeId
-                          where a.status=0 " + where + " and a.companyId='"+SystemUser.CurrentUser.CompanyID+"' order by addtime desc";
+                          where a.status=0 " + where + " and a.companyId='" + SystemUser.CurrentUser.CompanyID + "' order by addtime desc";
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
 
-                return new { dt = dtPage, cp = cp, ac = ac };
+                return new { dt = dtPage, cp = cp, ac = ac, csbsc = SystemUser.CurrentUser.CsOfficeId };
             }
             catch (Exception ex)
             {
@@ -97,7 +97,7 @@ public class ClMag
     /// <param name="jsr"></param>
     /// <returns></returns>
     [CSMethod("SaveCl")]
-    public object SaveCl(JSReader jsr,string kind)
+    public object SaveCl(JSReader jsr, string kind)
     {
         var user = SystemUser.CurrentUser;
         string userid = user.UserID;
@@ -137,11 +137,11 @@ public class ClMag
                     dr["address"] = jsr["address"];
                     dr["tel"] = jsr["tel"];
                     dr["carNum"] = carNum;
-                    dr["status"]=0;
+                    dr["status"] = 0;
                     dr["addtime"] = DateTime.Now;
                     dr["adduser"] = userid;
                     dr["updatetime"] = DateTime.Now;
-                    dr["updateuser"]= userid;
+                    dr["updateuser"] = userid;
                     dr["companyId"] = SystemUser.CurrentUser.CompanyID;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);

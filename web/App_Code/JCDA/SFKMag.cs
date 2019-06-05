@@ -46,7 +46,7 @@ public class SFKMag
                           + " or " + dbc.C_Like("itemName", keyword.Trim(), LikeStyle.LeftAndRightLike);
                 }
 
-                string str = @"select * from caiwu_income_item where status=0 " + where + " and companyId='"+SystemUser.CurrentUser.CompanyID+"' order by addtime desc";
+                string str = @"select * from caiwu_income_item where status=0 " + where + " and companyId='" + SystemUser.CurrentUser.CompanyID + "' order by addtime desc";
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -111,7 +111,7 @@ public class SFKMag
                     dr["id"] = new Guid(id);
                     dr["itemName"] = itemName;
                     dr["itemCode"] = jsr["itemCode"];
-                    dr["type"] =0 ;
+                    dr["type"] = 0;
                     dr["isIncome"] = Convert.ToInt32(jsr["isIncome"].ToString());
                     dr["memo"] = jsr["memo"];
                     dt.Rows.Add(dr);
@@ -152,6 +152,45 @@ public class SFKMag
             }
         }
     }
+
+    [CSMethod("GetAllSkxm")]
+    public DataTable GetAllSkxm()
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string str = "select * from caiwu_income_item where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID);
+                SqlCommand cmd = new SqlCommand(str);
+                DataTable dt = dbc.ExecuteDataTable(cmd);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("GetAllFkxm")]
+    public DataTable GetAllFkxm()
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string str = "select * from caiwu_expense_item where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID);
+                SqlCommand cmd = new SqlCommand(str);
+                DataTable dt = dbc.ExecuteDataTable(cmd);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
     /// <summary>
     /// 删除收款项目
     /// </summary>

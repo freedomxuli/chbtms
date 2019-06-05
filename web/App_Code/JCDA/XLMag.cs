@@ -46,16 +46,18 @@ public class XLMag
                           + " or " + dbc.C_Like("c.officeName", keyword.Trim(), LikeStyle.LeftAndRightLike) + ")";
                 }
 
-                string str = @"select a.*,b.officeName as fromOfficeName,c.officeName as toOfficeName from jichu_xianlu a left join jichu_office b on a.fromOfficeId=b.officeId
+                string str = @"select a.*,b.officeName as fromOfficeName,c.officeName as toOfficeName from jichu_xianlu a 
+                              left join jichu_office b on a.fromOfficeId=b.officeId
                               left join jichu_office c on a.toOfficeId=c.officeId
                               where a.status=0 " + where + " and a.companyId='" + SystemUser.CurrentUser.CompanyID + "' order by a.addtime desc";
                 //开始取分页数据   
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
-
                 dtPage.Columns.Add("XGQT");
 
-                str = "select a.*,b.UserName from jichu_xianlu2user a left join tb_b_user b on a.userId=b.UserID order by b.UserName";
+                str = @"select a.*,b.UserXM from jichu_xianlu2user a 
+                        left join tb_b_user b on a.userId=b.UserID 
+                        order by b.addtime desc";
                 DataTable xldt = dbc.ExecuteDataTable(str);
 
                 if (dtPage.Rows.Count > 0)
@@ -65,7 +67,7 @@ public class XLMag
                         DataRow[] drs = xldt.Select("traderId='" + dtPage.Rows[i]["traderId"] + "'");
                         if (drs.Length > 0)
                         {
-                            string[] arr = drs.Select(x => x["UserName"].ToString()).ToArray();
+                            string[] arr = drs.Select(x => x["UserXM"].ToString()).ToArray();
                             dtPage.Rows[i]["XGQT"] = string.Join(",", arr);
                         }
                     }
@@ -145,11 +147,11 @@ public class XLMag
                     dr["fromOfficeId"] = fromOfficeId;
                     dr["toOfficeId"] = toOfficeId;
                     dr["companyId"] = companyId;
-                    dr["status"]=0;
+                    dr["status"] = 0;
                     dr["addtime"] = DateTime.Now;
                     dr["adduser"] = userid;
                     dr["updatetime"] = DateTime.Now;
-                    dr["updateuser"]= userid;
+                    dr["updateuser"] = userid;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
                 }
@@ -220,7 +222,7 @@ public class XLMag
             dbc.BeginTransaction();
             try
             {
-                string str = "select UserID,UserName from tb_b_user	where companyId='" + SystemUser.CurrentUser.CompanyID + "' order by  UserName";
+                string str = "select UserID,UserXM from tb_b_user	where companyId='" + SystemUser.CurrentUser.CompanyID + "' order by  UserName";
                 DataTable userdt = dbc.ExecuteDataTable(str);
 
                 str = "select distinct userId from jichu_xianlu2user where traderId='" + xlid + "'";
@@ -238,7 +240,7 @@ public class XLMag
     }
 
     [CSMethod("SaveXL2YH")]
-    public object SaveXL2YH(JSReader js,string xlid)
+    public object SaveXL2YH(JSReader js, string xlid)
     {
         using (DBConnection dbc = new DBConnection())
         {
@@ -251,11 +253,11 @@ public class XLMag
                 DataTable dt = dbc.GetEmptyDataTable("jichu_xianlu2user");
                 for (int i = 0; i < js.ToArray().Length; i++)
                 {
-                        DataRow dr = dt.NewRow();
-                        dr["id"] = Guid.NewGuid();
-                        dr["traderId"] = xlid;
-                        dr["userId"] = js[i]["UserID"].ToString();
-                        dt.Rows.Add(dr);
+                    DataRow dr = dt.NewRow();
+                    dr["id"] = Guid.NewGuid();
+                    dr["traderId"] = xlid;
+                    dr["userId"] = js[i]["UserID"].ToString();
+                    dt.Rows.Add(dr);
                 }
 
                 dbc.InsertTable(dt);
@@ -267,6 +269,26 @@ public class XLMag
                 dbc.RoolbackTransaction();
                 throw ex;
             }
+        }
+    }
+
+    public string GetCompanyZX(string userid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            SystemUser user = SystemUser.GetUserByID(userid);
+            string sql = @"select a.*,c.officeName toOfficeName from jichu_xianlu a
+                            left join jichu_office c on a.toOfficeId=c.officeId
+                            where a.status=0 and a.companyId=" + dbc.ToSqlValue(user.CompanyID) + " and a.fromOfficeId=" + dbc.ToSqlValue(user.CsOfficeId);
+            DataTable dt = dbc.ExecuteDataTable(sql);
+            string companyXL = user.CsOfficeName;
+            List<string> xlArr = new List<string>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                xlArr.Add(dr["toOfficeName"].ToString());
+            }
+            companyXL += "至" + string.Join("、", xlArr) + "专线";
+            return companyXL;
         }
     }
 }

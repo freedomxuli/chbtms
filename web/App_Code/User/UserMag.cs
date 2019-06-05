@@ -446,6 +446,7 @@ public class UserMag
                     //dr["ToRoute"] = ;
                     dr["companyId"] = companyId;
                     //dr["PayPassword"] = ;
+                    dr["csOfficeId"] = jsr["csOfficeId"].ToString();
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
 
@@ -456,7 +457,7 @@ public class UserMag
                     rdr["userId"] = new Guid(YHID);
                     rdr["roleId"] = jsr["roleId"].ToString();
                     rdr["companyId"] = companyId;
-                    rdr["csOfficeId"] = jsr["csOfficeId"].ToString();
+                   
                     rdt.Rows.Add(rdr);
                     dbc.InsertTable(rdt);
 
@@ -511,7 +512,7 @@ public class UserMag
                     var dr = dt.NewRow();
                     dr["userofficeId"] = Guid.NewGuid().ToString();
                     dr["userId"] = YHID;
-                    dr["officeId"] = officejsr[i].ToString();
+                    dr["officeId"] = officejsr[i]["officeId"].ToString();
                     dr["companyId"] = companyId;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
@@ -525,7 +526,7 @@ public class UserMag
                     var dr = dt.NewRow();
                     dr["usertraderId"] = Guid.NewGuid().ToString();
                     dr["userId"] = YHID;
-                    dr["traderId"] = empojsr[i].ToString();
+                    dr["traderId"] = empojsr[i]["employId"].ToString();
                     dr["companyId"] = companyId;
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
@@ -971,4 +972,68 @@ public class UserMag
         return Privileges.ToArray();
     }
 
+    /// <summary>
+    /// 获取当前用户所在公司的所有办事处
+    /// </summary>
+    /// <returns></returns>
+    [CSMethod("GetBscByCompany")]
+    public DataTable GetBscByCompany()
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string str = @"select officeId,officeName,0 glzt from jichu_office 
+                    where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + @" 
+                    order by officeCode,addtime desc";
+                DataTable dt = dbc.ExecuteDataTable(str);
+
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 获取当前用户所在公司的所有业务员
+    /// </summary>
+    /// <returns></returns>
+    [CSMethod("GetEmployByCompany")]
+    public DataTable GetEmployByCompany()
+    {
+        using (var dbc = new DBConnection())
+        {
+            try
+            {
+                string companyID = SystemUser.CurrentUser.CompanyID;
+                string sql = @"select employId,employName,officeId,0 as glzt from jichu_employ 
+                where status = 0 and companyId = " + dbc.ToSqlValue(companyID) + @"
+                order by employCode,addtime desc";
+                DataTable dt_employ = dbc.ExecuteDataTable(sql);
+                return dt_employ;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("GetUserGlBscAndYwy")]
+    public object GetUserGlBscAndYwy(string userid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            string sql = @"select * from tb_b_user_office where companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and userId=" + dbc.ToSqlValue(userid);
+            DataTable offDt = dbc.ExecuteDataTable(sql);
+
+            sql = @"select * from tb_b_user_trader where companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and userId=" + dbc.ToSqlValue(userid);
+            DataTable traderDt = dbc.ExecuteDataTable(sql);
+
+            return new { offDt = offDt, traderDt = traderDt };
+        }
+    }
 }

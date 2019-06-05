@@ -38,18 +38,16 @@ function BindData(nPage) {
 //************************************页面方法***************************************
 
 function del(id) {
-    //Ext.MessageBox.confirm("提示", "是否删除你所选?", function (obj) {
-    //    if (obj == "yes") {
-    //        CS('CZCLZ.ZCDMag.DeleteZCD', function (retVal) {
-    //            if (retVal) {
-    //                BindData(1);
-    //            }
-    //        }, CS.onError, id);
-    //    }
-    //    else {
-    //        return;
-    //    }
-    //});
+    Ext.MessageBox.confirm("提示", "是否删除你所选?", function (obj) {
+        if (obj == "yes") {
+            CS('CZCLZ.ZCDMag.DelZcd', function (retVal) {
+                BindData(1);
+            }, CS.onError, id);
+        }
+        else {
+            return;
+        }
+    });
 }
 function Edit(id) {
     FrameStack.pushFrame({

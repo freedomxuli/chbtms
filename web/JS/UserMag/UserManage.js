@@ -1,9 +1,18 @@
-﻿var pageSize = 15;
+﻿//-----------------------------------------------------------全局变量-----------------------------------------------------------------
+var pageSize = 15;
 var cx_role;
 var cx_yhm;
 var cx_xm;
-//************************************数据源*****************************************
-var store = createSFW4Store({
+//-----------------------------------------------------------数据源-------------------------------------------------------------------
+//查询界面角色store
+var roleStore = Ext.create('Ext.data.Store', {
+    fields: [
+        { name: 'roleId' },
+        { name: 'roleName' }
+    ]
+});
+
+var yhstore = createSFW4Store({
     data: [],
     pageSize: pageSize,
     total: 1,
@@ -24,14 +33,7 @@ var store = createSFW4Store({
     }
 });
 
-
-var roleStore = Ext.create('Ext.data.Store', {
-    fields: [
-        { name: 'roleId' },
-        { name: 'roleName' }
-    ]
-});
-
+//编辑页面角色store
 var roleStore1 = Ext.create('Ext.data.Store', {
     fields: [
         { name: 'roleId' },
@@ -39,74 +41,131 @@ var roleStore1 = Ext.create('Ext.data.Store', {
     ]
 });
 
-var officeStore = Ext.create('Ext.data.Store', {
+//编辑页面从属办事处store
+var csbscStore = Ext.create('Ext.data.Store', {
     fields: [
         { name: 'VALUE' },
         { name: 'TEXT' }
     ]
 });
 
-
-var EmployStore = Ext.create('Ext.data.Store', {
+var officeStore = Ext.create('Ext.data.Store', {
     fields: [
-        'employId', 'officeId', 'employName', 'glzt'
-    ]
-});
-var OfficeStore = Ext.create('Ext.data.Store', {
-    fields: [
-        { name: 'userId' },
         { name: 'officeId' },
         { name: 'officeName' },
         { name: 'glzt' }
     ]
 });
+var officeSelStore = Ext.create('Ext.data.Store', {
+    fields: [
+        { name: 'officeId' },
+        { name: 'officeName' },
+        { name: 'glzt' }
+    ]
+});
+var employStore = Ext.create('Ext.data.Store', {
+    fields: [
+        'employId', 'officeId', 'employName', 'glzt'
+    ]
+});
+var employSelStore = Ext.create('Ext.data.Store', {
+    fields: [
+        'employId', 'officeId', 'employName', 'glzt'
+    ]
+});
+//-----------------------------------------------------------页面方法-----------------------------------------------------------------
+//获取查询页面角色
+function loadSearchJs() {
+    CS('CZCLZ.YHGLClass.GetRole', function (retVal) {
+        if (retVal) {
+            roleStore.removeAll();
+            roleStore.add([{ 'roleId': '', 'roleName': '全部角色' }]);
+            roleStore.loadData(retVal, true);
+            Ext.getCmp("cx_role").setValue('');
+        }
+    }, CS.onError);
+}
 
-var offidArr = [];
-//************************************数据源*****************************************
-
-//************************************页面方法***************************************
+//获取人员list
 function getUser(nPage) {
+    cx_role = Ext.getCmp("cx_role").getValue();
+    cx_yhm = Ext.getCmp("cx_yhm").getValue();
+    cx_xm = Ext.getCmp("cx_xm").getValue();
+
     CS('CZCLZ.YHGLClass.GetUserList', function (retVal) {
-        store.setData({
+        yhstore.setData({
             data: retVal.dt,
             pageSize: pageSize,
             total: retVal.ac,
             currentPage: retVal.cp
         });
-    }, CS.onError, nPage, pageSize, Ext.getCmp("cx_role").getValue(), Ext.getCmp("cx_yhm").getValue(), Ext.getCmp("cx_xm").getValue());
+    }, CS.onError, nPage, pageSize, cx_role, cx_yhm, cx_xm);
 }
 
+function loadEdit(r) {
+    MCS(
+        function (ret) {
+            var retVal = ret[0].retVal;
+            roleStore1.loadData(retVal);
+            var retVal2 = ret[1].retVal;
+            csbscStore.loadData(retVal2);
 
-function EditUser(id) {
-    var r = store.findRecord("UserID", id).data;
-    CS('CZCLZ.YHGLClass.GetRole', function (retVal) {
-        if (retVal) {
-            roleStore1.loadData(retVal, false);
-            var win = new addWin();
-            win.show(null, function () {
-                showCsOffice();
-                win.setTitle("用户修改");
+            if (r) {
                 var form = Ext.getCmp('addform');
                 form.form.setValues(r);
-                showOffice(id);
-            });
+            }
+        }, CS.onError,
+        {
+            ctx: 'CZCLZ.YHGLClass.GetRole', args: []
         }
-    }, CS.onError);
-
+        ,
+        {
+            ctx: 'CZCLZ.BscMag.GetBsc', args: []
+        }
+    );
 }
 
-//关联业务员显示
-function showEmploy(userid, zt) {
-    CS('CZCLZ.YwyMag.GetEmployByOffice', function (retVal) {
-        EmployStore.removeAll();
-        EmployStore.loadData(retVal);
+function loadGrid(id) {
+    MCS(
+        function (ret) {
+            var retVal = ret[0].retVal;
+            officeStore.loadData(retVal);
+            var retVal2 = ret[1].retVal;
+            employStore.loadData(retVal2);
 
-        for (var i = 0; i < EmployStore.data.length; i++) {
-            if (EmployStore.getAt(i).data.glzt == 1) {
-                Ext.getCmp('emgri').selModel.select(EmployStore.getAt(i), true, false);
-            }
+            var retVal3 = ret[2].retVal;
+            var model = Ext.getCmp('ofgrid').getSelectionModel();
+            var arr = [];
+            officeStore.each(function (record) {
+                for (var i = 0; i < retVal3.offDt.length; i++) {
+                    if (record.data.officeId == retVal3.offDt[i].officeId) {
+                        arr.push(record);
+                    }
+                }
+            });
+            model.select(arr);
+            
+            var model2 = Ext.getCmp('emgrid').getSelectionModel();
+            var arr = [];
+            employStore.each(function (record) {
+                for (var i = 0; i < retVal3.traderDt.length; i++) {
+                    if (record.data.employId == retVal3.traderDt[i].traderId) {
+                        arr.push(record);
+                    }
+                }
+            });
+            model2.select(arr);
+        }, CS.onError,
+        {
+            ctx: 'CZCLZ.YHGLClass.GetBscByCompany', args: []
+        },
+        {
+            ctx: 'CZCLZ.YHGLClass.GetEmployByCompany', args: []
+        },
+        {
+            ctx: 'CZCLZ.YHGLClass.GetUserGlBscAndYwy', args: [id]
         }
-    }, CS.onError, userid, offidArr, zt)
+    );
 }
 
 //关联办事处显示
@@ -117,7 +176,7 @@ function showOffice(userId) {
             OfficeStore.loadData(retVal.officeGlDt);
             for (var i = 0; i < OfficeStore.data.length; i++) {
                 if (OfficeStore.getAt(i).data.glzt == 1) {
-                    Ext.getCmp('ofgri').selModel.select(OfficeStore.getAt(i), true, false);
+                    sm_office.select(OfficeStore.getAt(i));
                 }
             }
             showEmploy(userId, 0);
@@ -126,17 +185,16 @@ function showOffice(userId) {
     }, CS.onError, userId)
 }
 
-function showCsOffice() {
-    CS('CZCLZ.BscMag.GetBsc', function (retVal) {
-        if (retVal.length > 0) {
-            officeStore.add([{ 'TEXT': '', 'VALUE': '' }]);
-            officeStore.loadData(retVal, true);
-        }
-    }, CS.onError)
+//编辑用户
+function EditUser(id) {
+    var r = yhstore.findRecord("UserID", id).data;
+    var win = new addWin({ title: '用户修改' });
+    win.show(null, function () {
+        loadEdit(r);
+        loadGrid(id);
+    });
 }
-//************************************页面方法***************************************
-
-//************************************弹出界面***************************************
+//-----------------------------------------------------------用户编辑界面-----------------------------------------------------------------
 Ext.define('addWin', {
     extend: 'Ext.window.Window',
     width: 600,
@@ -232,11 +290,10 @@ Ext.define('addWin', {
                                 allowBlank: false,
                                 editable: false,
                                 labelWidth: 70,
-                                store: officeStore,
+                                store: csbscStore,
                                 queryMode: 'local',
                                 displayField: 'TEXT',
-                                valueField: 'VALUE',
-                                value: ''
+                                valueField: 'VALUE'
                             }
                         ]
                     },
@@ -252,10 +309,10 @@ Ext.define('addWin', {
                         items: [
                             {
                                 xtype: 'gridpanel',
-                                store: OfficeStore,
+                                store: officeStore,
                                 width: 300,
                                 selModel: sm_office,
-                                id: 'ofgri',
+                                id: 'ofgrid',
                                 columns: [
                                     {
                                         xtype: 'gridcolumn',
@@ -284,29 +341,31 @@ Ext.define('addWin', {
                                     }
                                 ],
                                 listeners: {
-                                    itemclick: function (value, record, item, index, e, eOpts) {
-
-                                    },
                                     deselect: function (model, record, index) {//取消选中时产生的事件
-                                        var userid = record.data.userId == null ? '' : record.data.userId;
-                                        var offid = record.data.officeId;
-                                        //for (var i = 0; i < EmployStore.data.length; i++) {
-                                        //    if (EmployStore.data.items[i].data.officeId == offid) {
-                                        //        EmployStore.remove(EmployStore.data.items[i]);
-                                        //    }
-                                        //}
-                                        //Ext.getCmp("emgri").reconfigure(EmployStore);
-                                        var index = offidArr.indexOf(offid);
-                                        if (index > -1) {
-                                            offidArr.splice(index, 1);
+                                        record.data.glzt = 0;
+
+                                        //选择预存
+                                        for (var i = 0; i < officeSelStore.data.length; i++) {
+                                            if (officeSelStore.data.items[i].data.officeId == record.data.officeId) {
+                                                officeSelStore.remove(officeSelStore.data.items[i]);
+                                            }
                                         }
-                                        showEmploy(userid, 1);
                                     },
                                     select: function (model, record, index) {//record被选中时产生的事件
-                                        var userid = record.data.userId == null ? '' : record.data.userId;
-                                        var offid = record.data.officeId;
-                                        offidArr.push(offid);
-                                        showEmploy(userid, 1);
+                                        record.data.glzt = 1;
+
+                                        //选择预存
+                                        var n = 1;
+                                        if (officeSelStore.data.length > 0) {
+                                            for (var i = 0; i < officeSelStore.data.length; i++) {
+                                                if (officeSelStore.data.items[i].data.officeId == record.data.officeId) {
+                                                    n--;
+                                                }
+                                            }
+                                        }
+                                        if (n == 1) {
+                                            officeSelStore.add(record.data);
+                                        }
                                     }
                                 }
                             }
@@ -322,9 +381,9 @@ Ext.define('addWin', {
                         items: [
                             {
                                 xtype: 'gridpanel',
-                                store: EmployStore,
+                                store: employStore,
                                 selModel: sm_emp,
-                                id: 'emgri',
+                                id: 'emgrid',
                                 width: 300,
                                 columns: [
                                     {
@@ -350,7 +409,35 @@ Ext.define('addWin', {
                                         sortable: false,
                                         menuDisabled: true,
                                     }
-                                ]
+                                ],
+                                listeners: {
+                                    deselect: function (model, record, index) {//取消选中时产生的事件
+                                        record.data.glzt = 0;
+
+                                        //选择预存
+                                        for (var i = 0; i < employSelStore.data.length; i++) {
+                                            if (employSelStore.data.items[i].data.employId == record.data.employId) {
+                                                employSelStore.remove(employSelStore.data.items[i]);
+                                            }
+                                        }
+                                    },
+                                    select: function (model, record, index) {//record被选中时产生的事件
+                                        record.data.glzt = 1;
+
+                                        //选择预存
+                                        var n = 1;
+                                        if (employSelStore.data.length > 0) {
+                                            for (var i = 0; i < employSelStore.data.length; i++) {
+                                                if (employSelStore.data.items[i].data.employId == record.data.employId) {
+                                                    n--;
+                                                }
+                                            }
+                                        }
+                                        if (n == 1) {
+                                            employSelStore.add(record.data);
+                                        }
+                                    }
+                                }
                             }
                         ]
                     }
@@ -366,23 +453,20 @@ Ext.define('addWin', {
                                 var values = form.form.getValues(false);
                                 var me = this;
 
-                                var officeGl = [];
-                                var selOff = Ext.getCmp('ofgri').getSelectionModel().getSelection();
-                                for (var i = 0; i < selOff.length; i++) {
-                                    officeGl.push(selOff[i].get("officeId"))
+                                var xzlist = [];
+                                for (var i = 0; i < officeSelStore.data.items.length; i++) {
+                                    xzlist.push(officeSelStore.data.items[i].data);
                                 }
-
-                                var empGl = [];
-                                var selEmp = Ext.getCmp('emgri').getSelectionModel().getSelection();
-                                for (var i = 0; i < selEmp.length; i++) {
-                                    empGl.push(selEmp[i].get("employId"))
+                                var xzlist2 = [];
+                                for (var i = 0; i < employSelStore.data.items.length; i++) {
+                                    xzlist2.push(employSelStore.data.items[i].data);
                                 }
                                 CS('CZCLZ.YHGLClass.SaveUser', function (retVal) {
                                     if (retVal) {
                                         me.up('window').close();
                                         getUser(1);
                                     }
-                                }, CS.onError, values, officeGl, empGl);
+                                }, CS.onError, values, xzlist, xzlist2);
 
                             }
                         }
@@ -400,223 +484,201 @@ Ext.define('addWin', {
         me.callParent(arguments);
     }
 });
-//************************************弹出界面***************************************
 
-//************************************主界面*****************************************
-Ext.onReady(function () {
-    Ext.define('YhView', {
-        extend: 'Ext.container.Viewport',
+//-----------------------------------------------------------界    面-----------------------------------------------------------------
+Ext.define('YhView', {
+    extend: 'Ext.container.Viewport',
+    layout: {
+        type: 'fit'
+    },
+    initComponent: function () {
+        var me = this;
+        me.items = [
+            {
+                xtype: 'gridpanel',
+                id: 'usergrid',
+                title: '',
+                store: yhstore,
+                columnLines: true,
+                selModel: Ext.create('Ext.selection.CheckboxModel', {
 
-        layout: {
-            type: 'fit'
-        },
-
-        initComponent: function () {
-            var me = this;
-            me.items = [
+                }),
+                columns: [Ext.create('Ext.grid.RowNumberer'),
                 {
-                    xtype: 'gridpanel',
-                    id: 'usergrid',
-                    title: '',
-                    store: store,
-                    columnLines: true,
-                    selModel: Ext.create('Ext.selection.CheckboxModel', {
-
-                    }),
-                    columns: [Ext.create('Ext.grid.RowNumberer'),
-                    {
-                        xtype: 'gridcolumn',
-                        dataIndex: 'UserName',
-                        sortable: false,
-                        menuDisabled: true,
-                        text: "登录名"
-                    },
-                    {
-                        xtype: 'gridcolumn',
-                        dataIndex: 'roleName',
-                        sortable: false,
-                        menuDisabled: true,
-                        text: "角色"
-                    },
-                    {
-                        xtype: 'gridcolumn',
-                        dataIndex: 'UserXM',
-                        sortable: false,
-                        menuDisabled: true,
-                        text: "姓名"
-                    },
-                    {
-                        xtype: 'gridcolumn',
-                        dataIndex: 'UserTel',
-                        sortable: false,
-                        menuDisabled: true,
-                        text: "电话"
-                    },
-                    {
-                        text: '操作',
-                        dataIndex: 'UserID',
-                        width: 120,
-                        sortable: false,
-                        menuDisabled: true,
-                        renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                            var str;
-                            str = "<a onclick='EditUser(\"" + value + "\");'>修改</a>";
-                            return str;
-                        }
+                    xtype: 'gridcolumn',
+                    dataIndex: 'UserName',
+                    sortable: false,
+                    menuDisabled: true,
+                    text: "登录名"
+                },
+                {
+                    xtype: 'gridcolumn',
+                    dataIndex: 'roleName',
+                    sortable: false,
+                    menuDisabled: true,
+                    text: "角色"
+                },
+                {
+                    xtype: 'gridcolumn',
+                    dataIndex: 'UserXM',
+                    sortable: false,
+                    menuDisabled: true,
+                    text: "姓名"
+                },
+                {
+                    xtype: 'gridcolumn',
+                    dataIndex: 'UserTel',
+                    sortable: false,
+                    menuDisabled: true,
+                    text: "电话"
+                },
+                {
+                    text: '操作',
+                    dataIndex: 'UserID',
+                    width: 120,
+                    sortable: false,
+                    menuDisabled: true,
+                    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                        var str;
+                        str = "<a onclick='EditUser(\"" + value + "\");'>修改</a>";
+                        return str;
                     }
-                    ],
-                    viewConfig: {
+                }
+                ],
+                viewConfig: {
 
-                    },
-                    dockedItems: [
-                        {
-                            xtype: 'toolbar',
-                            dock: 'top',
-                            items: [
-                                {
-                                    xtype: 'combobox',
-                                    id: 'cx_role',
-                                    width: 160,
-                                    fieldLabel: '角色',
-                                    editable: false,
-                                    labelWidth: 40,
-                                    store: roleStore,
-                                    queryMode: 'local',
-                                    displayField: 'roleName',
-                                    valueField: 'roleId',
-                                    value: ''
-                                },
-                                {
-                                    xtype: 'textfield',
-                                    id: 'cx_yhm',
-                                    width: 140,
-                                    labelWidth: 50,
-                                    fieldLabel: '用户名'
-                                },
-                                {
-                                    xtype: 'textfield',
-                                    id: 'cx_xm',
-                                    width: 160,
-                                    labelWidth: 70,
-                                    fieldLabel: '真实姓名'
-                                },
-                                {
-                                    xtype: 'buttongroup',
-                                    title: '',
-                                    items: [
-                                        {
-                                            xtype: 'button',
-                                            iconCls: 'search',
-                                            text: '查询',
-                                            handler: function () {
-                                                getUser(1);
-                                            }
+                },
+                dockedItems: [
+                    {
+                        xtype: 'toolbar',
+                        dock: 'top',
+                        items: [
+                            {
+                                xtype: 'combobox',
+                                id: 'cx_role',
+                                width: 160,
+                                fieldLabel: '角色',
+                                editable: false,
+                                labelWidth: 40,
+                                store: roleStore,
+                                queryMode: 'local',
+                                displayField: 'roleName',
+                                valueField: 'roleId',
+                                value: ''
+                            },
+                            {
+                                xtype: 'textfield',
+                                id: 'cx_yhm',
+                                width: 140,
+                                labelWidth: 50,
+                                fieldLabel: '用户名'
+                            },
+                            {
+                                xtype: 'textfield',
+                                id: 'cx_xm',
+                                width: 160,
+                                labelWidth: 70,
+                                fieldLabel: '真实姓名'
+                            },
+                            {
+                                xtype: 'buttongroup',
+                                title: '',
+                                items: [
+                                    {
+                                        xtype: 'button',
+                                        iconCls: 'search',
+                                        text: '查询',
+                                        handler: function () {
+                                            getUser(1);
                                         }
-                                    ]
-                                },
-                                {
-                                    xtype: 'buttongroup',
-                                    title: '',
-                                    items: [
-                                        {
-                                            xtype: 'button',
-                                            iconCls: 'add',
-                                            text: '新增',
-                                            handler: function () {
-                                                CS('CZCLZ.YHGLClass.GetRole', function (retVal) {
-                                                    if (retVal) {
-                                                        roleStore1.loadData(retVal, true);
-                                                        var win = new addWin();
+                                    }
+                                ]
+                            },
+                            {
+                                xtype: 'buttongroup',
+                                title: '',
+                                items: [
+                                    {
+                                        xtype: 'button',
+                                        iconCls: 'add',
+                                        text: '新增',
+                                        handler: function () {
+                                            var win = new addWin();
+                                            win.show(null, function () {
+                                                loadEdit();
+                                                loadGrid();
+                                                //showOffice('');
+                                            });
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                xtype: 'buttongroup',
+                                title: '',
+                                items: [
+                                    {
+                                        xtype: 'button',
+                                        iconCls: 'delete',
+                                        text: '删除',
+                                        handler: function () {
+                                            var idlist = [];
+                                            var grid = Ext.getCmp("usergrid");
+                                            var rds = grid.getSelectionModel().getSelection();
+                                            if (rds.length == 0) {
+                                                Ext.Msg.show({
+                                                    title: '提示',
+                                                    msg: '请选择至少一条要删除的记录!',
+                                                    buttons: Ext.MessageBox.OK,
+                                                    icon: Ext.MessageBox.INFO
+                                                });
+                                                return;
+                                            }
 
-                                                        win.show(null, function () {
-                                                            showOffice('');
-                                                        });
+                                            Ext.MessageBox.confirm('删除提示', '是否要删除数据!', function (obj) {
+                                                if (obj == "yes") {
+                                                    for (var n = 0, len = rds.length; n < len; n++) {
+                                                        var rd = rds[n];
 
+                                                        idlist.push(rd.get("UserID"));
                                                     }
-                                                }, CS.onError);
 
-                                            }
-                                        }
-                                    ]
-                                },
-                                {
-                                    xtype: 'buttongroup',
-                                    title: '',
-                                    items: [
-                                        {
-                                            xtype: 'button',
-                                            iconCls: 'delete',
-                                            text: '删除',
-                                            handler: function () {
-                                                var idlist = [];
-                                                var grid = Ext.getCmp("usergrid");
-                                                var rds = grid.getSelectionModel().getSelection();
-                                                if (rds.length == 0) {
-                                                    Ext.Msg.show({
-                                                        title: '提示',
-                                                        msg: '请选择至少一条要删除的记录!',
-                                                        buttons: Ext.MessageBox.OK,
-                                                        icon: Ext.MessageBox.INFO
-                                                    });
+                                                    CS('CZCLZ.YHGLClass.DelUser', function (retVal) {
+                                                        if (retVal) {
+                                                            getUser(1);
+                                                        }
+                                                    }, CS.onError, idlist);
+                                                }
+                                                else {
                                                     return;
                                                 }
-
-                                                Ext.MessageBox.confirm('删除提示', '是否要删除数据!', function (obj) {
-                                                    if (obj == "yes") {
-                                                        for (var n = 0, len = rds.length; n < len; n++) {
-                                                            var rd = rds[n];
-
-                                                            idlist.push(rd.get("UserID"));
-                                                        }
-
-                                                        CS('CZCLZ.YHGLClass.DelUser', function (retVal) {
-                                                            if (retVal) {
-                                                                getUser(1);
-                                                            }
-                                                        }, CS.onError, idlist);
-                                                    }
-                                                    else {
-                                                        return;
-                                                    }
-                                                });
-
-
-
-                                            }
+                                            });
                                         }
-                                    ]
-                                }
+                                    }
+                                ]
+                            }
 
-                            ]
-                        },
-                        {
-                            xtype: 'pagingtoolbar',
-                            displayInfo: true,
-                            store: store,
-                            dock: 'bottom'
-                        }
-                    ]
-                }
-            ];
-            me.callParent(arguments);
-        }
-    });
+                        ]
+                    },
+                    {
+                        xtype: 'pagingtoolbar',
+                        displayInfo: true,
+                        store: yhstore,
+                        dock: 'bottom'
+                    }
+                ]
+            }
+        ];
+        me.callParent(arguments);
+    }
+});
 
+Ext.onReady(function () {
     new YhView();
 
-    CS('CZCLZ.YHGLClass.GetRole', function (retVal) {
-        if (retVal) {
-            roleStore.add([{ 'roleId': '', 'roleName': '全部角色' }]);
-            roleStore.loadData(retVal, true);
-            Ext.getCmp("cx_role").setValue('');
-        }
-    }, CS.onError, "");
-
-    cx_role = Ext.getCmp("cx_role").getValue();
-    cx_yhm = Ext.getCmp("cx_yhm").getValue();
-    cx_xm = Ext.getCmp("cx_xm").getValue();
+    //加载角色
+    loadSearchJs();
 
     getUser(1);
 
 })
-//************************************主界面*****************************************

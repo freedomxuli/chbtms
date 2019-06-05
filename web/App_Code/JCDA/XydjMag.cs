@@ -48,7 +48,26 @@ public class XydjMag
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
-
+                dtPage.Columns.Add("DJ");
+                foreach (DataRow dr in dtPage.Rows)
+                {
+                    string djstr = "";//☆★
+                    if (dr["grade"] != DBNull.Value)
+                    {
+                        int dj = Convert.ToInt32(dr["grade"]);
+                        int zs = dj / 2;
+                        int ys = dj % 2;
+                        for (int i = 0; i < zs; i++)
+                        {
+                            djstr += "★";
+                        }
+                        for (int i = 0; i < ys; i++)
+                        {
+                            djstr += "☆";
+                        }
+                    }
+                    dr["DJ"] = djstr;
+                }
                 return new { dt = dtPage, cp = cp, ac = ac };
             }
             catch (Exception ex)
