@@ -21,6 +21,7 @@ var BscStore = createSFW4Store({
         { name: 'adduser' },
         { name: 'updatetime' },
         { name: 'updateuser' },
+        { name: 'xh' }
     ],
     //sorters: [{ property: 'b', direction: 'DESC'}],
     onPageChange: function (sto, nPage, sorters) {
@@ -84,7 +85,7 @@ function del(id) {
 Ext.define('addWin', {
     extend: 'Ext.window.Window',
 
-    height: 350,
+    height: 400,
     width: 400,
     layout: {
         type: 'fit'
@@ -190,6 +191,16 @@ Ext.define('addWin', {
                         fieldLabel: '备注',
                         labelWidth: 70,
                         anchor: '100%'
+                    },
+                    {
+                        xtype: 'numberfield',
+                        id: 'xh',
+                        name: 'xh',
+                        fieldLabel: '序号',
+                        labelWidth: 70,
+                        anchor: '100%',
+                        minValue: 0,
+                        allowBlank: false
                     }
                 ],
                 buttonAlign: 'center',

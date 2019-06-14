@@ -45,7 +45,7 @@ public class BscMag
                     where += " and " + dbc.C_Like("officeCode", keyword.Trim(), LikeStyle.LeftAndRightLike)
                           + " and " + dbc.C_Like("officeName", keyword.Trim(), LikeStyle.LeftAndRightLike);
                 }
-                string str = "select * from jichu_office where status=0 " + where + " and companyId='" + SystemUser.CurrentUser.CompanyID + "' order by addtime desc";
+                string str = "select * from jichu_office where status=0 " + where + " and companyId='" + SystemUser.CurrentUser.CompanyID + "' order by xh";
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -74,7 +74,7 @@ public class BscMag
             {
                 string str = "select * from jichu_office where officeId=@officeId";
                 SqlCommand cmd = new SqlCommand(str);
-                cmd.Parameters.Add("@officeId", officeid);
+                cmd.Parameters.AddWithValue("@officeId", officeid);
                 DataTable dt = dbc.ExecuteDataTable(cmd);
                 return dt;
             }
@@ -155,6 +155,8 @@ public class BscMag
                     dr["updatetime"] = DateTime.Now;
                     dr["updateuser"] = userid;
                     dr["companyId"] = SystemUser.CurrentUser.CompanyID;
+
+                    dr["xh"] = Convert.ToInt32(jsr["xh"].ToString());
                     dt.Rows.Add(dr);
                     dbc.InsertTable(dt);
                 }
@@ -183,6 +185,8 @@ public class BscMag
                     dr["officeMemo"] = jsr["officeMemo"];
                     dr["updatetime"] = DateTime.Now;
                     dr["updateuser"] = userid;
+
+                    dr["xh"] = Convert.ToInt32(jsr["xh"].ToString());
                     dt.Rows.Add(dr);
                     dbc.UpdateTable(dt, dtt);
                 }
@@ -249,7 +253,7 @@ public class BscMag
             try
             {
                 string str = @"select officeId as VALUE,officeName as TEXT from jichu_office 
-                                where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " order by officeCode,addtime desc";
+                                where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " order by xh";
                 DataTable dt = dbc.ExecuteDataTable(str);
                 return dt;
             }

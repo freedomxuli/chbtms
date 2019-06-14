@@ -63,7 +63,7 @@ Ext.define('addWin', {
                         anchor: '100%'
                     },
                     {
-                        xtype: 'textareafield',
+                        xtype: 'textfield',
                         id: 'roleName',
                         name: 'roleName',
                         fieldLabel: '名称',
