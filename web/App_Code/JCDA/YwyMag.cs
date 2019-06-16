@@ -43,8 +43,8 @@ public class YwyMag
                 string where = "";
                 if (!string.IsNullOrEmpty(keyword.Trim()))
                 {
-                    where += " and " + dbc.C_Like("a.employCode", keyword.Trim(), LikeStyle.LeftAndRightLike)
-                          + " and " + dbc.C_Like("a.employName", keyword.Trim(), LikeStyle.LeftAndRightLike);
+                    where += " and (" + dbc.C_Like("a.employCode", keyword.Trim(), LikeStyle.LeftAndRightLike)
+                          + " or " + dbc.C_Like("a.employName", keyword.Trim(), LikeStyle.LeftAndRightLike) + ")";
                 }
                 string str = @"select a.*,b.officeName from jichu_employ a left join jichu_office b on a.officeId=b.officeId
                           where a.status=0 " + where + " and a.companyId='" + SystemUser.CurrentUser.CompanyID + "' order by addtime desc";

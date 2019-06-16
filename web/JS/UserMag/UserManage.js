@@ -26,7 +26,8 @@ var yhstore = createSFW4Store({
         { name: 'UserXM' },
         { name: 'UserTel' },
         { name: 'csOfficeId' },
-        { name: 'csOfficeName' }
+        { name: 'csOfficeName' },
+        { name: 'ClientKind' }
     ],
     onPageChange: function (sto, nPage, sorters) {
         getUser(nPage);
@@ -144,7 +145,7 @@ function loadGrid(id) {
                 }
             });
             model.select(arr);
-            
+
             var model2 = Ext.getCmp('emgrid').getSelectionModel();
             var arr = [];
             employStore.each(function (record) {
@@ -540,7 +541,11 @@ Ext.define('YhView', {
                     menuDisabled: true,
                     renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
                         var str;
-                        str = "<a onclick='EditUser(\"" + value + "\");'>修改</a>";
+                        if (record.data.ClientKind == 99) {
+                            str = '<font color="#cccccc" ext:qtip="禁止操作">禁止操作</font>';
+                        } else {
+                            str = "<a onclick='EditUser(\"" + value + "\");'>修改</a>";
+                        }
                         return str;
                     }
                 }

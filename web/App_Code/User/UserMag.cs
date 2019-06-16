@@ -132,7 +132,7 @@ public class UserMag
                                 left join tb_b_user_role b on a.UserID=b.UserID
                                 left join tb_b_roledb c on b.roleId=c.roleId 
                                 left join jichu_office d on a.csOfficeId=d.officeId
-                                where 1=1  ";
+                                where a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID);
                 str += where;
 
                 //开始取分页数据
@@ -231,9 +231,9 @@ public class UserMag
     [CSMethod("GetRole")]
     public DataTable GetRole()
     {
-        string sqlStr = "select roleId,roleName from tb_b_roledb order by rolePx";
         using (DBConnection dbc = new DBConnection())
         {
+            string sqlStr = "select roleId,roleName from tb_b_roledb where companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " order by rolePx";
             return dbc.ExecuteDataTable(sqlStr);
         }
     }
@@ -457,7 +457,7 @@ public class UserMag
                     rdr["userId"] = new Guid(YHID);
                     rdr["roleId"] = jsr["roleId"].ToString();
                     rdr["companyId"] = companyId;
-                   
+
                     rdt.Rows.Add(rdr);
                     dbc.InsertTable(rdt);
 

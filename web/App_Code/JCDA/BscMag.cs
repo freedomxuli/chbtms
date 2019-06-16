@@ -42,8 +42,8 @@ public class BscMag
                 string where = "";
                 if (!string.IsNullOrEmpty(keyword.Trim()))
                 {
-                    where += " and " + dbc.C_Like("officeCode", keyword.Trim(), LikeStyle.LeftAndRightLike)
-                          + " and " + dbc.C_Like("officeName", keyword.Trim(), LikeStyle.LeftAndRightLike);
+                    where += " and (" + dbc.C_Like("officeCode", keyword.Trim(), LikeStyle.LeftAndRightLike)
+                          + " or " + dbc.C_Like("officeName", keyword.Trim(), LikeStyle.LeftAndRightLike) + ")";
                 }
                 string str = "select * from jichu_office where status=0 " + where + " and companyId='" + SystemUser.CurrentUser.CompanyID + "' order by xh";
                 //开始取分页数据

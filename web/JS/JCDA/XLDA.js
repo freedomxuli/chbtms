@@ -71,17 +71,19 @@ function BindData(nPage) {
 
 //************************************页面方法***************************************
 function xg(id) {
-    CS('CZCLZ.XLMag.GetXLById', function (retVal) {
-        if (retVal) {
-            var win = new addWin();
-            win.show(null, function () {
-                GetfromBsc();
-                GettoBsc();
-                var form = Ext.getCmp('addform');
-                form.form.setValues(retVal[0]);
-            });
-        }
-    }, CS.onError, id);
+    var win = new addWin();
+    win.show(null, function () {
+        CS('CZCLZ.BscMag.GetBsc', function (ret) {
+            frombscstore.loadData(ret);
+            tobscstore.loadData(ret);
+            CS('CZCLZ.XLMag.GetXLById', function (retVal) {
+                if (retVal) {
+                    var form = Ext.getCmp('addform');
+                    form.form.setValues(retVal[0]);
+                }
+            }, CS.onError, id);
+        }, CS.onError)
+    });
 }
 
 function del(id) {
