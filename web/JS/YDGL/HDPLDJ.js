@@ -1041,15 +1041,17 @@ Ext.define('YDView', {
                                     {
                                         text: "导出excel",
                                         handler: function () {
-                                            var xzlist = [];
-                                            if (XZStore.data.items.length == 0) {
-                                                Ext.Msg.alert('提示', "请选择要设置运单！");
-                                                return;
+                                            if (privilege("运单管理_回单批量登记_导出")) {
+                                                var xzlist = [];
+                                                if (XZStore.data.items.length == 0) {
+                                                    Ext.Msg.alert('提示', "请选择要设置运单！");
+                                                    return;
+                                                }
+                                                for (var i = 0; i < XZStore.data.items.length; i++) {
+                                                    xzlist.push(XZStore.data.items[i].data.yundan_id);
+                                                }
+                                                DownloadFile("CZCLZ.YDMag.DownLoadYundan", "导出运单.xls", xzlist);
                                             }
-                                            for (var i = 0; i < XZStore.data.items.length; i++) {
-                                                xzlist.push(XZStore.data.items[i].data.yundan_id);
-                                            }
-                                            DownloadFile("CZCLZ.YDMag.DownLoadYundan", "导出运单.xls", xzlist);
                                         }
                                     }
                                 ]
@@ -1062,8 +1064,10 @@ Ext.define('YDView', {
                                         iconCls: 'add',
                                         text: '统一设置',
                                         handler: function () {
-                                            var win = new TYSZ();
-                                            win.show();
+                                            if (privilege("运单管理_回单批量登记_登记")) {
+                                                var win = new TYSZ();
+                                                win.show();
+                                            }
                                         }
                                     }
                                 ]
@@ -1076,24 +1080,26 @@ Ext.define('YDView', {
                                         iconCls: 'add',
                                         text: '执行已勾选操作',
                                         handler: function () {
-                                            var xzlist1 = [];
-                                            var xzlist2 = [];
-                                            var xzlist3 = [];
-                                            var grid = Ext.getCmp('YDGrid').store;
-                                            for (var a = 0; a < grid.data.items.length; a++) {
-                                                if (grid.data.items[a].data.ti1_zt == 1) {
-                                                    xzlist1.push(grid.data.items[a].data);
-                                                } else if (grid.data.items[a].data.ti2_zt == 1) {
-                                                    xzlist2.push(grid.data.items[a].data);
-                                                } else if (grid.data.items[a].data.ti3_zt == 1) {
-                                                    xzlist3.push(grid.data.items[a].data);
+                                            if (privilege("运单管理_回单批量登记_登记")) {
+                                                var xzlist1 = [];
+                                                var xzlist2 = [];
+                                                var xzlist3 = [];
+                                                var grid = Ext.getCmp('YDGrid').store;
+                                                for (var a = 0; a < grid.data.items.length; a++) {
+                                                    if (grid.data.items[a].data.ti1_zt == 1) {
+                                                        xzlist1.push(grid.data.items[a].data);
+                                                    } else if (grid.data.items[a].data.ti2_zt == 1) {
+                                                        xzlist2.push(grid.data.items[a].data);
+                                                    } else if (grid.data.items[a].data.ti3_zt == 1) {
+                                                        xzlist3.push(grid.data.items[a].data);
+                                                    }
                                                 }
+                                                CS('CZCLZ.YDMag.SaveYgxCz', function (retVal) {
+                                                    if (retVal) {
+                                                        BindData(Page);
+                                                    }
+                                                }, CS.onError, xzlist1, xzlist2, xzlist3);
                                             }
-                                            CS('CZCLZ.YDMag.SaveYgxCz', function (retVal) {
-                                                if (retVal) {
-                                                    BindData(Page);
-                                                }
-                                            }, CS.onError, xzlist1, xzlist2, xzlist3);
                                         }
                                     }
                                 ]
@@ -1235,7 +1241,9 @@ Ext.define('YDView', {
                                         iconCls: 'search',
                                         text: '查询',
                                         handler: function () {
-                                            BindData(1);
+                                            if (privilege("运单管理_回单批量登记_查询")) {
+                                                BindData(1);
+                                            }
                                         }
                                     }
                                 ]
@@ -1249,7 +1257,9 @@ Ext.define('YDView', {
                                         iconCls: 'add',
                                         text: '导出',
                                         handler: function () {
-                                            DownloadFile("CZCLZ.YDMag.DownLoadHuidan", "回单导出.xls", cx_sjlx, cx_qsz, cx_ddz, cx_huidanType, cx_sjlx2, cx_beg, cx_end, cx_ydh, cx_zcdh, cx_hpm, cx_fhr, cx_shr);
+                                            if (privilege("运单管理_回单批量登记_导出")) {
+                                                DownloadFile("CZCLZ.YDMag.DownLoadHuidan", "回单导出.xls", cx_sjlx, cx_qsz, cx_ddz, cx_huidanType, cx_sjlx2, cx_beg, cx_end, cx_ydh, cx_zcdh, cx_hpm, cx_fhr, cx_shr);
+                                            }
                                         }
                                     }
                                 ]

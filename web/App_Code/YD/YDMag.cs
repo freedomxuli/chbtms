@@ -2366,6 +2366,10 @@ order by a.updatetime desc";
                 {
                     where += " and " + dbc.C_Like("a.shouhuoPeople", shr, LikeStyle.LeftAndRightLike);
                 }
+                if (!string.IsNullOrEmpty(hpm))
+                {
+                    where += " and " + dbc.C_Like("a.goodsName", hpm, LikeStyle.LeftAndRightLike);
+                }
                 #endregion
 
                 string str = @"select a.*,b.zhuangchedanNum,c.officeName,d.officeName as toOfficeName,0 as ti1_zt,0 as ti2_zt,0 as ti3_zt from yundan_yundan a

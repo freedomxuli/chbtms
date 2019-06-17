@@ -1705,8 +1705,9 @@ function GetYDQSZ() {
 
         if (retVal[0]["officeId"] != "") {
             CS('CZCLZ.YDMag.GetYWYByQSZ', function (retVal) {
-                ywystore.loadData(retVal);
-                Ext.getCmp("traderName").setValue(retVal[0]["employId"]);
+                ywystore.add({ 'employId': '', 'employName': '业务员' });
+                ywystore.loadData(retVal, true);
+                Ext.getCmp("traderName").setValue('');
             }, CS.onError, retVal[0]["officeId"]);
         }
     }, CS.onError)
@@ -1762,6 +1763,9 @@ Ext.define('EditYD', {
                                             iconCls: 'save',
                                             text: '保存',
                                             handler: function () {
+                                                if (!privilege("运单管理_运单编辑_运单明细修改(普通)")) {
+                                                    return;
+                                                }
                                                 var form = Ext.getCmp('addform');
                                                 if (form.form.isValid()) {
                                                     //验证客户信用授权信息
@@ -1936,36 +1940,42 @@ Ext.define('EditYD', {
                                             arrowAlign: "right",
                                             menu: [
                                                 {
-                                                    text: "短驳费", handler: function () {
-                                                        if (ydid) {
-                                                            var win = new DBFList();
-                                                            win.show();
-                                                            BindDBF(1);
-                                                        } else {
-                                                            Ext.Msg.alert('提示', "未保存的运单禁止设置费用！");
-                                                            return;
+                                                    text: "短驳费",
+                                                    handler: function () {
+                                                        if (privilege("运单管理_运单编辑_运单明细修改(金额)")) {
+                                                            if (ydid) {
+                                                                var win = new DBFList();
+                                                                win.show();
+                                                                BindDBF(1);
+                                                            } else {
+                                                                Ext.Msg.alert('提示', "未保存的运单禁止设置费用！");
+                                                                return;
+                                                            }
                                                         }
                                                     }
                                                 },
                                                 {
-                                                    text: "分流费", handler: function () {
-                                                        if (ydid) {
-                                                            CS('CZCLZ.YDMag.IsYdZc', function (retVal) {
-                                                                var zcid = retVal.zhuangchedan_id;
-                                                                if (zcid != '') {
-                                                                    var win = new FLFList({ zhuangchedanId: zcid });
-                                                                    win.show();
-                                                                    BindSHF(1);
-                                                                    BindZZF(1);
-                                                                }
-                                                                else {
-                                                                    Ext.Msg.alert('提示', "该运单还未装车！");
-                                                                    return;
-                                                                }
-                                                            }, CS.onError, ydid)
-                                                        } else {
-                                                            Ext.Msg.alert('提示', "未保存的运单禁止设置分流费用！");
-                                                            return;
+                                                    text: "分流费",
+                                                    handler: function () {
+                                                        if (privilege("运单管理_运单编辑_运单明细修改(金额)")) {
+                                                            if (ydid) {
+                                                                CS('CZCLZ.YDMag.IsYdZc', function (retVal) {
+                                                                    var zcid = retVal.zhuangchedan_id;
+                                                                    if (zcid != '') {
+                                                                        var win = new FLFList({ zhuangchedanId: zcid });
+                                                                        win.show();
+                                                                        BindSHF(1);
+                                                                        BindZZF(1);
+                                                                    }
+                                                                    else {
+                                                                        Ext.Msg.alert('提示', "该运单还未装车！");
+                                                                        return;
+                                                                    }
+                                                                }, CS.onError, ydid)
+                                                            } else {
+                                                                Ext.Msg.alert('提示', "未保存的运单禁止设置分流费用！");
+                                                                return;
+                                                            }
                                                         }
                                                     }
                                                 }

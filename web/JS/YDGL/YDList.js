@@ -271,7 +271,9 @@ Ext.onReady(function () {
                                             iconCls: 'search',
                                             text: '查询',
                                             handler: function () {
-                                                BindData(1);
+                                                if (privilege("运单管理_运单编辑_运单明细查询")) {
+                                                    BindData(1);
+                                                }
                                             }
                                         }
                                     ]
