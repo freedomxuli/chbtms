@@ -238,8 +238,9 @@ var logStore = Ext.create('Ext.data.Store', {
 //-----------------------------------------------------------页面方法-----------------------------------------------------------------
 //获取办事处
 function GetBsc() {
-    CS('CZCLZ.BscMag.GetBsc2', function (retVal1) {
-        bscStore.loadData(retVal1);
+    CS('CZCLZ.BscMag.GetOtherBsc', function (retVal) {
+        bscStore.loadData(retVal);
+        Ext.getCmp('cx_bsc').setValue(retVal[0].officeId);
     }, CS.onError)
 }
 
@@ -503,6 +504,7 @@ Ext.define('dfListView', {
                         layout: {
                             type: 'border'
                         },
+                        id: 'hxsz',
                         items: [
                             {
                                 xtype: 'panel',
@@ -604,6 +606,19 @@ Ext.define('dfListView', {
 
                     },
                     {
+                        xtype: 'panel',
+                        height: 0,
+                        region: 'north',
+                        layout: {
+                            type: 'border'
+                        },
+                        id: 'hxsz2',
+                        hidden: true,
+                        items: [
+
+                        ]
+                    },
+                    {
                         xtype: 'gridpanel',
                         id: 'yfgrid',
                         region: 'center',
@@ -651,6 +666,7 @@ Ext.define('dfListView', {
                             selType: 'checkboxmodel',
                             mode: 'SIMPLE',
                             checkOnly: true,
+                            injectCheckbox: 1,
                             listeners: {
                                 beforedeselect: function (model, record, index) {
                                     if (record.data.isbj) {
@@ -913,29 +929,9 @@ Ext.define('dfListView', {
                                 items: [
                                     {
                                         xtype: 'combobox',
-                                        //fieldLabel: '性质',
-                                        labelAlign: 'right',
-                                        //labelWidth: 80,
-                                        displayField: 'text',
-                                        valueField: 'val',
-                                        queryMode: 'local',
-                                        id: 'cx_hxzt',
-                                        store: Ext.create('Ext.data.Store', {
-                                            fields: ['val', 'text'],
-                                            data: [
-                                                { "val": "", "text": "所有" },
-                                                { "val": "0", "text": "未核销" },
-                                                { "val": "1", "text": "已核销" }
-                                            ]
-                                        }),
-                                        editable: false,
-                                        width: 100
-                                    },
-                                    {
-                                        xtype: 'combobox',
                                         id: 'cx_bsc',
                                         width: 160,
-                                        fieldLabel: '办事处',
+                                        fieldLabel: '到达站',
                                         editable: false,
                                         labelWidth: 50,
                                         store: bscStore,
@@ -999,6 +995,68 @@ Ext.define('dfListView', {
                         xtype: 'toolbar',
                         dock: 'top',
                         items: [
+                            {
+                                xtype: 'buttongroup',
+                                items: [
+                                    {
+                                        xtype: "button",
+                                        text: "未核销",
+                                        arrowAlign: "right",
+                                        id: 'cx_hxzt2',
+                                        width: 100,
+                                        menu: [
+                                            {
+                                                text: "所有",
+                                                handler: function () {
+                                                    Ext.getCmp('cx_hxzt2').setText('所有');
+                                                    Ext.getCmp('hxsz2').show();
+                                                    Ext.getCmp('hxsz').hide();
+                                                    Ext.getCmp('cx_hxzt').setText('');
+                                                    getyfList(1);
+                                                }
+                                            },
+                                            {
+                                                text: "未核销",
+                                                handler: function () {
+                                                    Ext.getCmp('cx_hxzt2').setText('未核销');
+                                                    Ext.getCmp('hxsz').show();
+                                                    Ext.getCmp('hxsz2').hide();
+                                                    Ext.getCmp('cx_hxzt').setText('0');
+                                                    getyfList(1);
+                                                }
+                                            },
+                                            {
+                                                text: "已核销",
+                                                handler: function () {
+                                                    Ext.getCmp('cx_hxzt2').setText('已核销');
+                                                    Ext.getCmp('hxsz2').show();
+                                                    Ext.getCmp('hxsz').hide();
+                                                    Ext.getCmp('cx_hxzt').setText('1');
+                                                    getyfList(1);
+                                                }
+                                            },
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                xtype: 'combobox',
+                                labelAlign: 'right',
+                                displayField: 'text',
+                                valueField: 'val',
+                                queryMode: 'local',
+                                id: 'cx_hxzt',
+                                store: Ext.create('Ext.data.Store', {
+                                    fields: ['val', 'text'],
+                                    data: [
+                                        { "val": "", "text": "所有" },
+                                        { "val": "0", "text": "未核销" },
+                                        { "val": "1", "text": "已核销" }
+                                    ]
+                                }),
+                                hidden: true,
+                                value: '0'
+                            },
                             {
                                 xtype: 'buttongroup',
                                 title: '',
@@ -1108,8 +1166,11 @@ Ext.define('dfListView', {
 
 Ext.onReady(function () {
     new dfListView();
-    Ext.getCmp('cx_hxzt').setValue('');
-    GetBsc();
-    getyfList(1);
-    Ext.getCmp('sz_hxrq').setValue(new Date());
+    CS('CZCLZ.BscMag.GetOtherBsc', function (retVal) {
+        bscStore.loadData(retVal);
+        Ext.getCmp('cx_bsc').setValue(retVal[0].officeId);
+        Ext.getCmp('sz_hxrq').setValue(new Date());
+        getyfList(1);
+    }, CS.onError)
+
 });

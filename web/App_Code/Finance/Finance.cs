@@ -1067,7 +1067,7 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
                 }
                 if (!string.IsNullOrEmpty(bscid))
                 {
-                    list_where.Add("a.officeId=" + dbc.ToSqlValue(bscid));
+                    list_where.Add("b.toOfficeId=" + dbc.ToSqlValue(bscid));
                 }
                 if (!string.IsNullOrEmpty(kssj))
                 {
@@ -2538,7 +2538,7 @@ where income_id in(select id from caiwu_income where status=0 and yundanId=" + d
 	                            where kind=11 and status=0
 	                            group by driverId
                             ) d on a.driverId=d.driverId 
-                            where a.status=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID);
+                            where a.status=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " order by b.xh,a.kind";
 
             if (list_where.Count > 0)
             {

@@ -73,18 +73,22 @@ function getDriverList(nPage) {
 }
 
 function PostYJWin(id, dth) {
-    var win = new YJWin1({ driverId: id });
-    win.show(null, function () {
-        Ext.getCmp('thmoneyze').setValue(dth);
-        getexpenseLine(id);
-    });
+    if (privilege("财务核销管理_司机押金管理_退还押金")) {
+        var win = new YJWin1({ driverId: id });
+        win.show(null, function () {
+            Ext.getCmp('thmoneyze').setValue(dth);
+            getexpenseLine(id);
+        });
+    }
 }
 
 function GetYJWin(id) {
-    var win = new YJWin({ driverId: id });
-    win.show(null, function () {
-        getinLine(id);
-    });
+    if (privilege("财务核销管理_司机押金管理_收取押金")) {
+        var win = new YJWin({ driverId: id });
+        win.show(null, function () {
+            getinLine(id);
+        });
+    }
 }
 
 function getinLine(id) {
@@ -157,12 +161,12 @@ Ext.define('YJWin', {
                                 text: '保存',
                                 handler: function () {
                                     var sqdate = Ext.getCmp('sqDate').getValue();
-                                    if (sqdate == '') {
+                                    if (sqdate == '' || sqdate == null) {
                                         Ext.Msg.alert('提示', "登记日期必填！");
                                         return;
                                     }
                                     var sqmoney = Ext.getCmp('sqmoney').getValue();
-                                    if (sqmoney == '' || sqmoney == 0) {
+                                    if (sqmoney == '' || sqmoney == 0 || sqmoney == null) {
                                         Ext.Msg.alert('提示', "收取押金金额必填且不等于0！");
                                         return;
                                     }
@@ -292,13 +296,13 @@ Ext.define('YJWin1', {
                                 text: '保存',
                                 handler: function () {
                                     var thDate = Ext.getCmp('thDate').getValue();
-                                    if (thDate == '') {
+                                    if (thDate == '' || thDate == null) {
                                         Ext.Msg.alert('提示', "登记日期必填！");
                                         return;
                                     }
                                     var thmoney = Ext.getCmp('thmoney').getValue();
                                     var dthmoney = Ext.getCmp('thmoneyze').getValue();
-                                    if (thmoney == '' || thmoney == 0) {
+                                    if (thmoney == '' || thmoney == 0 || thmoney == null) {
                                         Ext.Msg.alert('提示', "退还押金金额必填且不等于0！");
                                         return;
                                     } else {
@@ -546,7 +550,9 @@ Ext.define('DriverView', {
                                 iconCls: 'search',
                                 text: '查询',
                                 handler: function () {
-                                    getDriverList(1);
+                                    if (!privilege("财务核销管理_司机押金管理_查询")) {
+                                        getDriverList(1);
+                                    }
                                 }
                             }
                             //{

@@ -297,7 +297,7 @@ public class BscMag
             try
             {
                 string str = @"select officeId,officeName from jichu_office 
-                    where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and officeId not in(" + dbc.ToSqlValue(SystemUser.CurrentUser.CsOfficeId) + ") order by officeCode,addtime desc";
+                    where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and officeId not in(" + dbc.ToSqlValue(SystemUser.CurrentUser.CsOfficeId) + ") order by xh";
                 DataTable dt = dbc.ExecuteDataTable(str);
                 return dt;
             }
