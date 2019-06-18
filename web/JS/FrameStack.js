@@ -4,6 +4,7 @@ FrameStack.pushFrame = function (url) {
     var param = null;
     var title = null;
     var showBackbutton = null;
+    var fsWinName = null;
     if (Ext.typeOf(url) == 'object') {
         var p = url;
         url = p.url;
@@ -11,6 +12,7 @@ FrameStack.pushFrame = function (url) {
         title = p.title;
         showBackbutton = p.showBackbutton;
         onClose = p.onClose;
+        fsWinName = p.fsWinName;
     }
 
     if (arguments.length > 1) {
@@ -23,14 +25,14 @@ FrameStack.pushFrame = function (url) {
         onClose = arguments[2];
 
     var winDom = window;
-    var mw = FrameStack.getMainWindow();
-    var orginOverflow = mw.document.body.style.overflow;
-    mw.document.body.style.overflow = "hidden";
+    var mw = FrameStack.getMainWindow(fsWinName);
+    var orignOverflow = mw.document.body.style.overflow;
+    mw.document.body.style.overflow = 'hidden';
     var sz = mw.Ext.getBody().getViewSize();
     var win = new mw.Ext.container.Container({
         resizable: false,
         //header: false,
-        modal: true,
+        modal: false,
         floating: true,
         border: false,
         //closable: false,
@@ -47,9 +49,13 @@ FrameStack.pushFrame = function (url) {
                 mw.Ext.EventManager.removeResizeListener(this.onWindowResize, this);
             },
             destroy: function () {
-                if (onClose)
-                    onClose.call(winDom, this.retVal);
-                mw.document.body.style.overflow = orginOverflow;
+                if (onClose) {
+                    var v = this.retVal;
+                    setTimeout(function () {
+                        onClose.call(winDom, v);
+                    }, 1);
+                }
+                mw.document.body.style.overflow = orignOverflow;
             },
             show: function () {
                 mw.Ext.EventManager.onWindowResize(this.onWindowResize, this, { delay: 1 });
@@ -57,7 +63,7 @@ FrameStack.pushFrame = function (url) {
                 f.dom.pw = this;
                 this.param = param;
                 if (showBackbutton) {
-                    mw.Ext.fly(win.el.query('.backbt')[0]).on('click', function () {
+                    mw.Ext.get(win.el.query('.backbt')[0]).on('click', function () {
                         win.destroy();
                     });
                 }
@@ -68,7 +74,7 @@ FrameStack.pushFrame = function (url) {
         items: [
             {
                 xtype: 'panel',
-                title: (showBackbutton ? '<img src="approot/d/images/bbb.png" width=16 style="vertical-align:bottom;cursor:pointer; margin-right:10px; width:82px; height:24px; float:left;" class="backbt"/>' : ""),
+                title: (showBackbutton ? '<img src="approot/r/Resource/images/back.png" width=16 style="vertical-align:bottom;cursor:pointer;" class="backbt"/>' : "") + (title || ""),
                 border: false
             }
         ]
@@ -77,7 +83,13 @@ FrameStack.pushFrame = function (url) {
 
     win.down('panel').update('<iframe frameborder="0" src="' + url + '" style="width:100%;height:100%" />');
     win.show();
-}
+};
+
+FrameStack.prepareClose = function(pw){
+    window.setTimeout(function () {
+        pw.destroy();
+    }, 1);
+};
 
 FrameStack.popFrame = function (retVal) {
     var pw = FrameStack.getSelfPushFrameWindow();
@@ -87,25 +99,23 @@ FrameStack.popFrame = function (retVal) {
         var parentWindow = parentFrame.parentWindow;
         parentWindow.setTimeout(function () {
             pw.retVal = retVal;
+            parentWindow.FrameStack.prepareClose(pw);
             mywin.location.href = 'about:blank';
-            var clearProxy = parentWindow.eval('({clear: function(pw){ return function(){ pw.destroy(); }; } })');
-            parentWindow.setTimeout(clearProxy.clear(pw), 1);
-
         }, 1);
         return true;
     }
     return false;
-}
+};
 
 FrameStack.isInFrameStack = function () {
     var pf = FrameStack.findParentIFrame(window);
     return pf && pf.pw;
-}
+};
 
 FrameStack.getParam = function () {
     var pw = FrameStack.getSelfPushFrameWindow();
     return pw.param;
-}
+};
 
 FrameStack.findParentIFrame = function (win) {
     if (win.parent == win)
@@ -122,7 +132,7 @@ FrameStack.findParentIFrame = function (win) {
         //else
         //    return null;
     }
-}
+};
 
 FrameStack.getSelfPushFrameWindow = function () {
     var pf = FrameStack.findParentIFrame(window);
@@ -131,19 +141,30 @@ FrameStack.getSelfPushFrameWindow = function () {
 };
 
 
-FrameStack.getMainWindow = function () {
+FrameStack.getMainWindow = function (fsWinName) {
     var curWin = window;
-    if (curWin.isFSMainWin)
+    if (fsWinName && curWin.fsWinName == fsWinName)
+        return curWin;
+    else if (curWin.isFSMainWin)
         return curWin;
     while (true) {
         var parentFrame = FrameStack.findParentIFrame(curWin);
-        if (parentFrame)
-            if (parentFrame.parentWindow.isFSMainWin)
-                return parentFrame.parentWindow;
-            else
-                curWin = parentFrame.parentWindow;
+        if (parentFrame) {
+            if (fsWinName) {
+                if (parentFrame.parentWindow.fsWinName == fsWinName)
+                    return parentFrame.parentWindow;
+                else
+                    curWin = parentFrame.parentWindow;
+            }
+            else {
+                if (parentFrame.parentWindow.isFSMainWin)
+                    return parentFrame.parentWindow;
+                else
+                    curWin = parentFrame.parentWindow;
+            }
+        }
         else
             return window;
     }
     return window;
-}
+};
