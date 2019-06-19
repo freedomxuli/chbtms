@@ -531,53 +531,32 @@ Ext.define('HXWin', {
                                 columnLines: true,
                                 plugins: [
                                     Ext.create('Ext.grid.plugin.CellEditing', {
-                                        clicksToEdit: 1                                                                                                                                                                                                                                                                      //设置单击单元格编辑  
+                                        clicksToEdit: 1,//设置单击单元格编辑
+                                        listeners: {
+                                            'beforeedit': function (editor, c, e) {
+                                                Ext.getCmp('qfgrid').getSelectionModel().setLocked(true);
+                                            },
+                                            'edit': function (editor, c, e) {
+                                                Ext.getCmp('qfgrid').getSelectionModel().setLocked(false);
+                                                //预存
+                                                if (selYdStore.data.length > 0) {
+                                                    for (var i = 0; i < selYdStore.data.length; i++) {
+                                                        if (selYdStore.data.items[i].data.id == c.record.data.id) {
+                                                            selYdStore.data.items[i].data.hxje = c.value;
+                                                        }
+                                                    }
+                                                }
+                                                
+                                            }
+                                        }
                                     })
                                 ],
-                                listeners: {
-                                    'beforeedit': function (editor, e) {
-                                        var grid = Ext.getCmp('qfgrid').store;
-                                        for (var a = 0; a < grid.data.items.length; a++) {
-                                            if (grid.data.items[a].data.isxz == 1) {
-                                                grid.data.items[a].data.isbj = true;
-                                            }
-                                        }
-                                    },
-                                    'edit': function (editor, e) {
-                                        //var yhze = isNaN(Number(Ext.getCmp('sz_yhx').getValue())) ? 0 : Number(Ext.getCmp('sz_yhx').getValue());
-                                        //yhze += isNaN(Number(e.record.data.hxje)) ? 0 : Number(e.record.data.hxje);
-                                        //Ext.getCmp('sz_yhx').setValue(yhze);
-
-                                        var grid = Ext.getCmp('qfgrid').store;
-                                        for (var a = 0; a < grid.data.items.length; a++) {
-                                            if (grid.data.items[a].data.isxz == 1) {
-                                                grid.data.items[a].data.isbj = false;
-                                            }
-                                        }
-
-                                        //选择预存
-                                        if (selYdStore.data.length > 0) {
-                                            for (var i = 0; i < selYdStore.data.length; i++) {
-                                                if (selYdStore.data.items[i].data.id == e.record.data.id) {
-                                                    selYdStore.data.items[i].data.hxje = e.record.data.hxje;
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
                                 selModel: Ext.create('Ext.selection.CheckboxModel', {
                                     selType: 'checkboxmodel',
                                     mode: 'SIMPLE',
                                     checkOnly: true,
                                     listeners: {
-                                        beforedeselect: function (model, record, index) {
-                                            if (record.data.isbj) {
-                                                return false;
-                                            }
-                                        },
                                         deselect: function (model, record, index) {//取消选中时产生的事件
-                                            record.data.isxz = 0;
-
                                             //选择预存
                                             for (var i = 0; i < selYdStore.data.length; i++) {
                                                 if (selYdStore.data.items[i].data.id == record.data.id) {
@@ -586,8 +565,6 @@ Ext.define('HXWin', {
                                             }
                                         },
                                         select: function (model, record, index) {//record被选中时产生的事件
-                                            record.data.isxz = 1;
-
                                             //选择预存
                                             var n = 1;
                                             if (selYdStore.data.length > 0) {
@@ -924,7 +901,8 @@ Ext.define('HXWin', {
                                         format: 'Y-m-d',
                                         fieldLabel: '核销日期',
                                         columnWidth: 0.3,
-                                        padding: '15 15 15 15'
+                                        padding: '15 15 15 15',
+                                        value: new Date()
                                     }
                                 ]
                             }
@@ -935,34 +913,40 @@ Ext.define('HXWin', {
                                 text: '保存核销结果',
                                 iconCls: "save",
                                 handler: function () {
-                                    var xzlist = [];
-                                    for (var i = 0; i < selYdStore.data.items.length; i++) {
-                                        var whx = selYdStore.data.items[i].data.whxmoney;
-                                        var hxje = selYdStore.data.items[i].data.hxje;
-                                        if (whx < hxje) {
-                                            Ext.Msg.alert('提示', "运单【" + selYdStore.data.items[i].data.yundanNum + "】本次核销金额大于未核销金额。");
+                                    if (privilege("财务应收核销_欠付运费核销_核销")) {
+                                        var xzlist = [];
+                                        for (var i = 0; i < selYdStore.data.items.length; i++) {
+                                            var whx = selYdStore.data.items[i].data.whxmoney;
+                                            var hxje = selYdStore.data.items[i].data.hxje;
+                                            if (whx < hxje) {
+                                                Ext.Msg.alert('提示', "运单【" + selYdStore.data.items[i].data.yundanNum + "】本次核销金额大于未核销金额。");
+                                                return;
+                                            } else {
+                                                xzlist.push(selYdStore.data.items[i].data);
+                                            }
+                                        }
+                                        var hxrq = Ext.getCmp('sz_hxrq').getValue();
+                                        if (hxrq == '' || hxrq == null) {
+                                            Ext.Msg.alert('提示', "日期必填！");
                                             return;
-                                        } else {
-                                            xzlist.push(selYdStore.data.items[i].data);
                                         }
-                                    }
-                                    var hxrq = Ext.getCmp('sz_hxrq').getValue();
-                                    if (hxrq == '' || hxrq == null) {
-                                        Ext.Msg.alert('提示', "日期必填！");
-                                        return;
-                                    }
-                                    CS('CZCLZ.Finance.SaveQFYFHx', function (retVal) {
-                                        if (retVal) {
-                                            Ext.Msg.show({
-                                                title: '提示',
-                                                msg: '保存成功!',
-                                                buttons: Ext.MessageBox.OK,
-                                                icon: Ext.MessageBox.INFO
-                                            });
-                                            Ext.getCmp('sz_ss').setValue('');
-                                            getqfList(1);
+                                        if (xzlist.length == 0) {
+                                            Ext.Msg.alert('提示', "请先选择数据，再保存！");
+                                            return;
                                         }
-                                    }, CS.onError, xzlist, hxrq);
+                                        CS('CZCLZ.Finance.SaveQFYFHx', function (retVal) {
+                                            if (retVal) {
+                                                Ext.Msg.show({
+                                                    title: '提示',
+                                                    msg: '保存成功!',
+                                                    buttons: Ext.MessageBox.OK,
+                                                    icon: Ext.MessageBox.INFO
+                                                });
+                                                Ext.getCmp('sz_ss').setValue('');
+                                                getqfList(1);
+                                            }
+                                        }, CS.onError, xzlist, hxrq);
+                                    }
                                 }
                             }
                         ]
@@ -982,52 +966,11 @@ Ext.define('HXWin', {
                                 store: qf_yhxStore,
                                 border: true,
                                 columnLines: true,
-                                plugins: [
-                                    Ext.create('Ext.grid.plugin.CellEditing', {
-                                        clicksToEdit: 1                                                                                                                                                                                                                                                                      //设置单击单元格编辑  
-                                    })
-                                ],
-                                listeners: {
-                                    //'beforeedit': function (editor, e) {
-                                    //    var grid = Ext.getCmp('qfgrid').store;
-                                    //    for (var a = 0; a < grid.data.items.length; a++) {
-                                    //        if (grid.data.items[a].data.isxz == 1) {
-                                    //            grid.data.items[a].data.isbj = true;
-                                    //        }
-                                    //    }
-                                    //},
-                                    //'edit': function (editor, e) {
-                                    //    //var yhze = isNaN(Number(Ext.getCmp('sz_yhx').getValue())) ? 0 : Number(Ext.getCmp('sz_yhx').getValue());
-                                    //    //yhze += isNaN(Number(e.record.data.hxje)) ? 0 : Number(e.record.data.hxje);
-                                    //    //Ext.getCmp('sz_yhx').setValue(yhze);
-
-                                    //    var grid = Ext.getCmp('qfgrid').store;
-                                    //    for (var a = 0; a < grid.data.items.length; a++) {
-                                    //        if (grid.data.items[a].data.isxz == 1) {
-                                    //            grid.data.items[a].data.isbj = false;
-                                    //        }
-                                    //    }
-
-                                    //    //选择预存
-                                    //    if (selYdStore.data.length > 0) {
-                                    //        for (var i = 0; i < selYdStore.data.length; i++) {
-                                    //            if (selYdStore.data.items[i].data.id == e.record.data.id) {
-                                    //                selYdStore.data.items[i].data.hxje = e.record.data.hxje;
-                                    //            }
-                                    //        }
-                                    //    }
-                                    //}
-                                },
                                 selModel: Ext.create('Ext.selection.CheckboxModel', {
                                     selType: 'checkboxmodel',
                                     mode: 'SIMPLE',
                                     checkOnly: true,
                                     listeners: {
-                                        //beforedeselect: function (model, record, index) {
-                                        //    if (record.data.isbj) {
-                                        //        return false;
-                                        //    }
-                                        //},
                                         deselect: function (model, record, index) {//取消选中时产生的事件
                                             record.data.isxz = 0;
 
@@ -1112,20 +1055,20 @@ Ext.define('HXWin', {
                                         text: "未核销",
                                         width: 90
                                     },
-                                    {
-                                        header: "本次核销",
-                                        width: 100,
-                                        sortable: false,
-                                        dataIndex: 'hxje',
-                                        menuDisabled: true,
-                                        xtype: 'numbercolumn',
-                                        editor: {
-                                            xtype: "numberfield",
-                                            allowNegative: false,
-                                            selectOnFocus: true
-                                        },
-                                        align: "center"
-                                    },
+                                    //{
+                                    //    header: "本次核销",
+                                    //    width: 100,
+                                    //    sortable: false,
+                                    //    dataIndex: 'hxje',
+                                    //    menuDisabled: true,
+                                    //    xtype: 'numbercolumn',
+                                    //    editor: {
+                                    //        xtype: "numberfield",
+                                    //        allowNegative: false,
+                                    //        selectOnFocus: true
+                                    //    },
+                                    //    align: "center"
+                                    //},
                                     {
                                         xtype: 'datecolumn',
                                         dataIndex: 'incomeDate',
@@ -1333,7 +1276,29 @@ Ext.define('HXWin', {
                                             {
                                                 text: "导出excel",
                                                 handler: function () {
-
+                                                    if (privilege("财务应收核销_欠付运费核销_导出")) {
+                                                        var xzlist = [];
+                                                        if (tabN == 1) {
+                                                            var sel = Ext.getCmp('qfgrid').getSelectionModel().getSelection();
+                                                            if (sel.length == 0) {
+                                                                Ext.Msg.alert('提示', "请选择导出记录。");
+                                                                return;
+                                                            }
+                                                            for (var i = 0; i < sel.length; i++) {
+                                                                xzlist.push(sel[i].data);
+                                                            }
+                                                        } else if (tabN == 2) {
+                                                            var sel = Ext.getCmp('qf_yhxgrid').getSelectionModel().getSelection();
+                                                            if (sel.length == 0) {
+                                                                Ext.Msg.alert('提示', "请选择导出记录。");
+                                                                return;
+                                                            }
+                                                            for (var i = 0; i < sel.length; i++) {
+                                                                xzlist.push(sel[i].data);
+                                                            }
+                                                        }
+                                                        DownloadFile("CZCLZ.Finance.DownLoadQfyf", "导出欠付运费核销.xls", xzlist);
+                                                    }
                                                 }
                                             },
                                             {
@@ -1372,18 +1337,20 @@ Ext.define('HXWin', {
                                                             if (tabN == 1) {
                                                                 for (var i = 0; i < selYdStore.data.items.length; i++) {
                                                                     var id = selYdStore.data.items[i].data.id;
+                                                                    var je = selYdStore.data.items[i].data.yhxmoney;
                                                                     var ydid = selYdStore.data.items[i].data.yundan_id;
                                                                     CS('CZCLZ.Finance.DeleteIncomeHxLog', function (retVal) {
                                                                         getqfList(1);
-                                                                    }, CS.onError, "2", id, ydid);
+                                                                    }, CS.onError, "2", id, ydid, je);
                                                                 }
                                                             } else if (tabN == 2) {
                                                                 for (var i = 0; i < selYdStore2.data.items.length; i++) {
                                                                     var id = selYdStore2.data.items[i].data.id;
+                                                                    var je = selYdStore2.data.items[i].data.yhxmoney;
                                                                     var ydid = selYdStore2.data.items[i].data.yundan_id;
                                                                     CS('CZCLZ.Finance.DeleteIncomeHxLog', function (retVal) {
                                                                         getqfList2(1);
-                                                                    }, CS.onError, "2", id, ydid);
+                                                                    }, CS.onError, "2", id, ydid, je);
                                                                 }
                                                             }
                                                         }
@@ -1569,7 +1536,9 @@ Ext.define('MainView', {
                                     iconCls: 'search',
                                     text: '查询',
                                     handler: function () {
-                                        getQfList(1);
+                                        if (privilege("财务应收核销_欠付运费核销_查询")) {
+                                            getQfList(1);
+                                        }
                                     }
                                 }
                             ]
@@ -1592,6 +1561,5 @@ Ext.define('MainView', {
 Ext.onReady(function () {
     new MainView();
     GetBsc();
-    getQfList(1);
 });
 

@@ -119,6 +119,7 @@ function getDfList(nPage) {
     var fhr = Ext.getCmp("cx_people").getValue();
     var ydbh = Ext.getCmp("cx_yundannum").getValue();
     CS('CZCLZ.Finance.GetDfyfHxListByPage', function (retVal) {
+        dfStore.removeAll();
         dfStore.setData({
             data: retVal.dt,
             pageSize: pageSize,
@@ -680,6 +681,7 @@ Ext.define('iViewport', {
                                                         Ext.getCmp('hxsz').hide();
                                                         Ext.getCmp('cx_hxzt').setValue('');
                                                         Ext.getCmp('saveHx').hide();
+                                                        selYdStore.removeAll();
                                                         getDfList(1);
                                                     }
                                                 },
@@ -690,6 +692,7 @@ Ext.define('iViewport', {
                                                         Ext.getCmp('hxsz').show();
                                                         Ext.getCmp('cx_hxzt').setValue('0');
                                                         Ext.getCmp('saveHx').show();
+                                                        selYdStore.removeAll();
                                                         getDfList(1);
                                                     }
                                                 },
@@ -700,6 +703,7 @@ Ext.define('iViewport', {
                                                         Ext.getCmp('hxsz').hide();
                                                         Ext.getCmp('cx_hxzt').setValue('1');
                                                         Ext.getCmp('saveHx').hide();
+                                                        selYdStore.removeAll();
                                                         getDfList(1);
                                                     }
                                                 }
@@ -738,7 +742,18 @@ Ext.define('iViewport', {
                                                 {
                                                     text: "导出excel",
                                                     handler: function () {
-
+                                                        if (privilege("财务应收核销_到付运费核销_导出")) {
+                                                            var sel = Ext.getCmp('yfgrid').getSelectionModel().getSelection();
+                                                            if (sel.length == 0) {
+                                                                Ext.Msg.alert('提示', "请选择导出记录。");
+                                                                return;
+                                                            }
+                                                            var xzlist = [];
+                                                            for (var i = 0; i < sel.length; i++) {
+                                                                xzlist.push(sel[i].data);
+                                                            }
+                                                            DownloadFile("CZCLZ.Finance.DownLoadDfyf", "导出到付运费核销.xls", xzlist);
+                                                        }
                                                     }
                                                 },
                                                 {
@@ -764,10 +779,11 @@ Ext.define('iViewport', {
                                                             if (btn == 'yes') {
                                                                 for (var i = 0; i < selYdStore.data.items.length; i++) {
                                                                     var id = selYdStore.data.items[i].data.id;
+                                                                    var je = selYdStore.data.items[i].data.yhxmoney;
                                                                     var ydid = selYdStore.data.items[i].data.yundan_id;
                                                                     CS('CZCLZ.Finance.DeleteIncomeHxLog', function (retVal) {
                                                                         getDfList(1);
-                                                                    }, CS.onError, "3", id, ydid);
+                                                                    }, CS.onError, "3", id, ydid, je);
                                                                 }
                                                             }
                                                         });

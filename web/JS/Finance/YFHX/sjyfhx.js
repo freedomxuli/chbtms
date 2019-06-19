@@ -794,10 +794,11 @@ Ext.define('mainView', {
                                                         if (btn == 'yes') {
                                                             for (var i = 0; i < hxSelStore.data.items.length; i++) {
                                                                 var id = hxSelStore.data.items[i].data.id;
+                                                                var je = hxSelStore.data.items[i].data.yhxmoney;
                                                                 var zcdid = hxSelStore.data.items[i].data.zhuangchedanId;
                                                                 CS('CZCLZ.Finance.DeleteExpenseHxLog', function (retVal) {
                                                                     gethkList(1);
-                                                                }, CS.onError, "8", id, zcdid);
+                                                                }, CS.onError, "8", id, zcdid, je);
                                                             }
                                                         }
                                                     });

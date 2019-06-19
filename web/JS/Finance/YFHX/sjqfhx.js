@@ -1030,18 +1030,20 @@ Ext.define('HXWin', {
                                                             if (tabN == 1) {
                                                                 for (var i = 0; i < whxSelStore.data.items.length; i++) {
                                                                     var id = whxSelStore.data.items[i].data.id;
+                                                                    var je = whxSelStore.data.items[i].data.yhxmoney;
                                                                     var zcdid = whxSelStore.data.items[i].data.zhuangchedanId;
                                                                     CS('CZCLZ.Finance.DeleteExpenseHxLog', function (retVal) {
                                                                         getWhxList(1);
-                                                                    }, CS.onError, "9", id, zcdid);
+                                                                    }, CS.onError, "9", id, zcdid, je);
                                                                 }
                                                             } else if (tabN == 2) {
                                                                 for (var i = 0; i < yhxSelStore.data.items.length; i++) {
                                                                     var id = yhxSelStore.data.items[i].data.id;
+                                                                    var je = yhxSelStore.data.items[i].data.yhxmoney;
                                                                     var zcdid = yhxSelStore.data.items[i].data.zhuangchedanId;
                                                                     CS('CZCLZ.Finance.DeleteExpenseHxLog', function (retVal) {
                                                                         getYhxList(1);
-                                                                    }, CS.onError, "9", id, zcdid);
+                                                                    }, CS.onError, "9", id, zcdid, je);
                                                                 }
                                                             }
                                                         }

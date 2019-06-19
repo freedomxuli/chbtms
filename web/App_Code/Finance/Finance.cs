@@ -9,6 +9,7 @@ using System.Text;
 using System.Data.SqlClient;
 using SmartFramework4v2.Web.Common.JSON;
 using SmartFramework4v2.Data;
+using Aspose.Cells;
 
 /// <summary>
 /// Finance 的摘要说明
@@ -945,7 +946,7 @@ left join (
 	where d.status=0 and d.is_leaf=0
 )c on a.yundan_chaifen_id=c.yundan_chaifen_id
 left join jichu_office f on a.officeId=f.officeId
-where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and a.status=0 and a.kind=2 and b.isOverQianfuHexiao=" + zt;
+where a.isLock=" + zt + " and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and a.status=0 and a.kind=2 and b.isOverQianfuHexiao=" + zt;
                 if (!string.IsNullOrEmpty(clientId))
                 {
                     sql += " and a.clientId=" + dbc.ToSqlValue(clientId);
@@ -1063,7 +1064,8 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
                 List<string> list_where = new List<string>();
                 if (!string.IsNullOrEmpty(hxzt))
                 {
-                    list_where.Add("b.isOverYufuHexiao=" + dbc.ToSqlValue(hxzt));
+                    list_where.Add("b.isOveDaofuHexiao=" + dbc.ToSqlValue(hxzt));
+                    list_where.Add("a.isLock=" + dbc.ToSqlValue(hxzt));
                 }
                 if (!string.IsNullOrEmpty(bscid))
                 {
@@ -1120,7 +1122,7 @@ left join (
 	where d.status=0 and d.is_leaf=0
 )c on a.yundan_chaifen_id=c.yundan_chaifen_id
 left join jichu_office f on a.officeId=f.officeId
-where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and a.status=0 and a.kind=3 ";
+where  a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and a.status=0 and a.kind=3 ";
 
                 if (list_where.Count > 0)
                 {
@@ -1221,7 +1223,7 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
     /// <param name="incomeId"></param>
     /// <param name="yundanId"></param>
     [CSMethod("DeleteIncomeHxLog")]
-    public void DeleteIncomeHxLog(string kind, string incomeId, string yundanId)
+    public void DeleteIncomeHxLog(string kind, string incomeId, string yundanId, string je)
     {
         using (DBConnection dbc = new DBConnection())
         {
@@ -1229,30 +1231,41 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
             {
                 dbc.BeginTransaction();
                 string zdName = "";
+                string rjMemo = "";
+                decimal qcje = !string.IsNullOrEmpty(je) ? Convert.ToDecimal(je) : 0;
+
                 switch (kind)
                 {
                     case "1":
                         zdName = "isOverYufuHexiao=0";
+                        rjMemo = "预付运费核销清除:" + qcje + "元";
                         break;
                     case "2":
                         zdName = "isOverQianfuHexiao=0";
+                        rjMemo = "预付运费核销清除:" + qcje + "元";
                         break;
                     case "3":
                         zdName = "isOveDaofuHexiao=0";
+                        rjMemo = "预付运费核销清除:" + qcje + "元";
                         break;
                     case "4":
                         zdName = "isOverDaishouInHexiao=0";
+                        rjMemo = "预付运费核销清除:" + qcje + "元";
                         break;
                 }
 
                 string sql = @"update yundan_yundan set " + zdName + " where yundan_id=" + dbc.ToSqlValue(yundanId);
                 dbc.ExecuteNonQuery(sql);
 
-                sql = "update caiwu_income set money=0 where id=" + dbc.ToSqlValue(incomeId);
+                sql = "update caiwu_income set money=0,isLock=0 where id=" + dbc.ToSqlValue(incomeId);
                 dbc.ExecuteNonQuery(sql);
 
-                sql = @"delete from caiwu_hx_log where income_id=" + dbc.ToSqlValue(incomeId);
+                saveLog(incomeId, DateTime.Now, qcje, rjMemo);
+
+                sql = @"delete from caiwu_report_riji where incomeId=" + dbc.ToSqlValue(incomeId);
                 dbc.ExecuteNonQuery(sql);
+
+
 
                 dbc.CommitTransaction();
             }
@@ -1261,6 +1274,509 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
                 dbc.RoolbackTransaction();
                 throw ex;
             }
+        }
+    }
+
+    [CSMethod("DownLoadYfyf", 2)]
+    public byte[] DownLoadYfyf(JSReader xzlist)
+    {
+        try
+        {
+            Aspose.Cells.Workbook workbook = new Aspose.Cells.Workbook(); //工作簿
+            Aspose.Cells.Worksheet sheet = workbook.Worksheets[0]; //工作表
+
+            Aspose.Cells.Cells cells = sheet.Cells;//单元格
+            #region 设置样式
+            //样式1
+            Aspose.Cells.Style style1 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style1.HorizontalAlignment = TextAlignmentType.Center;//文字居中
+            style1.Font.Name = "宋体";//文字字体
+            style1.Font.Size = 16;//文字大小
+            style1.IsTextWrapped = true;//单元格内容自动换行
+            style1.Font.IsBold = true;//粗体
+            style1.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式2
+            Aspose.Cells.Style style2 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style2.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style2.Font.Name = "宋体";//文字字体
+            style2.Font.Size = 10;//文字大小
+            style2.IsTextWrapped = true;//单元格内容自动换行
+            style2.Font.IsBold = true;//粗体
+            style2.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式3
+            Aspose.Cells.Style style3 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style3.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style3.Font.Name = "宋体";//文字字体
+            style3.Font.Size = 10;//文字大小
+            style3.IsTextWrapped = true;//单元格内容自动换行
+            style3.Font.IsBold = false;//粗体
+            style3.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+            #endregion
+
+            CellPutValue(cells, "导出预付运费核销", 0, 0, 1, 19, style1);
+            cells.SetRowHeight(0, 25.5);
+            CellPutValue(cells, "运单号", 1, 0, 1, 1, style2);
+            CellPutValue(cells, "装车单号", 1, 1, 1, 1, style2);
+            CellPutValue(cells, "现付", 1, 2, 1, 1, style2);
+            CellPutValue(cells, "已核销", 1, 3, 1, 1, style2);
+            CellPutValue(cells, "未核销", 1, 4, 1, 1, style2);
+            CellPutValue(cells, "本次核销", 1, 5, 1, 1, style2);
+            CellPutValue(cells, "最新核销时间", 1, 6, 1, 1, style2);
+            CellPutValue(cells, "办事处", 1, 7, 1, 1, style2);
+            CellPutValue(cells, "发货人", 1, 8, 1, 1, style2);
+            CellPutValue(cells, "发货电话", 1, 9, 1, 1, style2);
+            CellPutValue(cells, "收货人", 1, 10, 1, 1, style2);
+            CellPutValue(cells, "收货电话", 1, 11, 1, 1, style2);
+            CellPutValue(cells, "收货地址", 1, 12, 1, 1, style2);
+            CellPutValue(cells, "到达站", 1, 13, 1, 1, style2);
+            CellPutValue(cells, "送货方式", 1, 14, 1, 1, style2);
+            CellPutValue(cells, "结算方式", 1, 15, 1, 1, style2);
+            CellPutValue(cells, "运费", 1, 16, 1, 1, style2);
+            CellPutValue(cells, "制单人", 1, 17, 1, 1, style2);
+            CellPutValue(cells, "备注", 1, 18, 1, 1, style2);
+
+            var temp2 = 2;  //数据从第三行开始填充
+            for (int i = 0; i < xzlist.ToArray().Length; i++)
+            {
+                CellPutValue(cells, xzlist[i]["yundanNum"].ToString(), i + temp2, 0, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["zhuangchedanNum"].ToString(), i + temp2, 1, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["moneyXianfu"].ToString(), i + temp2, 2, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["yhxmoney"].ToString(), i + temp2, 3, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["whxmoney"].ToString(), i + temp2, 4, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["hxje"].ToString(), i + temp2, 5, 1, 1, style3);
+                if (!string.IsNullOrEmpty(xzlist[i]["incomeDate"].ToString()))
+                {
+                    CellPutValue(cells, Convert.ToDateTime(xzlist[i]["incomeDate"].ToString()).ToString("yyyy-MM-dd"), i + temp2, 6, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "", i + temp2, 6, 1, 1, style3);
+                }
+                CellPutValue(cells, xzlist[i]["officeName"].ToString(), i + temp2, 7, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoPeople"].ToString(), i + temp2, 8, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoTel"].ToString(), i + temp2, 9, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoPeople"].ToString(), i + temp2, 10, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoTel"].ToString(), i + temp2, 11, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoAddress"].ToString(), i + temp2, 12, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["ddofficeName"].ToString(), i + temp2, 13, 1, 1, style3);
+                if (Convert.ToInt32(xzlist[i]["songhuoType"].ToString()) == 0)
+                {
+                    CellPutValue(cells, "自提", i + temp2, 14, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "送货", i + temp2, 14, 1, 1, style3);
+                }
+                string str = "";
+                if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 11)
+                {
+                    str = "现金";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 1)
+                {
+                    str = "欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 2)
+                {
+                    str = "到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 3)
+                {
+                    str = "回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 4)
+                {
+                    str = "现付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 5)
+                {
+                    str = "现付+到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 6)
+                {
+                    str = "到付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 7)
+                {
+                    str = "现付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 8)
+                {
+                    str = "欠付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 9)
+                {
+                    str = "到付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 10)
+                {
+                    str = "现付+到付+欠付";
+                }
+                CellPutValue(cells, str, i + temp2, 15, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["moneyYunfei"].ToString(), i + temp2, 16, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["UserName"].ToString(), i + temp2, 17, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["memo"].ToString(), i + temp2, 18, 1, 1, style3);
+            }
+            System.IO.MemoryStream ms = workbook.SaveToStream();
+            byte[] bt = ms.ToArray();
+            return bt;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    [CSMethod("DownLoadDfyf", 2)]
+    public byte[] DownLoadDfyf(JSReader xzlist)
+    {
+        try
+        {
+            Aspose.Cells.Workbook workbook = new Aspose.Cells.Workbook(); //工作簿
+            Aspose.Cells.Worksheet sheet = workbook.Worksheets[0]; //工作表
+
+            Aspose.Cells.Cells cells = sheet.Cells;//单元格
+            #region 设置样式
+            //样式1
+            Aspose.Cells.Style style1 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style1.HorizontalAlignment = TextAlignmentType.Center;//文字居中
+            style1.Font.Name = "宋体";//文字字体
+            style1.Font.Size = 16;//文字大小
+            style1.IsTextWrapped = true;//单元格内容自动换行
+            style1.Font.IsBold = true;//粗体
+            style1.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式2
+            Aspose.Cells.Style style2 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style2.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style2.Font.Name = "宋体";//文字字体
+            style2.Font.Size = 10;//文字大小
+            style2.IsTextWrapped = true;//单元格内容自动换行
+            style2.Font.IsBold = true;//粗体
+            style2.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式3
+            Aspose.Cells.Style style3 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style3.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style3.Font.Name = "宋体";//文字字体
+            style3.Font.Size = 10;//文字大小
+            style3.IsTextWrapped = true;//单元格内容自动换行
+            style3.Font.IsBold = false;//粗体
+            style3.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+            #endregion
+
+            CellPutValue(cells, "导出到付运费核销", 0, 0, 1, 19, style1);
+            cells.SetRowHeight(0, 25.5);
+            CellPutValue(cells, "运单号", 1, 0, 1, 1, style2);
+            CellPutValue(cells, "装车单号", 1, 1, 1, 1, style2);
+            CellPutValue(cells, "到付", 1, 2, 1, 1, style2);//
+            CellPutValue(cells, "已核销", 1, 3, 1, 1, style2);
+            CellPutValue(cells, "未核销", 1, 4, 1, 1, style2);
+            CellPutValue(cells, "本次核销", 1, 5, 1, 1, style2);
+            CellPutValue(cells, "最新核销时间", 1, 6, 1, 1, style2);
+            CellPutValue(cells, "办事处", 1, 7, 1, 1, style2);
+            CellPutValue(cells, "发货人", 1, 8, 1, 1, style2);
+            CellPutValue(cells, "发货电话", 1, 9, 1, 1, style2);
+            CellPutValue(cells, "收货人", 1, 10, 1, 1, style2);
+            CellPutValue(cells, "收货电话", 1, 11, 1, 1, style2);
+            CellPutValue(cells, "收货地址", 1, 12, 1, 1, style2);
+            CellPutValue(cells, "到达站", 1, 13, 1, 1, style2);
+            CellPutValue(cells, "送货方式", 1, 14, 1, 1, style2);
+            CellPutValue(cells, "结算方式", 1, 15, 1, 1, style2);
+            CellPutValue(cells, "运费", 1, 16, 1, 1, style2);
+            CellPutValue(cells, "制单人", 1, 17, 1, 1, style2);
+            CellPutValue(cells, "备注", 1, 18, 1, 1, style2);
+
+            var temp2 = 2;  //数据从第三行开始填充
+            for (int i = 0; i < xzlist.ToArray().Length; i++)
+            {
+                CellPutValue(cells, xzlist[i]["yundanNum"].ToString(), i + temp2, 0, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["zhuangchedanNum"].ToString(), i + temp2, 1, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["moneyDaofu"].ToString(), i + temp2, 2, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["yhxmoney"].ToString(), i + temp2, 3, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["whxmoney"].ToString(), i + temp2, 4, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["hxje"].ToString(), i + temp2, 5, 1, 1, style3);
+                if (!string.IsNullOrEmpty(xzlist[i]["incomeDate"].ToString()))
+                {
+                    CellPutValue(cells, Convert.ToDateTime(xzlist[i]["incomeDate"].ToString()).ToString("yyyy-MM-dd"), i + temp2, 6, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "", i + temp2, 6, 1, 1, style3);
+                }
+                CellPutValue(cells, xzlist[i]["officeName"].ToString(), i + temp2, 7, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoPeople"].ToString(), i + temp2, 8, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoTel"].ToString(), i + temp2, 9, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoPeople"].ToString(), i + temp2, 10, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoTel"].ToString(), i + temp2, 11, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoAddress"].ToString(), i + temp2, 12, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["ddofficeName"].ToString(), i + temp2, 13, 1, 1, style3);
+                if (Convert.ToInt32(xzlist[i]["songhuoType"].ToString()) == 0)
+                {
+                    CellPutValue(cells, "自提", i + temp2, 14, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "送货", i + temp2, 14, 1, 1, style3);
+                }
+                string str = "";
+                if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 11)
+                {
+                    str = "现金";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 1)
+                {
+                    str = "欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 2)
+                {
+                    str = "到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 3)
+                {
+                    str = "回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 4)
+                {
+                    str = "现付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 5)
+                {
+                    str = "现付+到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 6)
+                {
+                    str = "到付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 7)
+                {
+                    str = "现付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 8)
+                {
+                    str = "欠付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 9)
+                {
+                    str = "到付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 10)
+                {
+                    str = "现付+到付+欠付";
+                }
+                CellPutValue(cells, str, i + temp2, 15, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["moneyYunfei"].ToString(), i + temp2, 16, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["UserName"].ToString(), i + temp2, 17, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["memo"].ToString(), i + temp2, 18, 1, 1, style3);
+            }
+            System.IO.MemoryStream ms = workbook.SaveToStream();
+            byte[] bt = ms.ToArray();
+            return bt;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+
+    [CSMethod("DownLoadQfyf", 2)]
+    public byte[] DownLoadQfyf(JSReader xzlist)
+    {
+        try
+        {
+            Aspose.Cells.Workbook workbook = new Aspose.Cells.Workbook(); //工作簿
+            Aspose.Cells.Worksheet sheet = workbook.Worksheets[0]; //工作表
+
+            Aspose.Cells.Cells cells = sheet.Cells;//单元格
+            #region 设置样式
+            //样式1
+            Aspose.Cells.Style style1 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style1.HorizontalAlignment = TextAlignmentType.Center;//文字居中
+            style1.Font.Name = "宋体";//文字字体
+            style1.Font.Size = 16;//文字大小
+            style1.IsTextWrapped = true;//单元格内容自动换行
+            style1.Font.IsBold = true;//粗体
+            style1.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式2
+            Aspose.Cells.Style style2 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style2.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style2.Font.Name = "宋体";//文字字体
+            style2.Font.Size = 10;//文字大小
+            style2.IsTextWrapped = true;//单元格内容自动换行
+            style2.Font.IsBold = true;//粗体
+            style2.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式3
+            Aspose.Cells.Style style3 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style3.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style3.Font.Name = "宋体";//文字字体
+            style3.Font.Size = 10;//文字大小
+            style3.IsTextWrapped = true;//单元格内容自动换行
+            style3.Font.IsBold = false;//粗体
+            style3.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+            #endregion
+
+            CellPutValue(cells, "导出欠付运费核销", 0, 0, 1, 21, style1);
+            cells.SetRowHeight(0, 25.5);
+            CellPutValue(cells, "运单号", 1, 0, 1, 1, style2);
+            CellPutValue(cells, "装车单号", 1, 1, 1, 1, style2);
+            CellPutValue(cells, "欠付（包括回单付）", 1, 2, 1, 1, style2);//
+            CellPutValue(cells, "已核销", 1, 3, 1, 1, style2);
+            CellPutValue(cells, "未核销", 1, 4, 1, 1, style2);
+            CellPutValue(cells, "本次核销", 1, 5, 1, 1, style2);
+            CellPutValue(cells, "最新核销时间", 1, 6, 1, 1, style2);
+            CellPutValue(cells, "办事处", 1, 7, 1, 1, style2);
+            CellPutValue(cells, "发货人", 1, 8, 1, 1, style2);
+            CellPutValue(cells, "发货电话", 1, 9, 1, 1, style2);
+            CellPutValue(cells, "收货人", 1, 10, 1, 1, style2);
+            CellPutValue(cells, "收货电话", 1, 11, 1, 1, style2);
+            CellPutValue(cells, "收货地址", 1, 12, 1, 1, style2);
+            CellPutValue(cells, "到达站", 1, 13, 1, 1, style2);
+            CellPutValue(cells, "送货方式", 1, 14, 1, 1, style2);
+            CellPutValue(cells, "结算方式", 1, 15, 1, 1, style2);
+            CellPutValue(cells, "运费", 1, 16, 1, 1, style2);
+            CellPutValue(cells, "制单人", 1, 17, 1, 1, style2);
+            CellPutValue(cells, "回单类型", 1, 18, 1, 1, style2);//
+            CellPutValue(cells, "回单状态", 1, 19, 1, 1, style2);//
+
+            CellPutValue(cells, "备注", 1, 20, 1, 1, style2);
+
+            var temp2 = 2;  //数据从第三行开始填充
+            for (int i = 0; i < xzlist.ToArray().Length; i++)
+            {
+                CellPutValue(cells, xzlist[i]["yundanNum"].ToString(), i + temp2, 0, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["zhuangchedanNum"].ToString(), i + temp2, 1, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["moneyQianfu"].ToString(), i + temp2, 2, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["yhxmoney"].ToString(), i + temp2, 3, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["whxmoney"].ToString(), i + temp2, 4, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["hxje"].ToString(), i + temp2, 5, 1, 1, style3);
+                if (!string.IsNullOrEmpty(xzlist[i]["incomeDate"].ToString()))
+                {
+                    CellPutValue(cells, Convert.ToDateTime(xzlist[i]["incomeDate"].ToString()).ToString("yyyy-MM-dd"), i + temp2, 6, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "", i + temp2, 6, 1, 1, style3);
+                }
+                CellPutValue(cells, xzlist[i]["officeName"].ToString(), i + temp2, 7, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoPeople"].ToString(), i + temp2, 8, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoTel"].ToString(), i + temp2, 9, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoPeople"].ToString(), i + temp2, 10, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoTel"].ToString(), i + temp2, 11, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoAddress"].ToString(), i + temp2, 12, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["ddofficeName"].ToString(), i + temp2, 13, 1, 1, style3);
+                if (Convert.ToInt32(xzlist[i]["songhuoType"].ToString()) == 0)
+                {
+                    CellPutValue(cells, "自提", i + temp2, 14, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "送货", i + temp2, 14, 1, 1, style3);
+                }
+                string str = "";
+                if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 11)
+                {
+                    str = "现金";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 1)
+                {
+                    str = "欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 2)
+                {
+                    str = "到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 3)
+                {
+                    str = "回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 4)
+                {
+                    str = "现付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 5)
+                {
+                    str = "现付+到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 6)
+                {
+                    str = "到付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 7)
+                {
+                    str = "现付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 8)
+                {
+                    str = "欠付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 9)
+                {
+                    str = "到付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 10)
+                {
+                    str = "现付+到付+欠付";
+                }
+                CellPutValue(cells, str, i + temp2, 15, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["moneyYunfei"].ToString(), i + temp2, 16, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["UserName"].ToString(), i + temp2, 17, 1, 1, style3);
+                if (Convert.ToInt32(xzlist[i]["huidanType"].ToString()) == 0)
+                {
+                    CellPutValue(cells, "回单", i + temp2, 18, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "收条", i + temp2, 18, 1, 1, style3);
+                }
+                if (Convert.ToInt32(xzlist[i]["isSign"].ToString()) == 0)
+                {
+                    CellPutValue(cells, "未回单", i + temp2, 19, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "已回单", i + temp2, 19, 1, 1, style3);
+                }
+                CellPutValue(cells, xzlist[i]["memo"].ToString(), i + temp2, 20, 1, 1, style3);
+            }
+            System.IO.MemoryStream ms = workbook.SaveToStream();
+            byte[] bt = ms.ToArray();
+            return bt;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
         }
     }
     #endregion
@@ -1295,17 +1811,17 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
                 string sqlW = "";
                 if (!string.IsNullOrEmpty(kssj))
                 {
-                    sqlW += "t1.actionDate>=" + dbc.ToSqlValue(Convert.ToDateTime(kssj));
+                    sqlW += " and t1.actionDate>=" + dbc.ToSqlValue(Convert.ToDateTime(kssj));
                 }
                 if (!string.IsNullOrEmpty(jssj))
                 {
-                    sqlW += "t1.actionDate<" + dbc.ToSqlValue(Convert.ToDateTime(jssj).AddDays(1));
+                    sqlW += " and t1.actionDate<" + dbc.ToSqlValue(Convert.ToDateTime(jssj).AddDays(1));
                 }
                 #endregion
 
                 string sql = @"select a.driverId,a.people,a.tel,a.carNum,isNULL(b.money,0) AllMoney,isNULL(c.HeXiaoMoney,0)HeXiaoMoney,
 (isNULL(b.money,0)-isNULL(c.HeXiaoMoney,0)) WeiHeXiaoMoney from jichu_driver a
-                                left join (
+                                inner join (
 	                                select t1.driverId,SUM(t1.money)money from yundan_duanbo_fenliu t1
 	                                where t1.status=0 and t1.kind=1 " + sqlW + @"
 	                                group by t1.driverId
@@ -1443,7 +1959,8 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
 	                                group by yundanId,driverId
                                 )d on a.yundanId=d.yundanId and a.driverId=d.driverId
                                 left join jichu_office e on a.officeId=e.officeId
-                                where a.isLock=0 and a.kind=1 and a.status=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and b.isOverDuanboHexiao=" + zt;
+                                where a.isLock=" + zt + " and a.kind=1 and a.status=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and b.isOverDuanboHexiao=" + zt;
+
                 if (!string.IsNullOrEmpty(driverId))
                 {
                     sql += " and a.driverId=" + dbc.ToSqlValue(driverId);
@@ -1459,6 +1976,168 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
                 return new { dt = dt_return, cp = cp, ac = ac };
             }
 
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    [CSMethod("DownLoadDbf", 2)]
+    public byte[] DownLoadDbf(JSReader xzlist)
+    {
+        try
+        {
+            Aspose.Cells.Workbook workbook = new Aspose.Cells.Workbook(); //工作簿
+            Aspose.Cells.Worksheet sheet = workbook.Worksheets[0]; //工作表
+
+            Aspose.Cells.Cells cells = sheet.Cells;//单元格
+            #region 设置样式
+            //样式1
+            Aspose.Cells.Style style1 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style1.HorizontalAlignment = TextAlignmentType.Center;//文字居中
+            style1.Font.Name = "宋体";//文字字体
+            style1.Font.Size = 16;//文字大小
+            style1.IsTextWrapped = true;//单元格内容自动换行
+            style1.Font.IsBold = true;//粗体
+            style1.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式2
+            Aspose.Cells.Style style2 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style2.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style2.Font.Name = "宋体";//文字字体
+            style2.Font.Size = 10;//文字大小
+            style2.IsTextWrapped = true;//单元格内容自动换行
+            style2.Font.IsBold = true;//粗体
+            style2.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式3
+            Aspose.Cells.Style style3 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style3.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style3.Font.Name = "宋体";//文字字体
+            style3.Font.Size = 10;//文字大小
+            style3.IsTextWrapped = true;//单元格内容自动换行
+            style3.Font.IsBold = false;//粗体
+            style3.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+            #endregion
+
+            CellPutValue(cells, "导出短驳费核销", 0, 0, 1, 19, style1);
+            cells.SetRowHeight(0, 25.5);
+            CellPutValue(cells, "运单号", 1, 0, 1, 1, style2);
+            CellPutValue(cells, "装车单号", 1, 1, 1, 1, style2);
+            CellPutValue(cells, "短驳费", 1, 2, 1, 1, style2);//
+            CellPutValue(cells, "已核销", 1, 3, 1, 1, style2);
+            CellPutValue(cells, "未核销", 1, 4, 1, 1, style2);
+            CellPutValue(cells, "本次核销", 1, 5, 1, 1, style2);
+            CellPutValue(cells, "最新核销时间", 1, 6, 1, 1, style2);
+            CellPutValue(cells, "办事处", 1, 7, 1, 1, style2);
+            CellPutValue(cells, "发货人", 1, 8, 1, 1, style2);
+            CellPutValue(cells, "发货电话", 1, 9, 1, 1, style2);
+            CellPutValue(cells, "收货人", 1, 10, 1, 1, style2);
+            CellPutValue(cells, "收货电话", 1, 11, 1, 1, style2);
+            CellPutValue(cells, "收货地址", 1, 12, 1, 1, style2);
+            CellPutValue(cells, "到达站", 1, 13, 1, 1, style2);
+            CellPutValue(cells, "送货方式", 1, 14, 1, 1, style2);
+            CellPutValue(cells, "结算方式", 1, 15, 1, 1, style2);
+            CellPutValue(cells, "运费", 1, 16, 1, 1, style2);
+            CellPutValue(cells, "制单人", 1, 17, 1, 1, style2);
+            CellPutValue(cells, "备注", 1, 18, 1, 1, style2);
+
+            var temp2 = 2;  //数据从第三行开始填充
+            for (int i = 0; i < xzlist.ToArray().Length; i++)
+            {
+                CellPutValue(cells, xzlist[i]["yundanNum"].ToString(), i + temp2, 0, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["zhuangchedanNum"].ToString(), i + temp2, 1, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["money"].ToString(), i + temp2, 2, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["yhxmoney"].ToString(), i + temp2, 3, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["whxmoney"].ToString(), i + temp2, 4, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["hxje"].ToString(), i + temp2, 5, 1, 1, style3);
+                if (!string.IsNullOrEmpty(xzlist[i]["expenseDate"].ToString()))
+                {
+                    CellPutValue(cells, Convert.ToDateTime(xzlist[i]["expenseDate"].ToString()).ToString("yyyy-MM-dd"), i + temp2, 6, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "", i + temp2, 6, 1, 1, style3);
+                }
+                CellPutValue(cells, xzlist[i]["officeName"].ToString(), i + temp2, 7, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoPeople"].ToString(), i + temp2, 8, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoTel"].ToString(), i + temp2, 9, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoPeople"].ToString(), i + temp2, 10, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoTel"].ToString(), i + temp2, 11, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoAddress"].ToString(), i + temp2, 12, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["ddofficeName"].ToString(), i + temp2, 13, 1, 1, style3);
+                if (Convert.ToInt32(xzlist[i]["songhuoType"].ToString()) == 0)
+                {
+                    CellPutValue(cells, "自提", i + temp2, 14, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "送货", i + temp2, 14, 1, 1, style3);
+                }
+                string str = "";
+                if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 11)
+                {
+                    str = "现金";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 1)
+                {
+                    str = "欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 2)
+                {
+                    str = "到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 3)
+                {
+                    str = "回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 4)
+                {
+                    str = "现付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 5)
+                {
+                    str = "现付+到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 6)
+                {
+                    str = "到付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 7)
+                {
+                    str = "现付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 8)
+                {
+                    str = "欠付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 9)
+                {
+                    str = "到付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 10)
+                {
+                    str = "现付+到付+欠付";
+                }
+                CellPutValue(cells, str, i + temp2, 15, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["moneyYunfei"].ToString(), i + temp2, 16, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["UserName"].ToString(), i + temp2, 17, 1, 1, style3);
+                
+                CellPutValue(cells, xzlist[i]["memo"].ToString(), i + temp2, 18, 1, 1, style3);
+            }
+            System.IO.MemoryStream ms = workbook.SaveToStream();
+            byte[] bt = ms.ToArray();
+            return bt;
         }
         catch (Exception ex)
         {
@@ -1495,17 +2174,17 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
                 string sqlW = "";
                 if (!string.IsNullOrEmpty(kssj))
                 {
-                    sqlW += "t1.actionDate>=" + dbc.ToSqlValue(Convert.ToDateTime(kssj));
+                    sqlW += " and t1.actionDate>=" + dbc.ToSqlValue(Convert.ToDateTime(kssj));
                 }
                 if (!string.IsNullOrEmpty(jssj))
                 {
-                    sqlW += "t1.actionDate<" + dbc.ToSqlValue(Convert.ToDateTime(jssj).AddDays(1));
+                    sqlW += " and t1.actionDate<" + dbc.ToSqlValue(Convert.ToDateTime(jssj).AddDays(1));
                 }
                 #endregion
 
                 string sql = @"select a.zhongzhuanId,a.compName,a.people,a.tel,isNULL(b.money,0) AllMoney,isNULL(c.HeXiaoMoney,0)HeXiaoMoney,
 (isNULL(b.money,0)-isNULL(c.HeXiaoMoney,0)) WeiHeXiaoMoney from jichu_zhongzhuan a
-                                left join (
+                                inner join (
 	                                select t1.zhongzhuanId,SUM(t1.money)money from yundan_duanbo_fenliu t1
 	                                where t1.status=0 and t1.kind=2 " + sqlW + @"
 	                                group by t1.zhongzhuanId
@@ -1643,7 +2322,7 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
 	                                group by yundanId,zhongzhuanId
                                 )d on a.yundanId=d.yundanId and a.zhongzhuanId=d.zhongzhuanId
                                 left join jichu_office e on a.officeId=e.officeId
-                                where a.isLock=0 and a.kind=2 and a.status=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and b.isOverZhongzhuanHexiao=" + zt;
+                                where a.isLock=" + zt + " and a.kind=2 and a.status=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and b.isOverZhongzhuanHexiao=" + zt;
                 if (!string.IsNullOrEmpty(zhongzhuanId))
                 {
                     sql += " and a.zhongzhuanId=" + dbc.ToSqlValue(zhongzhuanId);
@@ -1659,6 +2338,168 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
                 return new { dt = dt_return, cp = cp, ac = ac };
             }
 
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    [CSMethod("DownLoadBsczz", 2)]
+    public byte[] DownLoadBsczz(JSReader xzlist)
+    {
+        try
+        {
+            Aspose.Cells.Workbook workbook = new Aspose.Cells.Workbook(); //工作簿
+            Aspose.Cells.Worksheet sheet = workbook.Worksheets[0]; //工作表
+
+            Aspose.Cells.Cells cells = sheet.Cells;//单元格
+            #region 设置样式
+            //样式1
+            Aspose.Cells.Style style1 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style1.HorizontalAlignment = TextAlignmentType.Center;//文字居中
+            style1.Font.Name = "宋体";//文字字体
+            style1.Font.Size = 16;//文字大小
+            style1.IsTextWrapped = true;//单元格内容自动换行
+            style1.Font.IsBold = true;//粗体
+            style1.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式2
+            Aspose.Cells.Style style2 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style2.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style2.Font.Name = "宋体";//文字字体
+            style2.Font.Size = 10;//文字大小
+            style2.IsTextWrapped = true;//单元格内容自动换行
+            style2.Font.IsBold = true;//粗体
+            style2.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式3
+            Aspose.Cells.Style style3 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style3.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style3.Font.Name = "宋体";//文字字体
+            style3.Font.Size = 10;//文字大小
+            style3.IsTextWrapped = true;//单元格内容自动换行
+            style3.Font.IsBold = false;//粗体
+            style3.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+            #endregion
+
+            CellPutValue(cells, "导出办事处中转费核销", 0, 0, 1, 19, style1);
+            cells.SetRowHeight(0, 25.5);
+            CellPutValue(cells, "运单号", 1, 0, 1, 1, style2);
+            CellPutValue(cells, "装车单号", 1, 1, 1, 1, style2);
+            CellPutValue(cells, "中转费", 1, 2, 1, 1, style2);//
+            CellPutValue(cells, "已核销", 1, 3, 1, 1, style2);
+            CellPutValue(cells, "未核销", 1, 4, 1, 1, style2);
+            CellPutValue(cells, "本次核销", 1, 5, 1, 1, style2);
+            CellPutValue(cells, "最新核销时间", 1, 6, 1, 1, style2);
+            CellPutValue(cells, "办事处", 1, 7, 1, 1, style2);
+            CellPutValue(cells, "发货人", 1, 8, 1, 1, style2);
+            CellPutValue(cells, "发货电话", 1, 9, 1, 1, style2);
+            CellPutValue(cells, "收货人", 1, 10, 1, 1, style2);
+            CellPutValue(cells, "收货电话", 1, 11, 1, 1, style2);
+            CellPutValue(cells, "收货地址", 1, 12, 1, 1, style2);
+            CellPutValue(cells, "到达站", 1, 13, 1, 1, style2);
+            CellPutValue(cells, "送货方式", 1, 14, 1, 1, style2);
+            CellPutValue(cells, "结算方式", 1, 15, 1, 1, style2);
+            CellPutValue(cells, "运费", 1, 16, 1, 1, style2);
+            CellPutValue(cells, "制单人", 1, 17, 1, 1, style2);
+            CellPutValue(cells, "备注", 1, 18, 1, 1, style2);
+
+            var temp2 = 2;  //数据从第三行开始填充
+            for (int i = 0; i < xzlist.ToArray().Length; i++)
+            {
+                CellPutValue(cells, xzlist[i]["yundanNum"].ToString(), i + temp2, 0, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["zhuangchedanNum"].ToString(), i + temp2, 1, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["money"].ToString(), i + temp2, 2, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["yhxmoney"].ToString(), i + temp2, 3, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["whxmoney"].ToString(), i + temp2, 4, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["hxje"].ToString(), i + temp2, 5, 1, 1, style3);
+                if (!string.IsNullOrEmpty(xzlist[i]["expenseDate"].ToString()))
+                {
+                    CellPutValue(cells, Convert.ToDateTime(xzlist[i]["expenseDate"].ToString()).ToString("yyyy-MM-dd"), i + temp2, 6, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "", i + temp2, 6, 1, 1, style3);
+                }
+                CellPutValue(cells, xzlist[i]["officeName"].ToString(), i + temp2, 7, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoPeople"].ToString(), i + temp2, 8, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoTel"].ToString(), i + temp2, 9, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoPeople"].ToString(), i + temp2, 10, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoTel"].ToString(), i + temp2, 11, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoAddress"].ToString(), i + temp2, 12, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["ddofficeName"].ToString(), i + temp2, 13, 1, 1, style3);
+                if (Convert.ToInt32(xzlist[i]["songhuoType"].ToString()) == 0)
+                {
+                    CellPutValue(cells, "自提", i + temp2, 14, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "送货", i + temp2, 14, 1, 1, style3);
+                }
+                string str = "";
+                if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 11)
+                {
+                    str = "现金";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 1)
+                {
+                    str = "欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 2)
+                {
+                    str = "到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 3)
+                {
+                    str = "回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 4)
+                {
+                    str = "现付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 5)
+                {
+                    str = "现付+到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 6)
+                {
+                    str = "到付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 7)
+                {
+                    str = "现付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 8)
+                {
+                    str = "欠付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 9)
+                {
+                    str = "到付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 10)
+                {
+                    str = "现付+到付+欠付";
+                }
+                CellPutValue(cells, str, i + temp2, 15, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["moneyYunfei"].ToString(), i + temp2, 16, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["UserName"].ToString(), i + temp2, 17, 1, 1, style3);
+
+                CellPutValue(cells, xzlist[i]["memo"].ToString(), i + temp2, 18, 1, 1, style3);
+            }
+            System.IO.MemoryStream ms = workbook.SaveToStream();
+            byte[] bt = ms.ToArray();
+            return bt;
         }
         catch (Exception ex)
         {
@@ -1695,17 +2536,17 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
                 string sqlW = "";
                 if (!string.IsNullOrEmpty(kssj))
                 {
-                    sqlW += "t1.actionDate>=" + dbc.ToSqlValue(Convert.ToDateTime(kssj));
+                    sqlW += " and t1.actionDate>=" + dbc.ToSqlValue(Convert.ToDateTime(kssj));
                 }
                 if (!string.IsNullOrEmpty(jssj))
                 {
-                    sqlW += "t1.actionDate<" + dbc.ToSqlValue(Convert.ToDateTime(jssj).AddDays(1));
+                    sqlW += " and t1.actionDate<" + dbc.ToSqlValue(Convert.ToDateTime(jssj).AddDays(1));
                 }
                 #endregion
 
                 string sql = @"select a.driverId,a.people,a.tel,a.carNum,isNULL(b.money,0) AllMoney,isNULL(c.HeXiaoMoney,0)HeXiaoMoney,
 (isNULL(b.money,0)-isNULL(c.HeXiaoMoney,0)) WeiHeXiaoMoney from jichu_driver a
-                                left join (
+                                inner join (
 	                                select t1.driverId,SUM(t1.money)money from yundan_duanbo_fenliu t1
 	                                where t1.status=0 and t1.kind=3 " + sqlW + @"
 	                                group by t1.driverId
@@ -1843,7 +2684,7 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
 	                                group by yundanId,driverId
                                 )d on a.yundanId=d.yundanId and a.driverId=d.driverId
                                 left join jichu_office e on a.officeId=e.officeId
-                                where a.isLock=0 and a.kind=3 and a.status=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and b.isOverSonghuoHexiao=" + zt;
+                                where a.isLock=" + zt + " and a.kind=3 and a.status=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and b.isOverSonghuoHexiao=" + zt;
                 if (!string.IsNullOrEmpty(driverId))
                 {
                     sql += " and a.driverId=" + dbc.ToSqlValue(driverId);
@@ -1859,6 +2700,168 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
                 return new { dt = dt_return, cp = cp, ac = ac };
             }
 
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    [CSMethod("DownLoadBscsh", 2)]
+    public byte[] DownLoadBscsh(JSReader xzlist)
+    {
+        try
+        {
+            Aspose.Cells.Workbook workbook = new Aspose.Cells.Workbook(); //工作簿
+            Aspose.Cells.Worksheet sheet = workbook.Worksheets[0]; //工作表
+
+            Aspose.Cells.Cells cells = sheet.Cells;//单元格
+            #region 设置样式
+            //样式1
+            Aspose.Cells.Style style1 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style1.HorizontalAlignment = TextAlignmentType.Center;//文字居中
+            style1.Font.Name = "宋体";//文字字体
+            style1.Font.Size = 16;//文字大小
+            style1.IsTextWrapped = true;//单元格内容自动换行
+            style1.Font.IsBold = true;//粗体
+            style1.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style1.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式2
+            Aspose.Cells.Style style2 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style2.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style2.Font.Name = "宋体";//文字字体
+            style2.Font.Size = 10;//文字大小
+            style2.IsTextWrapped = true;//单元格内容自动换行
+            style2.Font.IsBold = true;//粗体
+            style2.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style2.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+
+            //样式3
+            Aspose.Cells.Style style3 = workbook.Styles[workbook.Styles.Add()];//新增样式    
+            style3.HorizontalAlignment = TextAlignmentType.Left;//文字居左
+            style3.Font.Name = "宋体";//文字字体
+            style3.Font.Size = 10;//文字大小
+            style3.IsTextWrapped = true;//单元格内容自动换行
+            style3.Font.IsBold = false;//粗体
+            style3.Borders[Aspose.Cells.BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+            style3.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+            #endregion
+
+            CellPutValue(cells, "导出办事处送货费核销", 0, 0, 1, 19, style1);
+            cells.SetRowHeight(0, 25.5);
+            CellPutValue(cells, "运单号", 1, 0, 1, 1, style2);
+            CellPutValue(cells, "装车单号", 1, 1, 1, 1, style2);
+            CellPutValue(cells, "送货费", 1, 2, 1, 1, style2);//
+            CellPutValue(cells, "已核销", 1, 3, 1, 1, style2);
+            CellPutValue(cells, "未核销", 1, 4, 1, 1, style2);
+            CellPutValue(cells, "本次核销", 1, 5, 1, 1, style2);
+            CellPutValue(cells, "最新核销时间", 1, 6, 1, 1, style2);
+            CellPutValue(cells, "办事处", 1, 7, 1, 1, style2);
+            CellPutValue(cells, "发货人", 1, 8, 1, 1, style2);
+            CellPutValue(cells, "发货电话", 1, 9, 1, 1, style2);
+            CellPutValue(cells, "收货人", 1, 10, 1, 1, style2);
+            CellPutValue(cells, "收货电话", 1, 11, 1, 1, style2);
+            CellPutValue(cells, "收货地址", 1, 12, 1, 1, style2);
+            CellPutValue(cells, "到达站", 1, 13, 1, 1, style2);
+            CellPutValue(cells, "送货方式", 1, 14, 1, 1, style2);
+            CellPutValue(cells, "结算方式", 1, 15, 1, 1, style2);
+            CellPutValue(cells, "运费", 1, 16, 1, 1, style2);
+            CellPutValue(cells, "制单人", 1, 17, 1, 1, style2);
+            CellPutValue(cells, "备注", 1, 18, 1, 1, style2);
+
+            var temp2 = 2;  //数据从第三行开始填充
+            for (int i = 0; i < xzlist.ToArray().Length; i++)
+            {
+                CellPutValue(cells, xzlist[i]["yundanNum"].ToString(), i + temp2, 0, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["zhuangchedanNum"].ToString(), i + temp2, 1, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["money"].ToString(), i + temp2, 2, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["yhxmoney"].ToString(), i + temp2, 3, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["whxmoney"].ToString(), i + temp2, 4, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["hxje"].ToString(), i + temp2, 5, 1, 1, style3);
+                if (!string.IsNullOrEmpty(xzlist[i]["expenseDate"].ToString()))
+                {
+                    CellPutValue(cells, Convert.ToDateTime(xzlist[i]["expenseDate"].ToString()).ToString("yyyy-MM-dd"), i + temp2, 6, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "", i + temp2, 6, 1, 1, style3);
+                }
+                CellPutValue(cells, xzlist[i]["officeName"].ToString(), i + temp2, 7, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoPeople"].ToString(), i + temp2, 8, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["fahuoTel"].ToString(), i + temp2, 9, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoPeople"].ToString(), i + temp2, 10, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoTel"].ToString(), i + temp2, 11, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["shouhuoAddress"].ToString(), i + temp2, 12, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["ddofficeName"].ToString(), i + temp2, 13, 1, 1, style3);
+                if (Convert.ToInt32(xzlist[i]["songhuoType"].ToString()) == 0)
+                {
+                    CellPutValue(cells, "自提", i + temp2, 14, 1, 1, style3);
+                }
+                else
+                {
+                    CellPutValue(cells, "送货", i + temp2, 14, 1, 1, style3);
+                }
+                string str = "";
+                if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 11)
+                {
+                    str = "现金";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 1)
+                {
+                    str = "欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 2)
+                {
+                    str = "到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 3)
+                {
+                    str = "回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 4)
+                {
+                    str = "现付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 5)
+                {
+                    str = "现付+到付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 6)
+                {
+                    str = "到付+欠付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 7)
+                {
+                    str = "现付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 8)
+                {
+                    str = "欠付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 9)
+                {
+                    str = "到付+回单付";
+                }
+                else if (Convert.ToInt32(xzlist[i]["payType"].ToString()) == 10)
+                {
+                    str = "现付+到付+欠付";
+                }
+                CellPutValue(cells, str, i + temp2, 15, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["moneyYunfei"].ToString(), i + temp2, 16, 1, 1, style3);
+                CellPutValue(cells, xzlist[i]["UserName"].ToString(), i + temp2, 17, 1, 1, style3);
+
+                CellPutValue(cells, xzlist[i]["memo"].ToString(), i + temp2, 18, 1, 1, style3);
+            }
+            System.IO.MemoryStream ms = workbook.SaveToStream();
+            byte[] bt = ms.ToArray();
+            return bt;
         }
         catch (Exception ex)
         {
@@ -2365,7 +3368,7 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
     /// <param name="incomeId">财务ID</param>
     /// <param name="id">运单ID or 装车单ID</param>
     [CSMethod("DeleteExpenseHxLog")]
-    public void DeleteExpenseHxLog(string kind, string incomeId, string id)
+    public void DeleteExpenseHxLog(string kind, string incomeId, string id, string je)
     {
         using (DBConnection dbc = new DBConnection())
         {
@@ -2373,25 +3376,34 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
             {
                 dbc.BeginTransaction();
                 string zdName = "";
+                string rjMemo = "";
+                decimal qcje = !string.IsNullOrEmpty(je) ? Convert.ToDecimal(je) : 0;
+
                 switch (kind)
                 {
                     case "1":
                         zdName = "isOverDuanboHexiao=0";
+                        rjMemo = "短驳费核销清除:" + qcje + "元";
                         break;
                     case "2":
                         zdName = "isOverZhongzhuanHexiao=0";
+                        rjMemo = "中转费核销清除:" + qcje + "元";
                         break;
                     case "3":
                         zdName = "isOverSonghuoHexiao=0";
+                        rjMemo = "送货费核销清除:" + qcje + "元";
                         break;
                     case "4":
                         zdName = "isOverHuikouHexiao=0";
+                        rjMemo = "回扣费核销清除:" + qcje + "元";
                         break;
                     case "8":
                         zdName = "isOverYufuHexiao=0";
+                        rjMemo = "预付费核销清除:" + qcje + "元";
                         break;
                     case "9":
                         zdName = "isOverQianfuHexiao=0";
+                        rjMemo = "欠付费核销清除:" + qcje + "元";
                         break;
                 }
 
@@ -2406,11 +3418,15 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
                 }
                 dbc.ExecuteNonQuery(sql);
 
-                sql = "update caiwu_expense set money=0 where id=" + dbc.ToSqlValue(incomeId);
+                sql = "update caiwu_expense set money=0,isLock=0 where id=" + dbc.ToSqlValue(incomeId);
                 dbc.ExecuteNonQuery(sql);
 
-                sql = @"delete from caiwu_hx_log where income_id=" + dbc.ToSqlValue(incomeId);
+                saveLog(incomeId, DateTime.Now, qcje, rjMemo);
+
+                sql = @"delete from caiwu_report_riji where incomeId=" + dbc.ToSqlValue(incomeId);
                 dbc.ExecuteNonQuery(sql);
+
+                
 
                 dbc.CommitTransaction();
             }
@@ -2478,9 +3494,9 @@ where a.isLock=0 and a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.Compa
     {
         using (DBConnection dbc = new DBConnection())
         {
-            string sql = @"select a.*,b.UserXM from dbo.caiwu_hx_log a 
-left join dbo.tb_b_user b on a.adduser=b.UserID
-where income_id=" + dbc.ToSqlValue(incomeid);
+            string sql = @"select a.*,b.UserXM from caiwu_hx_log a 
+left join tb_b_user b on a.adduser=b.UserID
+where income_id=" + dbc.ToSqlValue(incomeid) + " order by a.addtime desc";
             DataTable dt = dbc.ExecuteDataTable(sql);
             return dt;
         }
@@ -2683,7 +3699,7 @@ where income_id in(select id from caiwu_income where status=0 and yundanId=" + d
                                 left join jichu_driver e on a.driverId=e.driverId
                                 left join dbo.tb_b_user f on a.adduser=f.UserID
                                 where a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + where + @"
-                                order by dateFasheng asc";
+                                order by dateFasheng asc, addtime asc";
                 DataTable dt = dbc.ExecuteDataTable(sql);
 
                 sql = "select * from caiwu_income_item where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID);
@@ -2784,17 +3800,17 @@ where income_id in(select id from caiwu_income where status=0 and yundanId=" + d
             try
             {
                 //基础数据
-                string sql = @"select * from yundan_yundan where status=0";
+                string sql = @"select * from yundan_yundan where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID);
                 DataTable ydDt = dbc.ExecuteDataTable(sql);
 
-                sql = "select * from yundan_duanbo_fenliu where status=0";
+                sql = "select * from yundan_duanbo_fenliu where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID);
                 DataTable flDt = dbc.ExecuteDataTable(sql);
 
-                sql = "select* from dbo.zhuangchedan_zhuangchedan where status=0";
+                sql = "select * from zhuangchedan_zhuangchedan where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID);
                 DataTable zcdDt = dbc.ExecuteDataTable(sql);
 
                 decimal lastQCJE = 0m;//最后一期期初金额
-                sql = "select id,moneyFasheng from caiwu_report_riji order by dateFasheng desc";
+                sql = "select id,moneyFasheng from caiwu_report_riji where companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " order by dateFasheng desc";
                 DataTable dt = dbc.ExecuteDataTable(sql);
                 if (dt.Rows.Count > 0)
                 {
@@ -2902,6 +3918,61 @@ where income_id in(select id from caiwu_income where status=0 and yundanId=" + d
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+    }
+    #endregion
+
+    #region aspose Cell设置单元格格式 合并
+    /// <summary>
+    /// aspose Cell设置单元格格式 合并
+    /// </summary>
+    /// <param name="cells"></param>
+    /// <param name="text">单元格内容</param>
+    /// <param name="row">行下标</param>
+    /// <param name="cell">列下标</param>
+    /// <param name="merRow">要合并的行数</param>
+    /// <param name="merCell">要合并的列数</param>
+    /// <param name="style"></param>
+    public void CellPutValue(Cells cells, string text, int row, int cell, int merRow, int merCell, Style style)
+    {
+        cells[row, cell].PutValue(text);
+        cells[row, cell].SetStyle(style);
+        cells.Merge(row, cell, merRow, merCell);
+        if (merRow > 1)
+        {
+            for (int i = 1; i < merRow; i++)
+            {
+                cells[row + i, cell].SetStyle(style);
+            }
+        }
+        if (merCell > 1)
+        {
+            for (int i = 1; i < merCell; i++)
+            {
+                cells[row, cell + i].SetStyle(style);
+            }
+        }
+    }
+
+    public void CellPutValue2(Cells cells, string text, int row, int cell, int merRow, int merCell, Style style, int width)
+    {
+        cells[row, cell].PutValue(text);
+        cells[row, cell].SetStyle(style);
+        cells.SetColumnWidth(cell, width);
+        cells.Merge(row, cell, merRow, merCell);
+        if (merRow > 1)
+        {
+            for (int i = 1; i < merRow; i++)
+            {
+                cells[row + i, cell].SetStyle(style);
+            }
+        }
+        if (merCell > 1)
+        {
+            for (int i = 1; i < merCell; i++)
+            {
+                cells[row, cell + i].SetStyle(style);
             }
         }
     }

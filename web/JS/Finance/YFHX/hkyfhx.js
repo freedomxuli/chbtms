@@ -913,10 +913,11 @@ Ext.define('hkListView', {
                                                         if (btn == 'yes') {
                                                             for (var i = 0; i < selYdStore.data.items.length; i++) {
                                                                 var id = selYdStore.data.items[i].data.id;
+                                                                var je = selYdStore.data.items[i].data.yhxmoney;
                                                                 var ydid = selYdStore.data.items[i].data.yundan_id;
                                                                 CS('CZCLZ.Finance.DeleteExpenseHxLog', function (retVal) {
                                                                     gethkList(1);
-                                                                }, CS.onError, "4", id, ydid);
+                                                                }, CS.onError, "4", id, ydid, je);
                                                             }
                                                         }
                                                     });
