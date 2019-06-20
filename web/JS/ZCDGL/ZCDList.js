@@ -38,24 +38,28 @@ function BindData(nPage) {
 //************************************页面方法***************************************
 
 function del(id) {
-    Ext.MessageBox.confirm("提示", "是否删除你所选?", function (obj) {
-        if (obj == "yes") {
-            CS('CZCLZ.ZCDMag.DelZcd', function (retVal) {
-                BindData(1);
-            }, CS.onError, id);
-        }
-        else {
-            return;
-        }
-    });
+    if (privilege("装车单管理_装车单编辑_修改删除")) {
+        Ext.MessageBox.confirm("提示", "是否删除你所选?", function (obj) {
+            if (obj == "yes") {
+                CS('CZCLZ.ZCDMag.DelZcd', function (retVal) {
+                    BindData(1);
+                }, CS.onError, id);
+            }
+            else {
+                return;
+            }
+        });
+    }
 }
 function Edit(id) {
-    FrameStack.pushFrame({
-        url: "EditZCD.html?zcdid=" + id,
-        onClose: function () {
-            BindData(1);
-        }
-    });
+    if (privilege("装车单管理_装车单编辑_修改删除")) {
+        FrameStack.pushFrame({
+            url: "EditZCD.html?zcdid=" + id,
+            onClose: function () {
+                BindData(1);
+            }
+        });
+    }
 }
 //************************************页面方法***************************************
 
@@ -176,7 +180,9 @@ Ext.onReady(function () {
                                             iconCls: 'search',
                                             text: '查询',
                                             handler: function () {
-                                                BindData(1);
+                                                if (privilege("装车单管理_装车单编辑_查询")) {
+                                                    BindData(1);
+                                                }
                                             }
                                         }
                                     ]

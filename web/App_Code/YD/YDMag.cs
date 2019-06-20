@@ -236,7 +236,7 @@ where officeId in (select officeId from tb_b_user_office where userId=" + dbc.To
         {
             try
             {
-                string str = "  select employId,employName from jichu_employ where officeId=@officeId and status=0 order by employName";
+                string str = "  select employId,employName from jichu_employ where officeId=@officeId and status=0 and isFire=1 order by employName";
                 SqlCommand cmd = new SqlCommand(str);
                 cmd.Parameters.AddWithValue("@officeId", officeid);
                 DataTable dt = dbc.ExecuteDataTable(cmd);

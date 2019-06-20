@@ -193,19 +193,21 @@ function BindZZF(nPage) {
 
 //中转费编辑
 function xgzzf(id) {
-    CS('CZCLZ.YDMag.GetZhongZhuan', function (ret) {
-        zhongzhuanstore.loadData(ret);
-        CS('CZCLZ.YDMag.GetZZFById', function (retVal) {
-            
-            if (retVal) {
-                var win = new addZZFWin();
-                win.show(null, function () {
-                    var form = Ext.getCmp('addZZFform');
-                    form.form.setValues(retVal[0]);
-                });
-            }
-        }, CS.onError, id);
-    }, CS.onError)
+    if (privilege("财务核销管理_货物分流核销_修改删除")) {
+        CS('CZCLZ.YDMag.GetZhongZhuan', function (ret) {
+            zhongzhuanstore.loadData(ret);
+            CS('CZCLZ.YDMag.GetZZFById', function (retVal) {
+
+                if (retVal) {
+                    var win = new addZZFWin();
+                    win.show(null, function () {
+                        var form = Ext.getCmp('addZZFform');
+                        form.form.setValues(retVal[0]);
+                    });
+                }
+            }, CS.onError, id);
+        }, CS.onError)
+    }
 }
 
 //获取送货费明细
@@ -251,16 +253,18 @@ function LookGoods(id) {
 
 //删除短驳分流费
 function deldbf(id, cwid) {
-    Ext.MessageBox.confirm("提示", "是否删除?", function (obj) {
-        if (obj == "yes") {
-            CS('CZCLZ.YDMag.DeleteDBFById', function (retVal) {
-                if (retVal) {
-                    BindSHF(1);
-                    BindZZF(1);
-                }
-            }, CS.onError, id, cwid);
-        }
-    });
+    if (privilege("财务核销管理_货物分流核销_修改删除")) {
+        Ext.MessageBox.confirm("提示", "是否删除?", function (obj) {
+            if (obj == "yes") {
+                CS('CZCLZ.YDMag.DeleteDBFById', function (retVal) {
+                    if (retVal) {
+                        BindSHF(1);
+                        BindZZF(1);
+                    }
+                }, CS.onError, id, cwid);
+            }
+        });
+    }
 }
 //************************************页面方法***************************************
 Ext.define('HPWin', {
@@ -1139,7 +1143,9 @@ Ext.onReady(function () {
                                     iconCls: 'search',
                                     text: '查询',
                                     handler: function () {
-                                        GetYunDanList(1);
+                                        if (privilege("财务核销管理_货物分流核销_查询")) {
+                                            GetYunDanList(1);
+                                        }
                                     }
                                 }
                                 //{

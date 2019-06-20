@@ -782,6 +782,9 @@ Ext.define('iViewport', {
                                                                     var je = selYdStore.data.items[i].data.yhxmoney;
                                                                     var ydid = selYdStore.data.items[i].data.yundan_id;
                                                                     CS('CZCLZ.Finance.DeleteIncomeHxLog', function (retVal) {
+                                                                        Ext.getCmp('sz_whx').setValue('');
+                                                                        Ext.getCmp('sz_shx').setValue('');
+                                                                        Ext.getCmp('sz_yhx').setValue('');
                                                                         getDfList(1);
                                                                     }, CS.onError, "3", id, ydid, je);
                                                                 }
@@ -808,11 +811,11 @@ Ext.define('iViewport', {
                                                         var whx = selYdStore.data.items[i].data.whxmoney;
                                                         var hxje = selYdStore.data.items[i].data.hxje;
                                                         if (hxje == '0' || hxje == null || hxje == '') {
-                                                            Ext.Msg.alert('提示', "运单【" + gx[i].data.yundanNum + "】本次核销金额不能为0或空。");
+                                                            Ext.Msg.alert('提示', "运单【" + selYdStore.data.items[i].data.yundanNum + "】本次核销金额不能为0或空。");
                                                             return;
                                                         }
                                                         if (whx < hxje) {
-                                                            Ext.Msg.alert('提示', "运单【" + gx[i].data.yundanNum + "】本次核销金额大于未核销金额。");
+                                                            Ext.Msg.alert('提示', "运单【" + selYdStore.data.items[i].data.yundanNum + "】本次核销金额大于未核销金额。");
                                                             return;
                                                         } else {
                                                             xzlist.push(selYdStore.data.items[i].data);
@@ -838,6 +841,9 @@ Ext.define('iViewport', {
                                                                 buttons: Ext.MessageBox.OK,
                                                                 icon: Ext.MessageBox.INFO
                                                             });
+                                                            Ext.getCmp('sz_whx').setValue('');
+                                                            Ext.getCmp('sz_shx').setValue('');
+                                                            Ext.getCmp('sz_yhx').setValue('');
                                                             getDfList(1);
                                                         }
                                                     }, CS.onError, xzlist, hxrq);

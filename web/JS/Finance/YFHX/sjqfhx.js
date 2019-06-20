@@ -47,6 +47,7 @@ var yhxStore = createSFW4Store({
         { name: 'whxmoney' },
         { name: 'hxje' },
         { name: 'expenseDate' },
+        { name: 'officeId' },
         { name: 'officeName' },
         { name: 'ddofficeName' },
         { name: 'people' },
@@ -73,6 +74,7 @@ var yhxSelStore = Ext.create('Ext.data.Store', {
         { name: 'whxmoney' },
         { name: 'hxje' },
         { name: 'expenseDate' },
+        { name: 'officeId' },
         { name: 'officeName' },
         { name: 'ddofficeName' },
         { name: 'people' },
@@ -102,6 +104,7 @@ var whxStore = createSFW4Store({
         { name: 'whxmoney' },
         { name: 'hxje' },
         { name: 'expenseDate' },
+        { name: 'officeId' },
         { name: 'officeName' },
         { name: 'ddofficeName' },
         { name: 'people' },
@@ -128,6 +131,7 @@ var whxSelStore = Ext.create('Ext.data.Store', {
         { name: 'whxmoney' },
         { name: 'hxje' },
         { name: 'expenseDate' },
+        { name: 'officeId' },
         { name: 'officeName' },
         { name: 'ddofficeName' },
         { name: 'people' },
@@ -761,35 +765,41 @@ Ext.define('HXWin', {
                                 text: '保存核销结果',
                                 iconCls: "save",
                                 handler: function () {
-                                    var xzlist = [];
-                                    for (var i = 0; i < whxSelStore.data.items.length; i++) {
-                                        var whx = whxSelStore.data.items[i].data.whxmoney;
-                                        var hxje = whxSelStore.data.items[i].data.hxje;
-                                        if (whx < hxje) {
-                                            Ext.Msg.alert('提示', "运单【" + whxSelStore.data.items[i].data.yundanNum + "】本次核销金额大于未核销金额。");
+                                    if (privilege("财务应付核销_司机欠付核销_核销")) {
+                                        var xzlist = [];
+                                        for (var i = 0; i < whxSelStore.data.items.length; i++) {
+                                            var whx = whxSelStore.data.items[i].data.whxmoney;
+                                            var hxje = whxSelStore.data.items[i].data.hxje;
+                                            if (hxje == '0' || hxje == null || hxje == '') {
+                                                Ext.Msg.alert('提示', "运单【" + whxSelStore.data.items[i].data.yundanNum + "】本次核销金额不能为0或空。");
+                                                return;
+                                            }
+                                            if (whx < hxje) {
+                                                Ext.Msg.alert('提示', "运单【" + whxSelStore.data.items[i].data.yundanNum + "】本次核销金额大于未核销金额。");
+                                                return;
+                                            } else {
+                                                xzlist.push(whxSelStore.data.items[i].data);
+                                            }
+                                        }
+                                        var hxrq = Ext.getCmp('sz_hxrq').getValue();
+                                        if (hxrq == '' || hxrq == null) {
+                                            Ext.Msg.alert('提示', "日期必填！");
                                             return;
-                                        } else {
-                                            xzlist.push(whxSelStore.data.items[i].data);
                                         }
-                                    }
-                                    var hxrq = Ext.getCmp('sz_hxrq').getValue();
-                                    if (hxrq == '' || hxrq == null) {
-                                        Ext.Msg.alert('提示', "日期必填！");
-                                        return;
-                                    }
 
-                                    CS('CZCLZ.Finance.SaveQfHxOut', function (retVal) {
-                                        if (retVal) {
-                                            Ext.Msg.show({
-                                                title: '提示',
-                                                msg: '保存成功!',
-                                                buttons: Ext.MessageBox.OK,
-                                                icon: Ext.MessageBox.INFO
-                                            });
-                                            Ext.getCmp('sz_ss').setValue('');
-                                            getWhxList(1);
-                                        }
-                                    }, CS.onError, xzlist, hxrq);
+                                        CS('CZCLZ.Finance.SaveQfHxOut', function (retVal) {
+                                            if (retVal) {
+                                                Ext.Msg.show({
+                                                    title: '提示',
+                                                    msg: '保存成功!',
+                                                    buttons: Ext.MessageBox.OK,
+                                                    icon: Ext.MessageBox.INFO
+                                                });
+                                                Ext.getCmp('sz_ss').setValue('');
+                                                getWhxList(1);
+                                            }
+                                        }, CS.onError, xzlist, hxrq);
+                                    }
                                 }
                             }
                         ]
@@ -991,7 +1001,29 @@ Ext.define('HXWin', {
                                             {
                                                 text: "导出excel",
                                                 handler: function () {
-
+                                                    if (privilege("财务应付核销_司机欠付核销_导出")) {
+                                                        var xzlist = [];
+                                                        if (tabN == 1) {
+                                                            var sel = Ext.getCmp('whxGridId').getSelectionModel().getSelection();
+                                                            if (sel.length == 0) {
+                                                                Ext.Msg.alert('提示', "请选择导出记录。");
+                                                                return;
+                                                            }
+                                                            for (var i = 0; i < sel.length; i++) {
+                                                                xzlist.push(sel[i].data);
+                                                            }
+                                                        } else if (tabN == 2) {
+                                                            var sel = Ext.getCmp('yhxGridId').getSelectionModel().getSelection();
+                                                            if (sel.length == 0) {
+                                                                Ext.Msg.alert('提示', "请选择导出记录。");
+                                                                return;
+                                                            }
+                                                            for (var i = 0; i < sel.length; i++) {
+                                                                xzlist.push(sel[i].data);
+                                                            }
+                                                        }
+                                                        DownloadFile("CZCLZ.Finance.DownLoadSjqf", "司机欠付核销.xls", xzlist);
+                                                    }
                                                 }
                                             },
                                             {
@@ -1201,7 +1233,9 @@ Ext.define('MainView', {
                                     iconCls: 'search',
                                     text: '查询',
                                     handler: function () {
-                                        getList(1);
+                                        if (privilege("财务应付核销_司机欠付核销_查询")) {
+                                            getList(1);
+                                        }
                                     }
                                 }
                             ]
