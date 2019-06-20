@@ -2246,11 +2246,11 @@ where  a.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and 
                         sdl.Add("officeId", xzlist[i]["officeId"].ToString());
                         sdl.Add("expenseId", xzlist[i]["id"].ToString());
                         sdl.Add("yundanId", xzlist[i]["yundan_id"].ToString());
-                        sdl.Add("dateFasheng", hxrq);
+                        sdl.Add("dateFasheng", hxrq);//发生日期
                         //sdl.Add("memo", xzlist[i]["memo"].ToString());
                         InsertRJ(sdl, yhxje + hxje, 2);
                     }
-                    cwdr["expenseDate"] = Convert.ToDateTime(hxrq);
+                    cwdr["expenseDate"] = Convert.ToDateTime(hxrq);//核销日期
                     cwdr["money"] = yhxje + hxje;
                     cwdt.Rows.Add(cwdr);
 

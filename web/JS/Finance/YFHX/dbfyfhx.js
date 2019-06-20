@@ -887,6 +887,10 @@ Ext.define('HXWin', {
                                         for (var i = 0; i < whxSelStore.data.items.length; i++) {
                                             var whx = whxSelStore.data.items[i].data.whxmoney;
                                             var hxje = whxSelStore.data.items[i].data.hxje;
+                                            if (hxje == '0' || hxje == null || hxje == '') {
+                                                Ext.Msg.alert('提示', "运单【" + whxSelStore.data.items[i].data.yundanNum + "】本次核销金额不能为0或空。");
+                                                return;
+                                            }
                                             if (whx < hxje) {
                                                 Ext.Msg.alert('提示', "运单【" + whxSelStore.data.items[i].data.yundanNum + "】本次核销金额大于未核销金额。");
                                                 return;
