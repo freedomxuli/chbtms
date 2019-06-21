@@ -83,6 +83,101 @@ public class YDMag
 
     }
 
+    [CSMethod("GetYDList2")]
+    public object GetYDList2(int pagnum, int pagesize, JSReader jsr)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                int cp = pagnum;
+                int ac = 0;
+                string where = "";
+                List<string> wList = new List<string>();
+
+                string cx_yflx = jsr["cx_yflx"].ToString();
+                if (!string.IsNullOrEmpty(cx_yflx))
+                {
+                    wList.Add("");
+                }
+
+                string cx_ddz = jsr["cx_ddz"].ToString();
+                if (!string.IsNullOrEmpty(cx_ddz))
+                {
+                    wList.Add("");
+                }
+
+                string cx_beg = jsr["cx_beg"].ToString();
+                if (!string.IsNullOrEmpty(cx_beg))
+                {
+                    wList.Add("");
+                }
+
+                string cx_endjsr = jsr["cx_end"].ToString();
+                if (!string.IsNullOrEmpty(cx_endjsr))
+                {
+                    wList.Add("");
+                }
+
+                string cx_ydh = jsr["cx_ydh"].ToString();
+                if (!string.IsNullOrEmpty(cx_ydh))
+                {
+                    wList.Add("");
+                }
+
+                string cx_zcdh = jsr["cx_zcdh"].ToString();
+                if (!string.IsNullOrEmpty(cx_zcdh))
+                {
+                    wList.Add("");
+                }
+
+                string cx_fhr = jsr["cx_fhr"].ToString();
+                if (!string.IsNullOrEmpty(cx_fhr))
+                {
+                    wList.Add("");
+                }
+
+                string cx_shr = jsr["cx_shr"].ToString();
+                if (!string.IsNullOrEmpty(cx_shr))
+                {
+                    wList.Add("");
+                }
+
+                string cx_shrtel = jsr["cx_shrtel"].ToString();
+                if (!string.IsNullOrEmpty(cx_shrtel))
+                {
+                    wList.Add("");
+                }
+
+                string cx_yf = jsr["cx_yf"].ToString();
+                if (!string.IsNullOrEmpty(cx_yf))
+                {
+                    wList.Add("");
+                }
+
+
+                //if (!string.IsNullOrEmpty(keyword.Trim()))
+                //{
+                //    where += " and (" + dbc.C_Like("a.fahuoPeople", keyword.Trim(), LikeStyle.LeftAndRightLike)
+                //          + " or " + dbc.C_Like("b.officeName", keyword.Trim(), LikeStyle.LeftAndRightLike) + ")";
+                //}
+                string str = @" select a.*,b.officeName  from yundan_yundan a 
+                            left join jichu_office b on a.officeId=b.officeId where a.status=0 " + where
+                           + " and yundan_id in (select distinct yundan_id from yundan_chaifen where status=0 and companyId='" + SystemUser.CurrentUser.CompanyID + "')  order by a.addtime desc";
+                //开始取分页数据   
+                System.Data.DataTable dtPage = new System.Data.DataTable();
+                dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
+
+                return new { dt = dtPage, cp = cp, ac = ac };
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+    }
+
     [CSMethod("GetYDByID")]
     public object GetYDByID(string ydid)
     {
@@ -3585,7 +3680,7 @@ order by addtime desc";
                 style3.Borders[Aspose.Cells.BorderType.TopBorder].LineStyle = CellBorderType.Thin;
                 style3.Borders[Aspose.Cells.BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
                 #endregion
-                
+
                 CellPutValue(cells, "回单导出", 0, 0, 1, 30, style1);
                 cells.SetRowHeight(0, 25.5);
 
@@ -3721,7 +3816,7 @@ order by addtime desc";
                     var zhidanRen = dt.Rows[i]["zhidanRen"] == DBNull.Value ? "" : dt.Rows[i]["zhidanRen"].ToString();
                     var moneyDaishou = dt.Rows[i]["moneyDaishou"] == DBNull.Value ? "0.00" : Convert.ToDecimal(dt.Rows[i]["moneyDaishou"]).ToString("N2");
                     var moneyDaishouShouxu = dt.Rows[i]["moneyDaishouShouxu"] == DBNull.Value ? "0.00" : Convert.ToDecimal(dt.Rows[i]["moneyDaishouShouxu"]).ToString("N2");
-                    var memo = dt.Rows[i]["memo"] == DBNull.Value ? "" : dt.Rows[i]["memo"].ToString(); 
+                    var memo = dt.Rows[i]["memo"] == DBNull.Value ? "" : dt.Rows[i]["memo"].ToString();
 
                     //var officeName = dt.Rows[i]["officeName"] == DBNull.Value ? "" : dt.Rows[i]["officeName"].ToString();memo
                     //var toOfficeName = dt.Rows[i]["toOfficeName"] == DBNull.Value ? "" : dt.Rows[i]["toOfficeName"].ToString();

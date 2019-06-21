@@ -28,14 +28,25 @@ var YDStore = createSFW4Store({
 
 
 function BindData(nPage) {
-    CS('CZCLZ.YDMag.GetYDList', function (retVal) {
+    CS('CZCLZ.YDMag.GetYDList2', function (retVal) {
         YDStore.setData({
             data: retVal.dt,
             pageSize: pageSize,
             total: retVal.ac,
             currentPage: retVal.cp
         });
-    }, CS.onError, nPage, pageSize, Ext.getCmp("cx_keyword").getValue());
+    }, CS.onError, nPage, pageSize, {
+        'cx_yflx': Ext.getCmp("cx_yflx").getValue(),
+        'cx_ddz': Ext.getCmp("cx_ddz").getValue(),
+        'cx_beg': Ext.getCmp("cx_beg").getValue(),
+        'cx_end': Ext.getCmp("cx_end").getValue(),
+        'cx_ydh': Ext.getCmp("cx_ydh").getValue(),
+        'cx_zcdh': Ext.getCmp("cx_zcdh").getValue(),
+        'cx_fhr': Ext.getCmp("cx_fhr").getValue(),
+        'cx_shr': Ext.getCmp("cx_shr").getValue(),
+        'cx_shrtel': Ext.getCmp("cx_shrtel").getValue(),
+        'cx_yf': Ext.getCmp("cx_yf").getValue()
+    });
 }
 //************************************数据源*****************************************
 
@@ -160,7 +171,7 @@ Ext.onReady(function () {
                             flex: 1,
                             text: '结算方式',
                             renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                var str="";
+                                var str = "";
                                 if (value == 11) {
                                     str = "现金";
                                 } else if (value == 1) {
@@ -229,7 +240,7 @@ Ext.onReady(function () {
                             flex: 1,
                             text: '备注'
                         }
-                        
+
                     ],
                     viewConfig: {
 
@@ -345,27 +356,27 @@ Ext.onReady(function () {
                                     width: 180,
                                     fieldLabel: '发货人'
                                 },
-                                 {
-                                     xtype: 'textfield',
-                                     id: 'cx_shr',
-                                     labelWidth: 60,
-                                     width: 180,
-                                     fieldLabel: '收货人'
-                                 },
-                                  {
-                                      xtype: 'textfield',
-                                      id: 'cx_shrtel',
-                                      labelWidth: 70,
-                                      width: 180,
-                                      fieldLabel: '收货人电话'
-                                  },
-                                  {
-                                      xtype: 'textfield',
-                                      id: 'cx_yf',
-                                      labelWidth: 60,
-                                      width: 180,
-                                      fieldLabel: '运费'
-                                  },
+                                {
+                                    xtype: 'textfield',
+                                    id: 'cx_shr',
+                                    labelWidth: 60,
+                                    width: 180,
+                                    fieldLabel: '收货人'
+                                },
+                                {
+                                    xtype: 'textfield',
+                                    id: 'cx_shrtel',
+                                    labelWidth: 70,
+                                    width: 180,
+                                    fieldLabel: '收货人电话'
+                                },
+                                {
+                                    xtype: 'textfield',
+                                    id: 'cx_yf',
+                                    labelWidth: 60,
+                                    width: 180,
+                                    fieldLabel: '运费'
+                                },
                                 {
                                     xtype: 'buttongroup',
                                     title: '',
