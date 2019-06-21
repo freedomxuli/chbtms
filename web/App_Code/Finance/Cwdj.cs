@@ -137,27 +137,26 @@ public class Cwdj
             try
             {
                 dbc.BeginTransaction();
-                //变化量
+                //找出删除的金额与时间点
                 string sql = "select * from caiwu_income where id=" + dbc.ToSqlValue(id);
                 DataTable oldDt = dbc.ExecuteDataTable(sql);
                 decimal oldMoney = Convert.ToDecimal(oldDt.Rows[0]["money"]);
-                DateTime oldDate = Convert.ToDateTime(oldDt.Rows[0]["incomeDate"]);
 
+                sql = "select * from caiwu_report_riji where incomeId=" + dbc.ToSqlValue(id);
+                DataTable rjDt = dbc.ExecuteDataTable(sql);
+                DateTime oldDate = Convert.ToDateTime(rjDt.Rows[0]["dateFasheng"]);
+
+                //核销删除这笔
                 sql = @"update caiwu_income set status=1 where id=" + dbc.ToSqlValue(id);
                 dbc.ExecuteNonQuery(sql);
-
-                //是否是收入
-                sql = "select * from caiwu_income_item where id=" + dbc.ToSqlValue(oldDt.Rows[0]["itemId"].ToString());
-                DataTable itemDt = dbc.ExecuteDataTable(sql);
-                int isIncome = Convert.ToInt32(itemDt.Rows[0]["isIncome"]);
-
-                if (isIncome == 0)
-                {
-                    sql = @"update caiwu_report_riji set moneyFasheng=moneyFasheng-" + oldMoney + @" 
+                //日记账删除这笔
+                sql = "delete from caiwu_report_riji where incomeId=" + dbc.ToSqlValue(id) + " and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID);
+                dbc.ExecuteNonQuery(sql);
+                //更新日记账金额
+                sql = @"update caiwu_report_riji set moneyFasheng=moneyFasheng-" + oldMoney + @" 
 where companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and dateFasheng>=" + dbc.ToSqlValue(oldDate);
-                    dbc.ExecuteNonQuery(sql);
-                    dbc.CommitTransaction();
-                }
+                dbc.ExecuteNonQuery(sql);
+                dbc.CommitTransaction();
 
             }
             catch (Exception ex)
@@ -367,23 +366,22 @@ where companyId=" + dbc.ToSqlValue(companyid) + " and dateFasheng>=" + dbc.ToSql
                 string sql = "select * from caiwu_expense where id=" + dbc.ToSqlValue(id);
                 DataTable oldDt = dbc.ExecuteDataTable(sql);
                 decimal oldMoney = Convert.ToDecimal(oldDt.Rows[0]["money"]);
-                DateTime oldDate = Convert.ToDateTime(oldDt.Rows[0]["expenseDate"]);
 
+                sql = "select * from caiwu_report_riji where expenseId=" + dbc.ToSqlValue(id);
+                DataTable rjDt = dbc.ExecuteDataTable(sql);
+                DateTime oldDate = Convert.ToDateTime(rjDt.Rows[0]["dateFasheng"]);
+
+                //核销删除这笔
                 sql = @"update caiwu_expense set status=1 where id=" + dbc.ToSqlValue(id);
                 dbc.ExecuteNonQuery(sql);
-
-                //是否是成本
-                sql = "select * from caiwu_expense_item where id=" + dbc.ToSqlValue(oldDt.Rows[0]["itemId"].ToString());
-                DataTable itemDt = dbc.ExecuteDataTable(sql);
-                int isChengben = Convert.ToInt32(itemDt.Rows[0]["isChengben"]);
-
-                if (isChengben == 0)
-                {
-                    sql = @"update caiwu_report_riji set moneyFasheng=moneyFasheng+" + oldMoney + @" 
+                //日记账删除这笔
+                sql = "delete from caiwu_report_riji where expenseId=" + dbc.ToSqlValue(id) + " and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID);
+                dbc.ExecuteNonQuery(sql);
+                //更新日记账金额
+                sql = @"update caiwu_report_riji set moneyFasheng=moneyFasheng+" + oldMoney + @" 
 where companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + " and dateFasheng>=" + dbc.ToSqlValue(oldDate);
-                    dbc.ExecuteNonQuery(sql);
-                    dbc.CommitTransaction();
-                }
+                dbc.ExecuteNonQuery(sql);
+                dbc.CommitTransaction();
             }
             catch (Exception ex)
             {

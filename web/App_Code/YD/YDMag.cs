@@ -98,72 +98,74 @@ public class YDMag
                 string cx_yflx = jsr["cx_yflx"].ToString();
                 if (!string.IsNullOrEmpty(cx_yflx))
                 {
-                    wList.Add("");
+                    string[] lxs = cx_yflx.Split('_');
+                    wList.Add("payType in(" + string.Join(",", lxs) + ")");
                 }
-
                 string cx_ddz = jsr["cx_ddz"].ToString();
                 if (!string.IsNullOrEmpty(cx_ddz))
                 {
-                    wList.Add("");
+                    wList.Add("toOfficeId=" + dbc.ToSqlValue(cx_ddz));
+                }
+                string cx_zcdh = jsr["cx_zcdh"].ToString();
+                if (!string.IsNullOrEmpty(cx_zcdh))
+                {
+                    wList.Add(dbc.C_Like("zhuangchedanNum", cx_zcdh.Trim(), LikeStyle.LeftAndRightLike));
+                }
+                string cx_ydh = jsr["cx_ydh"].ToString();
+                if (!string.IsNullOrEmpty(cx_ydh))
+                {
+                    wList.Add(dbc.C_Like("yundanNum", cx_ydh.Trim(), LikeStyle.LeftAndRightLike));
                 }
 
                 string cx_beg = jsr["cx_beg"].ToString();
                 if (!string.IsNullOrEmpty(cx_beg))
                 {
-                    wList.Add("");
+                    wList.Add("yundanDate >= " + dbc.ToSqlValue(Convert.ToDateTime(cx_beg)));
                 }
 
                 string cx_endjsr = jsr["cx_end"].ToString();
                 if (!string.IsNullOrEmpty(cx_endjsr))
                 {
-                    wList.Add("");
+                    wList.Add("yundanDate < " + dbc.ToSqlValue(Convert.ToDateTime(cx_endjsr).AddDays(1)));
                 }
-
-                string cx_ydh = jsr["cx_ydh"].ToString();
-                if (!string.IsNullOrEmpty(cx_ydh))
-                {
-                    wList.Add("");
-                }
-
-                string cx_zcdh = jsr["cx_zcdh"].ToString();
-                if (!string.IsNullOrEmpty(cx_zcdh))
-                {
-                    wList.Add("");
-                }
-
                 string cx_fhr = jsr["cx_fhr"].ToString();
                 if (!string.IsNullOrEmpty(cx_fhr))
                 {
-                    wList.Add("");
+                    wList.Add(dbc.C_Like("fahuoPeople", cx_fhr.Trim(), LikeStyle.LeftAndRightLike));
                 }
-
                 string cx_shr = jsr["cx_shr"].ToString();
                 if (!string.IsNullOrEmpty(cx_shr))
                 {
-                    wList.Add("");
+                    wList.Add(dbc.C_Like("shouhuoPeople", cx_shr.Trim(), LikeStyle.LeftAndRightLike));
                 }
-
                 string cx_shrtel = jsr["cx_shrtel"].ToString();
                 if (!string.IsNullOrEmpty(cx_shrtel))
                 {
-                    wList.Add("");
+                    wList.Add(dbc.C_Like("shouhuoTel", cx_shrtel.Trim(), LikeStyle.LeftAndRightLike));
                 }
-
                 string cx_yf = jsr["cx_yf"].ToString();
                 if (!string.IsNullOrEmpty(cx_yf))
                 {
-                    wList.Add("");
+                    wList.Add("moneyYunfei=" + dbc.ToSqlValue(cx_yf));
                 }
 
-
-                //if (!string.IsNullOrEmpty(keyword.Trim()))
-                //{
-                //    where += " and (" + dbc.C_Like("a.fahuoPeople", keyword.Trim(), LikeStyle.LeftAndRightLike)
-                //          + " or " + dbc.C_Like("b.officeName", keyword.Trim(), LikeStyle.LeftAndRightLike) + ")";
-                //}
-                string str = @" select a.*,b.officeName  from yundan_yundan a 
-                            left join jichu_office b on a.officeId=b.officeId where a.status=0 " + where
-                           + " and yundan_id in (select distinct yundan_id from yundan_chaifen where status=0 and companyId='" + SystemUser.CurrentUser.CompanyID + "')  order by a.addtime desc";
+                if (wList.Count > 0)
+                {
+                    where = " and " + string.Join(" and ", wList);
+                }
+                string str = @"select * from(
+	                                select a.*,b.zhuangchedanNum,b.qiandanDate,b.people jsy,b.tel jsydh,b.carNum,c.officeName,d.officeName shwd from yundan_yundan a
+	                                left join (
+		                                select t1.*,t2.yundan_id,t3.people,t3.tel,t3.carNum from zhuangchedan_zhuangchedan t1
+		                                left join yundan_chaifen t2 on t1.zhuangchedan_id=t2.zhuangchedan_id and t2.is_leaf=0
+                                        left join jichu_driver t3 on t1.driverId=t3.driverId
+		                                where t1.status=0 and t1.companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + @"
+	                                )b on a.yundan_id=b.yundan_id
+	                                left join jichu_office c on a.officeId=c.officeId 
+	                                left join jichu_office d on a.toOfficeId=d.officeId 
+                                )t
+                                where status=0 and companyId=" + dbc.ToSqlValue(SystemUser.CurrentUser.CompanyID) + where + @"
+                                order by addtime desc";
                 //开始取分页数据   
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str, pagesize, ref cp, out ac);
@@ -176,6 +178,23 @@ public class YDMag
             }
         }
 
+    }
+
+    [CSMethod("Qrqs")]
+    public void Qrqs(string ydid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sql = @"update yundan_yundan set isSign=1 where yundan_id=" + dbc.ToSqlValue(ydid);
+                dbc.ExecuteNonQuery(sql);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 
     [CSMethod("GetYDByID")]

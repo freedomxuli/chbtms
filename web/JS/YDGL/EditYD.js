@@ -1799,6 +1799,10 @@ Ext.define('EditYD', {
                                                     var moneyDaofu = Ext.getCmp("moneyDaofu").getValue();
                                                     var moneyHuidanfu = Ext.getCmp("moneyHuidanfu").getValue();
                                                     var moneyYunfei = Ext.getCmp("moneyYunfei").getValue();
+                                                    if (moneyYunfei == null || moneyYunfei == '' || moneyYunfei == '0') {
+                                                        Ext.Msg.alert('提示', "运费金额不能为空或0!");
+                                                        return;
+                                                    }
                                                     if (moneyYunfei != moneyXianfu + moneyQianfu + moneyDaofu + moneyHuidanfu) {
                                                         Ext.Msg.alert('提示', "运费金额必须等于：现付+到付+欠付+回单付 !");
                                                         return;

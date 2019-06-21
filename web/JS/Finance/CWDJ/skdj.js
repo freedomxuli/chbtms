@@ -65,46 +65,50 @@ function searchIncome(nPage) {
 }
 
 function edit(id) {
-    var win = new addWin({ skid: id });
-    win.show(null, function () {
-        MCS(
-            function (ret) {
-                var retVal = ret[0].retVal;
-                bscStore.loadData(retVal);
-                var retVal2 = ret[1].retVal;
-                itemStore.loadData(retVal2);
-                var retVal3 = ret[2].retVal[0];
-                console.log(retVal3);
-                var form = Ext.getCmp('addform');
-                form.form.setValues(retVal3);
+    if (privilege("财务登记管理_收款登记_修改删除")) {
+        var win = new addWin({ skid: id });
+        win.show(null, function () {
+            MCS(
+                function (ret) {
+                    var retVal = ret[0].retVal;
+                    bscStore.loadData(retVal);
+                    var retVal2 = ret[1].retVal;
+                    itemStore.loadData(retVal2);
+                    var retVal3 = ret[2].retVal[0];
+                    console.log(retVal3);
+                    var form = Ext.getCmp('addform');
+                    form.form.setValues(retVal3);
 
-            }, CS.onError,
-            {
-                ctx: 'CZCLZ.BscMag.GetBsc2', args: []
-            }
-            ,
-            {
-                ctx: 'CZCLZ.SFKMag.GetAllSkxm', args: []
-            }
-            ,
-            {
-                ctx: 'CZCLZ.Cwdj.GetIncomeByID', args: [id]
-            }
-        );
-    });
+                }, CS.onError,
+                {
+                    ctx: 'CZCLZ.BscMag.GetBsc2', args: []
+                }
+                ,
+                {
+                    ctx: 'CZCLZ.SFKMag.GetAllSkxm', args: []
+                }
+                ,
+                {
+                    ctx: 'CZCLZ.Cwdj.GetIncomeByID', args: [id]
+                }
+            );
+        });
+    }
 }
 
 function del(id) {
-    Ext.MessageBox.confirm("提示", "是否删除?", function (obj) {
-        if (obj == "yes") {
-            CS('CZCLZ.Cwdj.DelIncome', function (retVal) {
-                searchIncome(page);
-            }, CS.onError, id);
-        }
-        else {
-            return;
-        }
-    });
+    if (privilege("财务登记管理_收款登记_修改删除")) {
+        Ext.MessageBox.confirm("提示", "是否删除?", function (obj) {
+            if (obj == "yes") {
+                CS('CZCLZ.Cwdj.DelIncome', function (retVal) {
+                    searchIncome(page);
+                }, CS.onError, id);
+            }
+            else {
+                return;
+            }
+        });
+    }
 }
 
 Ext.define('addWin', {
@@ -373,7 +377,9 @@ Ext.onReady(function () {
                                         iconCls: 'search',
                                         text: '查询',
                                         handler: function () {
-                                            searchIncome(page);
+                                            if (privilege("财务登记管理_收款登记_查询")) {
+                                                searchIncome(page);
+                                            }
                                         }
                                     },
                                     {
@@ -381,27 +387,29 @@ Ext.onReady(function () {
                                         iconCls: 'add',
                                         text: '新增项目',
                                         handler: function () {
-                                            var win = new addWin({ id: "" });
-                                            win.show(null, function () {
-                                                MCS(
-                                                    function (ret) {
-                                                        var retVal = ret[0].retVal;
-                                                        bscStore.loadData(retVal);
-                                                        Ext.getCmp('officeId').setValue('');
-                                                        var retVal2 = ret[1].retVal;
-                                                        itemStore.loadData(retVal2);
-                                                        Ext.getCmp('itemId').setValue('');
+                                            if (privilege("财务登记管理_收款登记_登记")) {
+                                                var win = new addWin({ id: "" });
+                                                win.show(null, function () {
+                                                    MCS(
+                                                        function (ret) {
+                                                            var retVal = ret[0].retVal;
+                                                            bscStore.loadData(retVal);
+                                                            Ext.getCmp('officeId').setValue('');
+                                                            var retVal2 = ret[1].retVal;
+                                                            itemStore.loadData(retVal2);
+                                                            Ext.getCmp('itemId').setValue('');
 
-                                                    }, CS.onError,
-                                                    {
-                                                        ctx: 'CZCLZ.BscMag.GetBsc2', args: []
-                                                    }
-                                                    ,
-                                                    {
-                                                        ctx: 'CZCLZ.SFKMag.GetAllSkxm', args: []
-                                                    }
-                                                );
-                                            });
+                                                        }, CS.onError,
+                                                        {
+                                                            ctx: 'CZCLZ.BscMag.GetBsc2', args: []
+                                                        }
+                                                        ,
+                                                        {
+                                                            ctx: 'CZCLZ.SFKMag.GetAllSkxm', args: []
+                                                        }
+                                                    );
+                                                });
+                                            }
                                         }
                                     }
                                 ]

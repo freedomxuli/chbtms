@@ -65,45 +65,49 @@ function searchExpense(nPage) {
 }
 
 function edit(id) {
-    var win = new addWin({ ID: id });
-    win.show(null, function () {
-        MCS(
-            function (ret) {
-                var retVal = ret[0].retVal;
-                bscStore.loadData(retVal);
-                var retVal2 = ret[1].retVal;
-                itemStore.loadData(retVal2);
-                var retVal3 = ret[2].retVal[0];
-                var form = Ext.getCmp('addform');
-                form.form.setValues(retVal3);
+    if (privilege("财务登记管理_费用登记_修改删除")) {
+        var win = new addWin({ ID: id });
+        win.show(null, function () {
+            MCS(
+                function (ret) {
+                    var retVal = ret[0].retVal;
+                    bscStore.loadData(retVal);
+                    var retVal2 = ret[1].retVal;
+                    itemStore.loadData(retVal2);
+                    var retVal3 = ret[2].retVal[0];
+                    var form = Ext.getCmp('addform');
+                    form.form.setValues(retVal3);
 
-            }, CS.onError,
-            {
-                ctx: 'CZCLZ.BscMag.GetBsc2', args: []
-            }
-            ,
-            {
-                ctx: 'CZCLZ.SFKMag.GetAllFkxm', args: []
-            }
-            ,
-            {
-                ctx: 'CZCLZ.Cwdj.GetExpenseByID', args: [id]
-            }
-        );
-    });
+                }, CS.onError,
+                {
+                    ctx: 'CZCLZ.BscMag.GetBsc2', args: []
+                }
+                ,
+                {
+                    ctx: 'CZCLZ.SFKMag.GetAllFkxm', args: []
+                }
+                ,
+                {
+                    ctx: 'CZCLZ.Cwdj.GetExpenseByID', args: [id]
+                }
+            );
+        });
+    }
 }
 
 function del(id) {
-    Ext.MessageBox.confirm("提示", "是否删除?", function (obj) {
-        if (obj == "yes") {
-            CS('CZCLZ.Cwdj.DelExpense', function (retVal) {
-                searchExpense(page);
-            }, CS.onError, id);
-        }
-        else {
-            return;
-        }
-    });
+    if (privilege("财务登记管理_费用登记_修改删除")) {
+        Ext.MessageBox.confirm("提示", "是否删除?", function (obj) {
+            if (obj == "yes") {
+                CS('CZCLZ.Cwdj.DelExpense', function (retVal) {
+                    searchExpense(page);
+                }, CS.onError, id);
+            }
+            else {
+                return;
+            }
+        });
+    }
 }
 
 
@@ -373,7 +377,9 @@ Ext.onReady(function () {
                                         iconCls: 'search',
                                         text: '查询',
                                         handler: function () {
-                                            searchExpense(page);
+                                            if (privilege("财务登记管理_费用登记_查询")) {
+                                                searchExpense(page);
+                                            }
                                         }
                                     },
                                     {
@@ -381,25 +387,27 @@ Ext.onReady(function () {
                                         iconCls: 'add',
                                         text: '新增项目',
                                         handler: function () {
-                                            var win = new addWin({ ID: '' });
-                                            win.show(null, function () {
-                                                MCS(
-                                                    function (ret) {
-                                                        var retVal = ret[0].retVal;
-                                                        bscStore.loadData(retVal);
-                                                        var retVal2 = ret[1].retVal;
-                                                        itemStore.loadData(retVal2);
+                                            if (privilege("财务登记管理_费用登记_登记")) {
+                                                var win = new addWin({ ID: '' });
+                                                win.show(null, function () {
+                                                    MCS(
+                                                        function (ret) {
+                                                            var retVal = ret[0].retVal;
+                                                            bscStore.loadData(retVal);
+                                                            var retVal2 = ret[1].retVal;
+                                                            itemStore.loadData(retVal2);
 
-                                                    }, CS.onError,
-                                                    {
-                                                        ctx: 'CZCLZ.BscMag.GetBsc2', args: []
-                                                    }
-                                                    ,
-                                                    {
-                                                        ctx: 'CZCLZ.SFKMag.GetAllFkxm', args: []
-                                                    }
-                                                );
-                                            });
+                                                        }, CS.onError,
+                                                        {
+                                                            ctx: 'CZCLZ.BscMag.GetBsc2', args: []
+                                                        }
+                                                        ,
+                                                        {
+                                                            ctx: 'CZCLZ.SFKMag.GetAllFkxm', args: []
+                                                        }
+                                                    );
+                                                });
+                                            }
                                         }
                                     }
                                 ]
